@@ -7,49 +7,41 @@
   <meta name="description" content="Studio217 builds AI-powered automation tools for travel agencies, operators, and concierge services. Check-ins, CC auth, flight tracking — all automated." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" />
+
   <style>
+    /* ─── Reset & Variables ──────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #080808;
-      --surface:   #101010;
-      --surface2:  #161616;
-      --border:    #1e1e1e;
-      --border2:   #2a2a2a;
-      --indigo:    #6366f1;
-      --purple:    #a855f7;
-      --glow:      rgba(99,102,241,0.18);
-      --glow2:     rgba(168,85,247,0.12);
-      --text:      #f0f0f0;
-      --text2:     #888;
-      --text3:     #444;
-      --radius:    14px;
-      --radius-sm: 8px;
+      --black:    #0d0d0d;
+      --dark:     #141414;
+      --dark2:    #1a1a1a;
+      --mid:      #272727;
+      --mid2:     #2e2e2e;
+      --gray:     #aaaaaa;
+      --light:    #f0f0f0;
+      --white:    #ffffff;
+      --indigo:   #6366f1;
+      --purple:   #a855f7;
+      --pink:     #ec4899;
+      --glow:     rgba(99,102,241,0.14);
+      --font-display: 'Barlow Condensed', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 16px;
       line-height: 1.6;
       overflow-x: hidden;
     }
 
-    /* ── NOISE OVERLAY ─────────────────────────────── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: .4;
-    }
-
-    /* ── NAV ───────────────────────────────────────── */
+    /* ─── NAV ────────────────────────────────────────────────────────── */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -57,214 +49,452 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 40px;
-      height: 64px;
-      background: rgba(8,8,8,0.8);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
+      padding: 22px 48px;
+      background: transparent;
+      transition: background .35s, backdrop-filter .35s;
+    }
+
+    nav.scrolled {
+      background: rgba(13,13,13,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--mid);
     }
 
     .nav-logo {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 26px;
+      letter-spacing: 0.06em;
+      color: var(--white);
+      text-decoration: none;
       display: flex;
       align-items: center;
       gap: 10px;
-      text-decoration: none;
-      color: var(--text);
-      font-weight: 700;
-      font-size: 17px;
-      letter-spacing: -0.3px;
     }
 
-    .nav-logo .logo-mark {
-      width: 32px; height: 32px;
+    .nav-logo .logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
       background: linear-gradient(135deg, var(--indigo), var(--purple));
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 900;
-      color: #fff;
-      letter-spacing: -1px;
     }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 32px;
+      gap: 36px;
       list-style: none;
     }
 
     .nav-links a {
-      text-decoration: none;
-      color: var(--text2);
+      font-family: var(--font-body);
       font-size: 14px;
       font-weight: 500;
+      color: var(--gray);
+      text-decoration: none;
+      letter-spacing: .02em;
       transition: color .2s;
     }
-    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover { color: var(--white); }
 
     .nav-cta {
-      background: linear-gradient(135deg, var(--indigo), var(--purple));
-      color: #fff !important;
-      padding: 8px 18px;
-      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 14px;
       font-weight: 600;
-      font-size: 13px !important;
-      transition: opacity .2s !important;
+      color: var(--white) !important;
+      background: linear-gradient(135deg, var(--indigo), var(--purple));
+      padding: 10px 22px;
+      border-radius: 100px;
+      text-decoration: none;
+      letter-spacing: .02em;
+      transition: opacity .2s, transform .2s;
     }
-    .nav-cta:hover { opacity: .85; }
+    .nav-cta:hover { opacity: .85; transform: translateY(-1px); }
 
-    /* ── HERO ──────────────────────────────────────── */
+    /* ─── HERO ───────────────────────────────────────────────────────── */
     .hero {
-      position: relative;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 120px 24px 80px;
+      padding: 130px 24px 90px;
+      position: relative;
       overflow: hidden;
     }
 
-    /* Ambient glows */
-    .hero::after {
+    /* Grid overlay */
+    .hero::before {
       content: '';
       position: absolute;
-      width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -60%);
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(99,102,241,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
       pointer-events: none;
     }
 
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      border-radius: 999px;
-      padding: 6px 16px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text2);
-      letter-spacing: .5px;
+    /* Radial glow */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -55%);
+      width: 900px; height: 900px;
+      background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, rgba(168,85,247,0.05) 40%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .28em;
       text-transform: uppercase;
-      margin-bottom: 32px;
+      color: var(--gray);
+      margin-bottom: 28px;
       position: relative;
       z-index: 1;
+      opacity: 0;
+      animation: fadeUp .8s ease .2s forwards;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .hero-badge .dot {
+    .hero-eyebrow .pulse {
       width: 6px; height: 6px;
-      background: #22c55e;
       border-radius: 50%;
-      animation: pulse 2s infinite;
+      background: #22c55e;
+      animation: blink 2s infinite;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: .5; transform: scale(1.4); }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .3; }
     }
 
-    .hero h1 {
+    .hero-title {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: clamp(90px, 17vw, 240px);
+      line-height: 0.88;
+      letter-spacing: -0.02em;
       position: relative;
       z-index: 1;
-      font-size: clamp(48px, 7vw, 88px);
-      font-weight: 900;
-      letter-spacing: -3px;
-      line-height: 1.0;
-      margin-bottom: 24px;
-      max-width: 900px;
+      opacity: 0;
+      animation: fadeUp .8s ease .4s forwards;
     }
 
-    .hero h1 .gradient {
-      background: linear-gradient(135deg, var(--indigo) 0%, var(--purple) 50%, #ec4899 100%);
+    .hero-title .line-white {
+      display: block;
+      color: var(--white);
+    }
+
+    .hero-title .line-grad {
+      display: block;
+      background: linear-gradient(135deg, var(--indigo) 0%, var(--purple) 50%, var(--pink) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    .hero p {
+    .hero-sub {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 36px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(16px, 2.5vw, 24px);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gray);
       position: relative;
       z-index: 1;
-      font-size: clamp(17px, 2vw, 20px);
-      color: var(--text2);
-      max-width: 580px;
-      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp .8s ease .6s forwards;
+    }
+
+    .hero-sub .sep {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--indigo);
+      opacity: .6;
+    }
+
+    .hero-tagline {
+      margin-top: 36px;
+      font-size: 18px;
+      color: rgba(255,255,255,.45);
       font-weight: 400;
+      max-width: 540px;
       line-height: 1.7;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeUp .8s ease .75s forwards;
     }
 
     .hero-actions {
-      position: relative;
-      z-index: 1;
+      margin-top: 48px;
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
       justify-content: center;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeUp .8s ease .9s forwards;
     }
 
     .btn-primary {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: linear-gradient(135deg, var(--indigo), var(--purple));
-      color: #fff;
-      padding: 14px 28px;
-      border-radius: 10px;
+      font-family: var(--font-body);
       font-size: 15px;
       font-weight: 600;
+      color: var(--white);
+      background: linear-gradient(135deg, var(--indigo), var(--purple));
+      padding: 15px 36px;
+      border-radius: 100px;
       text-decoration: none;
-      transition: all .2s;
-      box-shadow: 0 0 30px rgba(99,102,241,0.25);
+      letter-spacing: .02em;
+      transition: opacity .2s, transform .2s, box-shadow .2s;
+      box-shadow: 0 0 32px rgba(99,102,241,.25);
     }
     .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 45px rgba(99,102,241,0.4);
+      opacity: .88;
+      transform: translateY(-2px);
+      box-shadow: 0 0 48px rgba(99,102,241,.4);
     }
 
-    .btn-secondary {
+    .btn-outline {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: var(--surface2);
-      color: var(--text);
-      padding: 14px 28px;
-      border-radius: 10px;
+      font-family: var(--font-body);
       font-size: 15px;
       font-weight: 500;
+      color: var(--white);
+      background: transparent;
+      padding: 15px 36px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,.18);
       text-decoration: none;
-      border: 1px solid var(--border2);
-      transition: all .2s;
+      letter-spacing: .02em;
+      transition: border-color .2s, transform .2s;
     }
-    .btn-secondary:hover {
-      border-color: var(--border2);
-      background: #1e1e1e;
+    .btn-outline:hover {
+      border-color: rgba(255,255,255,.5);
+      transform: translateY(-2px);
     }
 
-    /* ── STATS BAR ─────────────────────────────────── */
-    .stats-bar {
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 28px 40px;
+    /* ─── MARQUEE ────────────────────────────────────────────────────── */
+    .marquee-wrap {
+      border-top: 1px solid var(--mid);
+      border-bottom: 1px solid var(--mid);
+      padding: 20px 0;
+      overflow: hidden;
+      background: var(--dark2);
+    }
+
+    .marquee-track {
       display: flex;
-      justify-content: center;
-      gap: 80px;
+      gap: 56px;
+      width: max-content;
+      animation: marquee 28s linear infinite;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
+
+    .marquee-track span { opacity: .35; transition: opacity .2s; }
+    .marquee-track span:hover { opacity: 1; }
+    .marquee-track .sep { opacity: .15; color: var(--indigo); }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─── SECTION SHARED ─────────────────────────────────────────────── */
+    section {
+      padding: 110px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: clamp(52px, 8vw, 104px);
+      line-height: .9;
+      letter-spacing: -.02em;
+    }
+
+    /* ─── PRODUCTS ───────────────────────────────────────────────────── */
+    #products { border-top: 1px solid var(--mid); }
+
+    .products-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 56px;
+      gap: 32px;
       flex-wrap: wrap;
     }
 
-    .stat {
-      text-align: center;
+    .products-header p {
+      max-width: 360px;
+      color: rgba(255,255,255,.45);
+      font-size: 16px;
+      line-height: 1.75;
     }
 
-    .stat-value {
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+    }
+
+    .product-card {
+      background: var(--dark2);
+      padding: 48px 44px;
+      position: relative;
+      overflow: hidden;
+      transition: background .25s;
+      cursor: default;
+    }
+
+    /* rounded corners only on outer edges */
+    .product-card:nth-child(1) { border-radius: 16px 0 0 0; }
+    .product-card:nth-child(2) { border-radius: 0 16px 0 0; }
+    .product-card:nth-child(3) { border-radius: 0 0 0 16px; }
+    .product-card:nth-child(4) { border-radius: 0 0 16px 0; }
+
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--indigo), var(--purple), transparent);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .product-card:hover { background: var(--mid); }
+    .product-card:hover::before { opacity: 1; }
+
+    .product-number {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 80px;
+      color: rgba(255,255,255,.04);
+      line-height: 1;
+      margin-bottom: 20px;
+      letter-spacing: -.02em;
+      user-select: none;
+    }
+
+    .product-icon-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .product-icon {
       font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -1px;
+    }
+
+    .product-tag {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 100px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .tag-live { background: rgba(34,197,94,.1);  color: #22c55e; border: 1px solid rgba(34,197,94,.2); }
+    .tag-beta { background: rgba(99,102,241,.1); color: #818cf8; border: 1px solid rgba(99,102,241,.2); }
+    .tag-soon { background: rgba(168,85,247,.08); color: #c084fc; border: 1px solid rgba(168,85,247,.2); }
+
+    .product-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 36px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .product-desc {
+      color: rgba(255,255,255,.45);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .product-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .product-features li {
+      font-size: 13px;
+      color: rgba(255,255,255,.4);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .product-features li::before {
+      content: '—';
+      color: var(--indigo);
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    /* ─── STATS STRIP ────────────────────────────────────────────────── */
+    .stats-strip {
+      border-top: 1px solid var(--mid);
+      padding: 80px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+    }
+
+    .stat { text-align: center; }
+
+    .stat-number {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 72px;
+      line-height: 1;
+      letter-spacing: -.03em;
       background: linear-gradient(135deg, var(--indigo), var(--purple));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -272,290 +502,235 @@
     }
 
     .stat-label {
-      font-size: 13px;
-      color: var(--text2);
-      margin-top: 2px;
-    }
-
-    /* ── SECTIONS ──────────────────────────────────── */
-    section {
-      padding: 100px 40px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .section-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      margin-top: 8px;
       font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
+      letter-spacing: .18em;
       text-transform: uppercase;
-      color: var(--indigo);
-      margin-bottom: 16px;
+      color: rgba(255,255,255,.35);
     }
 
-    .section-label::before {
-      content: '';
-      display: block;
-      width: 16px; height: 1px;
-      background: var(--indigo);
-    }
+    /* ─── HOW IT WORKS ───────────────────────────────────────────────── */
+    #how { border-top: 1px solid var(--mid); }
 
-    h2 {
-      font-size: clamp(32px, 4vw, 48px);
-      font-weight: 800;
-      letter-spacing: -2px;
-      line-height: 1.1;
-      margin-bottom: 16px;
-    }
-
-    .section-sub {
-      font-size: 17px;
-      color: var(--text2);
-      max-width: 520px;
-      line-height: 1.7;
-      margin-bottom: 60px;
-    }
-
-    /* ── PRODUCTS GRID ─────────────────────────────── */
-    .products-grid {
+    .how-header {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-    }
-
-    .product-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 32px;
-      transition: all .25s;
-      cursor: default;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .product-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, var(--glow), transparent 60%);
-      opacity: 0;
-      transition: opacity .3s;
-    }
-
-    .product-card:hover {
-      border-color: var(--border2);
-      transform: translateY(-2px);
-    }
-
-    .product-card:hover::before { opacity: 1; }
-
-    .product-icon {
-      width: 44px; height: 44px;
-      border-radius: 10px;
-      display: flex;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
       align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      margin-bottom: 20px;
+      margin-bottom: 72px;
     }
 
-    .product-card h3 {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .product-tag {
-      font-size: 10px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 999px;
-      letter-spacing: .5px;
-      text-transform: uppercase;
-    }
-
-    .tag-live   { background: rgba(34,197,94,.12); color: #22c55e; border: 1px solid rgba(34,197,94,.2); }
-    .tag-beta   { background: rgba(99,102,241,.12); color: #818cf8; border: 1px solid rgba(99,102,241,.2); }
-    .tag-soon   { background: rgba(136,136,136,.1); color: var(--text3); border: 1px solid var(--border); }
-
-    .product-card p {
-      font-size: 14px;
-      color: var(--text2);
-      line-height: 1.65;
-      margin-bottom: 20px;
-    }
-
-    .product-features {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .product-features li {
-      font-size: 13px;
-      color: var(--text2);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .product-features li::before {
-      content: '✓';
-      color: var(--indigo);
-      font-weight: 700;
-      font-size: 12px;
-      flex-shrink: 0;
-    }
-
-    /* ── HOW IT WORKS ──────────────────────────────── */
-    .how-section { background: var(--surface); }
-    .how-section > div {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 100px 40px;
+    .how-header p {
+      color: rgba(255,255,255,.45);
+      font-size: 17px;
+      line-height: 1.8;
     }
 
     .steps {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 40px;
-      margin-top: 60px;
-      position: relative;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
     }
 
     .step {
+      background: var(--dark2);
+      padding: 40px 36px;
       position: relative;
+      transition: background .25s;
     }
 
-    .step-number {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--indigo), var(--purple));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 18px;
+    .step:first-child { border-radius: 16px 0 0 16px; }
+    .step:last-child  { border-radius: 0 16px 16px 0; }
+
+    .step::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--purple), transparent);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .step:hover { background: var(--mid); }
+    .step:hover::before { opacity: 1; }
+
+    .step-num {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 56px;
+      color: rgba(255,255,255,.05);
+      line-height: 1;
+      margin-bottom: 16px;
     }
 
     .step h4 {
-      font-size: 16px;
+      font-family: var(--font-display);
       font-weight: 700;
-      margin-bottom: 8px;
-      letter-spacing: -0.3px;
+      font-size: 20px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
     }
 
     .step p {
+      color: rgba(255,255,255,.4);
       font-size: 14px;
-      color: var(--text2);
-      line-height: 1.65;
+      line-height: 1.7;
     }
 
-    /* ── WHY US ────────────────────────────────────── */
+    /* ─── ABOUT / MISSION ────────────────────────────────────────────── */
+    #about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      border-top: 1px solid var(--mid);
+    }
+
+    .about-statement {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: clamp(44px, 5.5vw, 68px);
+      line-height: 1.05;
+      letter-spacing: -.01em;
+    }
+
+    .about-statement em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--indigo), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .about-body p {
+      color: rgba(255,255,255,.5);
+      font-size: 16px;
+      line-height: 1.85;
+      margin-bottom: 20px;
+    }
+
+    .about-body p:last-child { margin-bottom: 0; }
+
+    /* ─── WHY US GRID ────────────────────────────────────────────────── */
+    #why { border-top: 1px solid var(--mid); }
+
+    .why-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 56px;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .why-header p {
+      max-width: 360px;
+      color: rgba(255,255,255,.45);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
     .why-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
     }
 
     .why-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
+      background: var(--dark2);
+      padding: 36px 32px;
+      transition: background .25s;
     }
 
+    .why-card:nth-child(1) { border-radius: 16px 0 0 0; }
+    .why-card:nth-child(3) { border-radius: 0 16px 0 0; }
+    .why-card:nth-child(4) { border-radius: 0 0 0 16px; }
+    .why-card:nth-child(6) { border-radius: 0 0 16px 0; }
+
+    .why-card:hover { background: var(--mid); }
+
     .why-icon {
-      font-size: 24px;
+      font-size: 26px;
       margin-bottom: 14px;
     }
 
     .why-card h4 {
-      font-size: 15px;
+      font-family: var(--font-display);
       font-weight: 700;
-      margin-bottom: 8px;
-      letter-spacing: -0.3px;
+      font-size: 20px;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
     }
 
     .why-card p {
-      font-size: 13px;
-      color: var(--text2);
-      line-height: 1.65;
+      color: rgba(255,255,255,.4);
+      font-size: 14px;
+      line-height: 1.7;
     }
 
-    /* ── STACK ─────────────────────────────────────── */
+    /* ─── STACK PILLS ────────────────────────────────────────────────── */
+    .stack-section {
+      border-top: 1px solid var(--mid);
+      padding: 56px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .stack-label {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.3);
+      white-space: nowrap;
+    }
+
     .stack-pills {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 32px;
     }
 
     .pill {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 7px 16px;
+      background: var(--dark2);
+      border: 1px solid var(--mid2);
+      border-radius: 100px;
+      padding: 7px 18px;
       font-size: 13px;
       font-weight: 500;
-      color: var(--text2);
+      color: rgba(255,255,255,.45);
+      transition: border-color .2s, color .2s;
     }
+    .pill:hover { border-color: var(--indigo); color: var(--white); }
 
-    /* ── CTA SECTION ───────────────────────────────── */
-    .cta-section {
+    /* ─── CONTACT / CTA ──────────────────────────────────────────────── */
+    #contact {
+      border-top: 1px solid var(--mid);
       text-align: center;
-      position: relative;
-      overflow: hidden;
     }
 
-    .cta-inner {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 80px 40px;
-      position: relative;
-      overflow: hidden;
+    .contact-inner {
+      max-width: 680px;
+      margin: 0 auto;
     }
 
-    .cta-inner::before {
-      content: '';
-      position: absolute;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
+    #contact .section-title { margin-bottom: 20px; }
 
-    .cta-inner h2 {
-      position: relative;
-      z-index: 1;
-      max-width: 600px;
-      margin: 0 auto 16px;
-    }
-
-    .cta-inner p {
-      position: relative;
-      z-index: 1;
+    #contact > .contact-inner > p {
+      color: rgba(255,255,255,.45);
       font-size: 17px;
-      color: var(--text2);
-      margin-bottom: 40px;
+      margin-bottom: 48px;
+      line-height: 1.75;
     }
 
     .cta-form {
-      position: relative;
-      z-index: 1;
       display: flex;
       gap: 10px;
       max-width: 440px;
@@ -564,26 +739,25 @@
 
     .cta-form input {
       flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border2);
-      border-radius: 10px;
-      padding: 14px 18px;
+      background: var(--dark2);
+      border: 1px solid var(--mid2);
+      border-radius: 100px;
+      padding: 14px 22px;
       font-size: 14px;
       font-family: inherit;
-      color: var(--text);
+      color: var(--white);
       outline: none;
       transition: border-color .2s;
     }
-
     .cta-form input:focus { border-color: var(--indigo); }
-    .cta-form input::placeholder { color: var(--text3); }
+    .cta-form input::placeholder { color: rgba(255,255,255,.25); }
 
     .cta-form button {
       background: linear-gradient(135deg, var(--indigo), var(--purple));
       color: #fff;
       border: none;
-      border-radius: 10px;
-      padding: 14px 22px;
+      border-radius: 100px;
+      padding: 14px 26px;
       font-size: 14px;
       font-weight: 600;
       font-family: inherit;
@@ -593,40 +767,58 @@
     }
     .cta-form button:hover { opacity: .85; }
 
-    /* ── FOOTER ────────────────────────────────────── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 48px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: gap;
-      gap: 24px;
-      max-width: 1200px;
-      margin: 0 auto;
+    .signup-confirm {
+      font-size: 13px;
+      margin-top: 20px;
+      color: #22c55e;
+      display: none;
+      letter-spacing: .05em;
     }
 
-    .footer-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: var(--text);
+    .contact-email-link {
+      display: inline-block;
+      margin-top: 40px;
+      font-family: var(--font-display);
       font-weight: 700;
-      font-size: 16px;
+      font-size: clamp(22px, 3vw, 36px);
+      letter-spacing: .04em;
+      color: var(--white);
+      text-decoration: none;
+      border-bottom: 2px solid rgba(255,255,255,.15);
+      padding-bottom: 4px;
+      transition: border-color .2s, color .2s;
+    }
+    .contact-email-link:hover {
+      color: var(--gray);
+      border-color: var(--gray);
     }
 
-    .footer-logo .logo-mark {
-      width: 28px; height: 28px;
-      background: linear-gradient(135deg, var(--indigo), var(--purple));
-      border-radius: 7px;
+    /* ─── FOOTER ─────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--mid);
+      padding: 44px 48px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 12px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-brand {
+      font-family: var(--font-display);
       font-weight: 900;
-      color: #fff;
-      letter-spacing: -1px;
+      font-size: 22px;
+      letter-spacing: .06em;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-brand .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--indigo), var(--purple));
     }
 
     .footer-links {
@@ -637,129 +829,159 @@
 
     .footer-links a {
       font-size: 13px;
-      color: var(--text2);
+      color: rgba(255,255,255,.3);
       text-decoration: none;
+      letter-spacing: .04em;
       transition: color .2s;
     }
-    .footer-links a:hover { color: var(--text); }
+    .footer-links a:hover { color: var(--white); }
 
     .footer-copy {
       font-size: 13px;
-      color: var(--text3);
+      color: rgba(255,255,255,.25);
+      letter-spacing: .04em;
     }
 
-    /* ── DIVIDER ───────────────────────────────────── */
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 0;
+    /* ─── ANIMATIONS ─────────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── RESPONSIVE ────────────────────────────────── */
-    @media (max-width: 768px) {
-      nav { padding: 0 20px; }
+    /* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 18px 22px; }
       .nav-links { display: none; }
-      section { padding: 70px 20px; }
-      .stats-bar { gap: 40px; padding: 28px 20px; }
-      .cta-form { flex-direction: column; }
-      footer { flex-direction: column; text-align: center; }
-      .footer-links { flex-wrap: wrap; justify-content: center; }
-      .hero h1 { letter-spacing: -2px; }
-    }
 
-    /* ── SCROLL ANIMATIONS ─────────────────────────── */
-    .fade-up {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity .6s ease, transform .6s ease;
-    }
-    .fade-up.visible {
-      opacity: 1;
-      transform: none;
+      section { padding: 72px 22px; }
+      .stats-strip { grid-template-columns: repeat(2, 1fr); padding: 60px 22px; }
+      .stack-section { padding: 48px 22px; }
+
+      .products-grid { grid-template-columns: 1fr; }
+      .product-card:nth-child(1) { border-radius: 16px 16px 0 0; }
+      .product-card:nth-child(2) { border-radius: 0; }
+      .product-card:nth-child(3) { border-radius: 0; }
+      .product-card:nth-child(4) { border-radius: 0 0 16px 16px; }
+
+      .steps { grid-template-columns: 1fr 1fr; }
+      .step:first-child { border-radius: 16px 0 0 0; }
+      .step:last-child  { border-radius: 0 0 16px 0; }
+
+      .how-header { grid-template-columns: 1fr; gap: 24px; }
+
+      #about { grid-template-columns: 1fr; gap: 40px; }
+
+      .why-grid { grid-template-columns: 1fr; }
+      .why-card:nth-child(1) { border-radius: 16px 16px 0 0; }
+      .why-card:nth-child(6) { border-radius: 0 0 16px 16px; }
+      .why-card:nth-child(3) { border-radius: 0; }
+      .why-card:nth-child(4) { border-radius: 0; }
+
+      .products-header, .why-header { flex-direction: column; align-items: flex-start; }
+
+      .cta-form { flex-direction: column; border-radius: 16px; }
+      .cta-form input, .cta-form button { border-radius: 100px; }
+
+      footer { flex-direction: column; text-align: center; padding: 32px 22px; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
     }
   </style>
 </head>
 <body>
 
   <!-- NAV -->
-  <nav>
+  <nav id="navbar">
     <a href="#" class="nav-logo">
-      <div class="logo-mark">S2</div>
-      Studio217
+      <span class="logo-dot"></span>
+      STUDIO217
     </a>
     <ul class="nav-links">
       <li><a href="#products">Products</a></li>
       <li><a href="#how">How it works</a></li>
-      <li><a href="#why">Why us</a></li>
+      <li><a href="#about">About</a></li>
       <li><a href="#contact" class="nav-cta">Get Early Access</a></li>
     </ul>
   </nav>
 
   <!-- HERO -->
-  <div class="hero">
-    <div class="hero-badge">
-      <span class="dot"></span>
-      Now in early access
-    </div>
-    <h1>
-      AI automation for<br />
-      <span class="gradient">the travel industry</span>
+  <header class="hero">
+    <p class="hero-eyebrow">
+      <span class="pulse"></span>
+      Now in early access &nbsp;·&nbsp; studio217.ai
+    </p>
+    <h1 class="hero-title">
+      <span class="line-white">AI OPS FOR</span>
+      <span class="line-grad">TRAVEL</span>
     </h1>
-    <p>
+    <div class="hero-sub">
+      <span>Check-ins</span>
+      <span class="sep"></span>
+      <span>CC Auth</span>
+      <span class="sep"></span>
+      <span>Flight Tracking</span>
+      <span class="sep"></span>
+      <span>Automation</span>
+    </div>
+    <p class="hero-tagline">
       Studio217 builds intelligent tools that handle the repetitive work —
-      check-ins, CC authorization, flight tracking — so your team can focus
-      on what actually matters.
+      so your team can focus on what actually matters.
     </p>
     <div class="hero-actions">
-      <a href="#contact" class="btn-primary">
-        Get Early Access →
-      </a>
-      <a href="#products" class="btn-secondary">
-        See what we build
-      </a>
+      <a href="#contact" class="btn-primary">Get Early Access →</a>
+      <a href="#products" class="btn-outline">See what we build</a>
     </div>
-  </div>
+  </header>
 
-  <!-- STATS BAR -->
-  <div class="stats-bar">
-    <div class="stat">
-      <div class="stat-value">10+</div>
-      <div class="stat-label">Airlines automated</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">24/7</div>
-      <div class="stat-label">Always running</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">100%</div>
-      <div class="stat-label">Hands-free check-ins</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">&lt; 2s</div>
-      <div class="stat-label">Average response time</div>
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>AutoCheck</span><span class="sep">·</span>
+      <span>AuthFlow</span><span class="sep">·</span>
+      <span>FlyPal</span><span class="sep">·</span>
+      <span>Foster AI</span><span class="sep">·</span>
+      <span>American Airlines</span><span class="sep">·</span>
+      <span>Delta</span><span class="sep">·</span>
+      <span>United</span><span class="sep">·</span>
+      <span>Emirates</span><span class="sep">·</span>
+      <span>Lufthansa</span><span class="sep">·</span>
+      <span>Singapore Airlines</span><span class="sep">·</span>
+      <span>Studio217</span><span class="sep">·</span>
+      <!-- duplicate for seamless loop -->
+      <span>AutoCheck</span><span class="sep">·</span>
+      <span>AuthFlow</span><span class="sep">·</span>
+      <span>FlyPal</span><span class="sep">·</span>
+      <span>Foster AI</span><span class="sep">·</span>
+      <span>American Airlines</span><span class="sep">·</span>
+      <span>Delta</span><span class="sep">·</span>
+      <span>United</span><span class="sep">·</span>
+      <span>Emirates</span><span class="sep">·</span>
+      <span>Lufthansa</span><span class="sep">·</span>
+      <span>Singapore Airlines</span><span class="sep">·</span>
+      <span>Studio217</span><span class="sep">·</span>
     </div>
   </div>
 
   <!-- PRODUCTS -->
   <section id="products">
-    <div class="section-label">Products</div>
-    <h2>Everything you need,<br />nothing you don't</h2>
-    <p class="section-sub">
-      Four focused tools built for travel professionals. Each one automates a
-      task your team shouldn't be doing manually.
-    </p>
+    <div class="products-header">
+      <div>
+        <p class="section-label">Our Products</p>
+        <h2 class="section-title">What we<br/>build</h2>
+      </div>
+      <p>Four focused tools for travel professionals. Each one automates a task your team shouldn't be doing manually.</p>
+    </div>
 
     <div class="products-grid">
 
-      <div class="product-card fade-up">
-        <div class="product-icon" style="background:rgba(99,102,241,.12);">✈️</div>
-        <h3>
-          AutoCheck
+      <div class="product-card">
+        <div class="product-number">01</div>
+        <div class="product-icon-row">
+          <span class="product-icon">✈️</span>
           <span class="product-tag tag-live">Live</span>
-        </h3>
-        <p>
-          Automatically checks in passengers the moment the window opens —
-          across every major airline, every flight, every time.
+        </div>
+        <h3 class="product-name">AutoCheck</h3>
+        <p class="product-desc">
+          Automatically checks in passengers the moment the window opens — across every major airline, every flight, every time.
         </p>
         <ul class="product-features">
           <li>American, Delta, United, Southwest + 7 more</li>
@@ -769,15 +991,15 @@
         </ul>
       </div>
 
-      <div class="product-card fade-up">
-        <div class="product-icon" style="background:rgba(168,85,247,.12);">💳</div>
-        <h3>
-          AuthFlow
+      <div class="product-card">
+        <div class="product-number">02</div>
+        <div class="product-icon-row">
+          <span class="product-icon">💳</span>
           <span class="product-tag tag-live">Live</span>
-        </h3>
-        <p>
-          Automates hotel credit card authorization requests — finds the right
-          contact, sends the form, tracks replies, and follows up automatically.
+        </div>
+        <h3 class="product-name">AuthFlow</h3>
+        <p class="product-desc">
+          Automates hotel credit card authorization requests — finds the right contact, sends the form, tracks replies, follows up automatically.
         </p>
         <ul class="product-features">
           <li>Auto-discovers hotel email addresses</li>
@@ -787,15 +1009,15 @@
         </ul>
       </div>
 
-      <div class="product-card fade-up">
-        <div class="product-icon" style="background:rgba(236,72,153,.1);">🛫</div>
-        <h3>
-          FlyPal
+      <div class="product-card">
+        <div class="product-number">03</div>
+        <div class="product-icon-row">
+          <span class="product-icon">🛫</span>
           <span class="product-tag tag-beta">Beta</span>
-        </h3>
-        <p>
-          Real-time flight tracking with shareable codes. Send a link —
-          anyone can watch your flight live, no app required.
+        </div>
+        <h3 class="product-name">FlyPal</h3>
+        <p class="product-desc">
+          Real-time flight tracking with shareable codes. Send a link — anyone can watch your flight live, no app required.
         </p>
         <ul class="product-features">
           <li>Live flight status & tracking</li>
@@ -805,20 +1027,20 @@
         </ul>
       </div>
 
-      <div class="product-card fade-up">
-        <div class="product-icon" style="background:rgba(34,197,94,.08);">🤖</div>
-        <h3>
-          Foster
-          <span class="product-tag tag-soon">Coming soon</span>
-        </h3>
-        <p>
-          The AI agent infrastructure behind all Studio217 products — available
-          as a standalone platform for building your own travel automations.
+      <div class="product-card">
+        <div class="product-number">04</div>
+        <div class="product-icon-row">
+          <span class="product-icon">🤖</span>
+          <span class="product-tag tag-soon">Coming Soon</span>
+        </div>
+        <h3 class="product-name">Foster</h3>
+        <p class="product-desc">
+          The AI agent infrastructure behind all Studio217 products — available as a platform to build your own travel automations.
         </p>
         <ul class="product-features">
           <li>Connect to any airline or hotel system</li>
           <li>Build custom automation workflows</li>
-          <li>Telegram, email & Sheets integrations built-in</li>
+          <li>Telegram, email & Sheets built-in</li>
           <li>No code required</li>
         </ul>
       </div>
@@ -826,121 +1048,157 @@
     </div>
   </section>
 
-  <hr class="divider" />
-
-  <!-- HOW IT WORKS -->
-  <div class="how-section" id="how">
-    <div>
-      <div class="section-label">How it works</div>
-      <h2>Set it up once.<br />It runs forever.</h2>
-
-      <div class="steps">
-        <div class="step fade-up">
-          <div class="step-number">1</div>
-          <h4>Connect your roster</h4>
-          <p>Link your Google Sheet with passenger details, booking references, and hotel names. That's your source of truth.</p>
-        </div>
-        <div class="step fade-up">
-          <div class="step-number">2</div>
-          <h4>Studio217 goes to work</h4>
-          <p>Our agents monitor check-in windows, find hotel contacts, send authorization requests, and track replies — all automatically.</p>
-        </div>
-        <div class="step fade-up">
-          <div class="step-number">3</div>
-          <h4>You get notified</h4>
-          <p>Every action shows up in Telegram instantly. Boarding passes, auth confirmations, delays — you're always in the loop.</p>
-        </div>
-        <div class="step fade-up">
-          <div class="step-number">4</div>
-          <h4>Sheet stays updated</h4>
-          <p>Every result is written back to your sheet in real time. Seats, confirmation status, emails found — full audit trail.</p>
-        </div>
-      </div>
+  <!-- STATS -->
+  <div class="stats-strip">
+    <div class="stat">
+      <div class="stat-number">10+</div>
+      <p class="stat-label">Airlines automated</p>
+    </div>
+    <div class="stat">
+      <div class="stat-number">24/7</div>
+      <p class="stat-label">Always running</p>
+    </div>
+    <div class="stat">
+      <div class="stat-number">100%</div>
+      <p class="stat-label">Hands-free check-ins</p>
+    </div>
+    <div class="stat">
+      <div class="stat-number">&lt;2s</div>
+      <p class="stat-label">Avg. response time</p>
     </div>
   </div>
 
+  <!-- HOW IT WORKS -->
+  <section id="how">
+    <div class="how-header">
+      <div>
+        <p class="section-label">How it works</p>
+        <h2 class="section-title">Set it up<br/>once.</h2>
+      </div>
+      <p>Connect your Google Sheet, point your Telegram, and Studio217 handles everything else — around the clock, without fail.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h4>Connect your roster</h4>
+        <p>Link your Google Sheet with passenger details, booking references, and hotel names. That's your source of truth.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h4>We go to work</h4>
+        <p>Our agents monitor check-in windows, find hotel contacts, send authorization requests, and track replies — all automatically.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h4>You get notified</h4>
+        <p>Every action shows up in Telegram instantly. Boarding passes, auth confirmations, delays — you're always in the loop.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h4>Sheet stays updated</h4>
+        <p>Every result writes back in real time. Seats, statuses, emails found — full audit trail, always current.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div>
+      <p class="section-label">Our philosophy</p>
+      <h2 class="about-statement">
+        Built by people who <em>actually</em><br/>
+        know travel ops.
+      </h2>
+    </div>
+    <div class="about-body">
+      <p>We didn't build generic AI tools and point them at travel. We built specifically for the problems travel teams deal with every single day — missed check-in windows, hotel email hunts, manual CC auth requests, passengers calling for updates.</p>
+      <p>Studio217 is the stack we wish existed. Now it does — and we're making it available to travel agencies, operators, and concierge services who are tired of doing this by hand.</p>
+      <p>We run everything we build. If it breaks for you, it breaks for us first.</p>
+    </div>
+  </section>
+
   <!-- WHY US -->
   <section id="why">
-    <div class="section-label">Why Studio217</div>
-    <h2>Built by people who<br />know travel ops</h2>
-    <p class="section-sub">
-      We didn't build generic AI tools and point them at travel. We built
-      specifically for the problems travel teams deal with every single day.
-    </p>
+    <div class="why-header">
+      <div>
+        <p class="section-label">Why Studio217</p>
+        <h2 class="section-title">Why<br/>us</h2>
+      </div>
+      <p>We built this for a real operation. That means it's hardened, proven, and already works at scale.</p>
+    </div>
 
     <div class="why-grid">
-      <div class="why-card fade-up">
+      <div class="why-card">
         <div class="why-icon">⚡</div>
-        <h4>Always on, never misses a window</h4>
-        <p>Check-in windows open at exactly T-24h. Our agents are already waiting. No cron jobs for you to manage.</p>
+        <h4>Never misses a window</h4>
+        <p>Check-in windows open at exactly T-24h. Our agents are already waiting. No cron jobs to manage.</p>
       </div>
-      <div class="why-card fade-up">
+      <div class="why-card">
         <div class="why-icon">🔒</div>
         <h4>Your data stays yours</h4>
         <p>Everything runs on your infrastructure. Your Google Sheets, your email, your Telegram. We don't store passenger data.</p>
       </div>
-      <div class="why-card fade-up">
+      <div class="why-card">
         <div class="why-icon">🛠️</div>
         <h4>No IT team required</h4>
-        <p>Connects to tools you already use — Google Sheets, Gmail, Telegram. Setup takes minutes, not months.</p>
+        <p>Connects to tools you already use — Google Sheets, Gmail, Telegram. Setup in minutes, not months.</p>
       </div>
-      <div class="why-card fade-up">
+      <div class="why-card">
         <div class="why-icon">📈</div>
         <h4>Scales with your volume</h4>
         <p>One booking or a thousand — the same automation handles it. No extra headcount, no extra cost.</p>
       </div>
-      <div class="why-card fade-up">
+      <div class="why-card">
         <div class="why-icon">🌐</div>
         <h4>Every major airline</h4>
         <p>American, Delta, United, Southwest, Emirates, Lufthansa, Air France, Turkish, KLM, Qatar, Singapore, Virgin — and growing.</p>
       </div>
-      <div class="why-card fade-up">
+      <div class="why-card">
         <div class="why-icon">💬</div>
         <h4>Real support, real people</h4>
         <p>Direct access to the team that built this. Not a ticket queue — a Telegram group where things actually get fixed.</p>
       </div>
     </div>
-
-    <div style="margin-top:60px">
-      <div class="section-label">Built with</div>
-      <div class="stack-pills">
-        <span class="pill">Python</span>
-        <span class="pill">Playwright</span>
-        <span class="pill">Google Sheets API</span>
-        <span class="pill">Gmail API</span>
-        <span class="pill">Telegram Bot API</span>
-        <span class="pill">OpenAI</span>
-        <span class="pill">Vercel</span>
-        <span class="pill">React</span>
-        <span class="pill">Redis</span>
-      </div>
-    </div>
   </section>
 
-  <hr class="divider" />
+  <!-- STACK PILLS -->
+  <div class="stack-section">
+    <span class="stack-label">Built with</span>
+    <div class="stack-pills">
+      <span class="pill">Python</span>
+      <span class="pill">Playwright</span>
+      <span class="pill">Google Sheets API</span>
+      <span class="pill">Gmail API</span>
+      <span class="pill">Telegram Bot API</span>
+      <span class="pill">OpenAI</span>
+      <span class="pill">React</span>
+      <span class="pill">Vercel</span>
+      <span class="pill">Redis</span>
+    </div>
+  </div>
 
-  <!-- CTA -->
-  <section id="contact" class="cta-section">
-    <div class="cta-inner">
-      <div class="section-label" style="justify-content:center">Early access</div>
-      <h2>Ready to automate<br />your travel ops?</h2>
-      <p>Join the waitlist. We're onboarding travel agencies & operators now.</p>
+  <!-- CONTACT / CTA -->
+  <section id="contact">
+    <div class="contact-inner">
+      <p class="section-label">Early access</p>
+      <h2 class="section-title">Let's<br/>Automate</h2>
+      <p>Join the waitlist. We're onboarding travel agencies & operators now. Limited spots.</p>
       <div class="cta-form">
         <input type="email" placeholder="your@agency.com" id="emailInput" />
         <button onclick="handleSignup()">Join waitlist</button>
       </div>
-      <p id="signup-msg" style="font-size:13px;margin-top:16px;color:#22c55e;display:none;">
-        ✓ You're on the list. We'll be in touch.
-      </p>
+      <p class="signup-confirm" id="signup-msg">✓ You're on the list. We'll be in touch.</p>
+      <a href="mailto:hello@studio217.ai" class="contact-email-link">hello@studio217.ai</a>
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer>
-    <a href="#" class="footer-logo">
-      <div class="logo-mark">S2</div>
-      Studio217
-    </a>
+    <span class="footer-brand">
+      <span class="dot"></span>
+      STUDIO217
+    </span>
     <ul class="footer-links">
       <li><a href="#products">Products</a></li>
       <li><a href="#how">How it works</a></li>
@@ -951,22 +1209,38 @@
   </footer>
 
   <script>
-    // Scroll fade-in
+    // Sticky nav
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Scroll reveal
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((e, i) => {
         if (e.isIntersecting) {
-          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          setTimeout(() => {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'translateY(0)';
+          }, i * 70);
           observer.unobserve(e.target);
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.08 });
 
-    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    document.querySelectorAll(
+      '.product-card, .step, .stat, .why-card, .about-statement, .about-body, .pill'
+    ).forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity .55s ease, transform .55s ease';
+      observer.observe(el);
+    });
 
     // Signup
     function handleSignup() {
       const input = document.getElementById('emailInput');
-      const msg = document.getElementById('signup-msg');
+      const msg   = document.getElementById('signup-msg');
       if (!input.value || !input.value.includes('@')) {
         input.style.borderColor = '#ef4444';
         setTimeout(() => input.style.borderColor = '', 1500);
@@ -974,7 +1248,6 @@
       }
       input.parentElement.style.display = 'none';
       msg.style.display = 'block';
-      // TODO: wire to backend / Sheets API
     }
   </script>
 
