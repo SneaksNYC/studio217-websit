@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio217 — AI Automation for the Travel Industry</title>
+  <meta name="description" content="Studio217 builds AI-powered automation tools for travel agencies, operators, and concierge services. Check-ins, CC auth, flight tracking — all automated." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #080808;
+      --surface:   #101010;
+      --surface2:  #161616;
+      --border:    #1e1e1e;
+      --border2:   #2a2a2a;
+      --indigo:    #6366f1;
+      --purple:    #a855f7;
+      --glow:      rgba(99,102,241,0.18);
+      --glow2:     rgba(168,85,247,0.12);
+      --text:      #f0f0f0;
+      --text2:     #888;
+      --text3:     #444;
+      --radius:    14px;
+      --radius-sm: 8px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ─────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: .4;
+    }
+
+    /* ── NAV ───────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 64px;
+      background: rgba(8,8,8,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: -0.3px;
+    }
+
+    .nav-logo .logo-mark {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--indigo), var(--purple));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -1px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text2);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: linear-gradient(135deg, var(--indigo), var(--purple));
+      color: #fff !important;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px !important;
+      transition: opacity .2s !important;
+    }
+    .nav-cta:hover { opacity: .85; }
+
+    /* ── HERO ──────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      overflow: hidden;
+    }
+
+    /* Ambient glows */
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -60%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: .5; transform: scale(1.4); }
+    }
+
+    .hero h1 {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(48px, 7vw, 88px);
+      font-weight: 900;
+      letter-spacing: -3px;
+      line-height: 1.0;
+      margin-bottom: 24px;
+      max-width: 900px;
+    }
+
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--indigo) 0%, var(--purple) 50%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(17px, 2vw, 20px);
+      color: var(--text2);
+      max-width: 580px;
+      margin-bottom: 40px;
+      font-weight: 400;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--indigo), var(--purple));
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .2s;
+      box-shadow: 0 0 30px rgba(99,102,241,0.25);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 45px rgba(99,102,241,0.4);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      color: var(--text);
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      border: 1px solid var(--border2);
+      transition: all .2s;
+    }
+    .btn-secondary:hover {
+      border-color: var(--border2);
+      background: #1e1e1e;
+    }
+
+    /* ── STATS BAR ─────────────────────────────────── */
+    .stats-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 40px;
+      display: flex;
+      justify-content: center;
+      gap: 80px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--indigo), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
+    /* ── SECTIONS ──────────────────────────────────── */
+    section {
+      padding: 100px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--indigo);
+      margin-bottom: 16px;
+    }
+
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 16px; height: 1px;
+      background: var(--indigo);
+    }
+
+    h2 {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 17px;
+      color: var(--text2);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 60px;
+    }
+
+    /* ── PRODUCTS GRID ─────────────────────────────── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: all .25s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--glow), transparent 60%);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .product-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-2px);
+    }
+
+    .product-card:hover::before { opacity: 1; }
+
+    .product-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .product-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .product-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .tag-live   { background: rgba(34,197,94,.12); color: #22c55e; border: 1px solid rgba(34,197,94,.2); }
+    .tag-beta   { background: rgba(99,102,241,.12); color: #818cf8; border: 1px solid rgba(99,102,241,.2); }
+    .tag-soon   { background: rgba(136,136,136,.1); color: var(--text3); border: 1px solid var(--border); }
+
+    .product-card p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+
+    .product-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .product-features li {
+      font-size: 13px;
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .product-features li::before {
+      content: '✓';
+      color: var(--indigo);
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    /* ── HOW IT WORKS ──────────────────────────────── */
+    .how-section { background: var(--surface); }
+    .how-section > div {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 40px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 40px;
+      margin-top: 60px;
+      position: relative;
+    }
+
+    .step {
+      position: relative;
+    }
+
+    .step-number {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--indigo), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 18px;
+    }
+
+    .step h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .step p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.65;
+    }
+
+    /* ── WHY US ────────────────────────────────────── */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .why-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    .why-icon {
+      font-size: 24px;
+      margin-bottom: 14px;
+    }
+
+    .why-card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .why-card p {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.65;
+    }
+
+    /* ── STACK ─────────────────────────────────────── */
+    .stack-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 32px;
+    }
+
+    .pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 7px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text2);
+    }
+
+    /* ── CTA SECTION ───────────────────────────────── */
+    .cta-section {
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-inner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 80px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .cta-inner h2 {
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
+      margin: 0 auto 16px;
+    }
+
+    .cta-inner p {
+      position: relative;
+      z-index: 1;
+      font-size: 17px;
+      color: var(--text2);
+      margin-bottom: 40px;
+    }
+
+    .cta-form {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 10px;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .cta-form input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .cta-form input:focus { border-color: var(--indigo); }
+    .cta-form input::placeholder { color: var(--text3); }
+
+    .cta-form button {
+      background: linear-gradient(135deg, var(--indigo), var(--purple));
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity .2s;
+    }
+    .cta-form button:hover { opacity: .85; }
+
+    /* ── FOOTER ────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: gap;
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .footer-logo .logo-mark {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--indigo), var(--purple));
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -1px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text2);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .footer-links a:hover { color: var(--text); }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--text3);
+    }
+
+    /* ── DIVIDER ───────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── RESPONSIVE ────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      section { padding: 70px 20px; }
+      .stats-bar { gap: 40px; padding: 28px 20px; }
+      .cta-form { flex-direction: column; }
+      footer { flex-direction: column; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+      .hero h1 { letter-spacing: -2px; }
+    }
+
+    /* ── SCROLL ANIMATIONS ─────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="logo-mark">S2</div>
+      Studio217
+    </a>
+    <ul class="nav-links">
+      <li><a href="#products">Products</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#why">Why us</a></li>
+      <li><a href="#contact" class="nav-cta">Get Early Access</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Now in early access
+    </div>
+    <h1>
+      AI automation for<br />
+      <span class="gradient">the travel industry</span>
+    </h1>
+    <p>
+      Studio217 builds intelligent tools that handle the repetitive work —
+      check-ins, CC authorization, flight tracking — so your team can focus
+      on what actually matters.
+    </p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">
+        Get Early Access →
+      </a>
+      <a href="#products" class="btn-secondary">
+        See what we build
+      </a>
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-value">10+</div>
+      <div class="stat-label">Airlines automated</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">24/7</div>
+      <div class="stat-label">Always running</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">100%</div>
+      <div class="stat-label">Hands-free check-ins</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">&lt; 2s</div>
+      <div class="stat-label">Average response time</div>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <section id="products">
+    <div class="section-label">Products</div>
+    <h2>Everything you need,<br />nothing you don't</h2>
+    <p class="section-sub">
+      Four focused tools built for travel professionals. Each one automates a
+      task your team shouldn't be doing manually.
+    </p>
+
+    <div class="products-grid">
+
+      <div class="product-card fade-up">
+        <div class="product-icon" style="background:rgba(99,102,241,.12);">✈️</div>
+        <h3>
+          AutoCheck
+          <span class="product-tag tag-live">Live</span>
+        </h3>
+        <p>
+          Automatically checks in passengers the moment the window opens —
+          across every major airline, every flight, every time.
+        </p>
+        <ul class="product-features">
+          <li>American, Delta, United, Southwest + 7 more</li>
+          <li>Seat selection & boarding pass delivery</li>
+          <li>Google Sheets integration for your roster</li>
+          <li>Telegram alerts on every check-in</li>
+        </ul>
+      </div>
+
+      <div class="product-card fade-up">
+        <div class="product-icon" style="background:rgba(168,85,247,.12);">💳</div>
+        <h3>
+          AuthFlow
+          <span class="product-tag tag-live">Live</span>
+        </h3>
+        <p>
+          Automates hotel credit card authorization requests — finds the right
+          contact, sends the form, tracks replies, and follows up automatically.
+        </p>
+        <ul class="product-features">
+          <li>Auto-discovers hotel email addresses</li>
+          <li>Sends branded CC auth request emails</li>
+          <li>Tracks replies & escalates if no response</li>
+          <li>Hotel directory built & maintained automatically</li>
+        </ul>
+      </div>
+
+      <div class="product-card fade-up">
+        <div class="product-icon" style="background:rgba(236,72,153,.1);">🛫</div>
+        <h3>
+          FlyPal
+          <span class="product-tag tag-beta">Beta</span>
+        </h3>
+        <p>
+          Real-time flight tracking with shareable codes. Send a link —
+          anyone can watch your flight live, no app required.
+        </p>
+        <ul class="product-features">
+          <li>Live flight status & tracking</li>
+          <li>Shareable codes for clients & families</li>
+          <li>Telegram notifications on delays & gates</li>
+          <li>Available at flypal.app</li>
+        </ul>
+      </div>
+
+      <div class="product-card fade-up">
+        <div class="product-icon" style="background:rgba(34,197,94,.08);">🤖</div>
+        <h3>
+          Foster
+          <span class="product-tag tag-soon">Coming soon</span>
+        </h3>
+        <p>
+          The AI agent infrastructure behind all Studio217 products — available
+          as a standalone platform for building your own travel automations.
+        </p>
+        <ul class="product-features">
+          <li>Connect to any airline or hotel system</li>
+          <li>Build custom automation workflows</li>
+          <li>Telegram, email & Sheets integrations built-in</li>
+          <li>No code required</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- HOW IT WORKS -->
+  <div class="how-section" id="how">
+    <div>
+      <div class="section-label">How it works</div>
+      <h2>Set it up once.<br />It runs forever.</h2>
+
+      <div class="steps">
+        <div class="step fade-up">
+          <div class="step-number">1</div>
+          <h4>Connect your roster</h4>
+          <p>Link your Google Sheet with passenger details, booking references, and hotel names. That's your source of truth.</p>
+        </div>
+        <div class="step fade-up">
+          <div class="step-number">2</div>
+          <h4>Studio217 goes to work</h4>
+          <p>Our agents monitor check-in windows, find hotel contacts, send authorization requests, and track replies — all automatically.</p>
+        </div>
+        <div class="step fade-up">
+          <div class="step-number">3</div>
+          <h4>You get notified</h4>
+          <p>Every action shows up in Telegram instantly. Boarding passes, auth confirmations, delays — you're always in the loop.</p>
+        </div>
+        <div class="step fade-up">
+          <div class="step-number">4</div>
+          <h4>Sheet stays updated</h4>
+          <p>Every result is written back to your sheet in real time. Seats, confirmation status, emails found — full audit trail.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHY US -->
+  <section id="why">
+    <div class="section-label">Why Studio217</div>
+    <h2>Built by people who<br />know travel ops</h2>
+    <p class="section-sub">
+      We didn't build generic AI tools and point them at travel. We built
+      specifically for the problems travel teams deal with every single day.
+    </p>
+
+    <div class="why-grid">
+      <div class="why-card fade-up">
+        <div class="why-icon">⚡</div>
+        <h4>Always on, never misses a window</h4>
+        <p>Check-in windows open at exactly T-24h. Our agents are already waiting. No cron jobs for you to manage.</p>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon">🔒</div>
+        <h4>Your data stays yours</h4>
+        <p>Everything runs on your infrastructure. Your Google Sheets, your email, your Telegram. We don't store passenger data.</p>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon">🛠️</div>
+        <h4>No IT team required</h4>
+        <p>Connects to tools you already use — Google Sheets, Gmail, Telegram. Setup takes minutes, not months.</p>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon">📈</div>
+        <h4>Scales with your volume</h4>
+        <p>One booking or a thousand — the same automation handles it. No extra headcount, no extra cost.</p>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon">🌐</div>
+        <h4>Every major airline</h4>
+        <p>American, Delta, United, Southwest, Emirates, Lufthansa, Air France, Turkish, KLM, Qatar, Singapore, Virgin — and growing.</p>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon">💬</div>
+        <h4>Real support, real people</h4>
+        <p>Direct access to the team that built this. Not a ticket queue — a Telegram group where things actually get fixed.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:60px">
+      <div class="section-label">Built with</div>
+      <div class="stack-pills">
+        <span class="pill">Python</span>
+        <span class="pill">Playwright</span>
+        <span class="pill">Google Sheets API</span>
+        <span class="pill">Gmail API</span>
+        <span class="pill">Telegram Bot API</span>
+        <span class="pill">OpenAI</span>
+        <span class="pill">Vercel</span>
+        <span class="pill">React</span>
+        <span class="pill">Redis</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- CTA -->
+  <section id="contact" class="cta-section">
+    <div class="cta-inner">
+      <div class="section-label" style="justify-content:center">Early access</div>
+      <h2>Ready to automate<br />your travel ops?</h2>
+      <p>Join the waitlist. We're onboarding travel agencies & operators now.</p>
+      <div class="cta-form">
+        <input type="email" placeholder="your@agency.com" id="emailInput" />
+        <button onclick="handleSignup()">Join waitlist</button>
+      </div>
+      <p id="signup-msg" style="font-size:13px;margin-top:16px;color:#22c55e;display:none;">
+        ✓ You're on the list. We'll be in touch.
+      </p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="#" class="footer-logo">
+      <div class="logo-mark">S2</div>
+      Studio217
+    </a>
+    <ul class="footer-links">
+      <li><a href="#products">Products</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="https://flypal.app">FlyPal</a></li>
+      <li><a href="mailto:hello@studio217.ai">Contact</a></li>
+    </ul>
+    <span class="footer-copy">© 2026 Studio217. All rights reserved.</span>
+  </footer>
+
+  <script>
+    // Scroll fade-in
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Signup
+    function handleSignup() {
+      const input = document.getElementById('emailInput');
+      const msg = document.getElementById('signup-msg');
+      if (!input.value || !input.value.includes('@')) {
+        input.style.borderColor = '#ef4444';
+        setTimeout(() => input.style.borderColor = '', 1500);
+        return;
+      }
+      input.parentElement.style.display = 'none';
+      msg.style.display = 'block';
+      // TODO: wire to backend / Sheets API
+    }
+  </script>
+
+</body>
+</html>
