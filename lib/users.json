@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1",
+    "name": "Habib",
+    "email": "habib@studio217.io",
+    "password": "$2b$10$zWUzVr2cXD98JlMyvBdtqOHPzrxYkmCjELYExKnz4GpixyKkvN/ma",
+    "role": "admin",
+    "active": true,
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "2",
+    "name": "Sarah Chen",
+    "email": "sarah@client.com",
+    "password": "$2b$10$zWUzVr2cXD98JlMyvBdtqOHPzrxYkmCjELYExKnz4GpixyKkvN/ma",
+    "role": "client",
+    "active": true,
+    "createdAt": "2024-02-15T00:00:00Z"
+  }
+]

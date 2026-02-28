@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio 217 — Cinematic Membrane</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #0057FF;
+    --blue-glow: rgba(0, 87, 255, 0.6);
+    --blue-dim: rgba(0, 87, 255, 0.15);
+    --blue-card: rgba(0, 87, 255, 0.06);
+    --bg: #050508;
+    --surface: #0c0c12;
+    --white: #FFFFFF;
+    --gray: rgba(255,255,255,0.6);
+    --border: rgba(255,255,255,0.06);
+    --display: 'Syne', sans-serif;
+    --body: 'Outfit', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* GRAIN TEXTURE */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.35;
+  }
+
+  /* FADE-UP ANIMATION */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 3rem;
+    height: 64px;
+    background: rgba(5,5,8,0.7);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .nav-logo {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--white);
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 20px var(--blue-glow);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-btn {
+    font-family: var(--body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--white);
+    background: var(--blue);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 100px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: box-shadow 0.3s, transform 0.2s;
+    box-shadow: 0 0 0 rgba(0,87,255,0);
+  }
+
+  .nav-btn:hover {
+    box-shadow: 0 0 20px rgba(0,87,255,0.5);
+    transform: translateY(-1px);
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* MESH GRADIENT BG */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 50%, rgba(0,87,255,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 80% 20%, rgba(0,87,255,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 60% 80%, rgba(0,40,180,0.08) 0%, transparent 70%);
+    animation: meshShift 12s ease-in-out infinite alternate;
+  }
+
+  @keyframes meshShift {
+    0% { filter: hue-rotate(0deg) brightness(1); }
+    50% { filter: hue-rotate(15deg) brightness(1.1); }
+    100% { filter: hue-rotate(-10deg) brightness(0.95); }
+  }
+
+  /* BLUE ORB */
+  .hero-orb {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,87,255,0.2) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-30%, -50%);
+    filter: blur(80px);
+    animation: orbFloat 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(-30%, -50%) scale(1); }
+    50% { transform: translate(-25%, -55%) scale(1.1); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    width: 100%;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    border: 1px solid rgba(0,87,255,0.3);
+    background: rgba(0,87,255,0.08);
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--blue);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--blue);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.8); }
+  }
+
+  .hero-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(4rem, 12vw, 10rem);
+    color: var(--white);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    text-shadow: 0 0 80px rgba(0,87,255,0.3), 0 0 200px rgba(0,87,255,0.15);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-glow-line {
+    width: min(600px, 80%);
+    height: 2px;
+    background: linear-gradient(90deg, var(--blue), transparent);
+    box-shadow: 0 0 20px var(--blue-glow);
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .hero-glow-line::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--blue);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--blue);
+    animation: dotSlide 3s ease-in-out infinite;
+  }
+
+  @keyframes dotSlide {
+    0% { left: 0; opacity: 1; }
+    80% { left: 90%; opacity: 1; }
+    100% { left: 90%; opacity: 0; }
+  }
+
+  .hero-sub {
+    font-family: var(--body);
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    color: rgba(255,255,255,0.5);
+    max-width: 500px;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-blue {
+    display: inline-block;
+    font-family: var(--body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--white);
+    background: var(--blue);
+    padding: 14px 36px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: box-shadow 0.3s, transform 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-blue:hover {
+    box-shadow: 0 0 30px rgba(0,87,255,0.6);
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    display: inline-block;
+    font-family: var(--body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+    padding: 14px 36px;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.15);
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .btn-ghost:hover {
+    border-color: rgba(0,87,255,0.5);
+    color: var(--white);
+  }
+
+  /* SECTION WRAPPER */
+  .section {
+    padding: 8rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-eyebrow {
+    font-family: var(--body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 1rem;
+  }
+
+  .section-heading {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section-sub {
+    font-family: var(--body);
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.45);
+    max-width: 500px;
+    line-height: 1.8;
+    margin-bottom: 4rem;
+  }
+
+  /* PRODUCTS */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .product-card {
+    background: var(--surface);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background 0.3s;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .product-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--blue-dim);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .product-card::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 0;
+    border: 1px solid rgba(0,87,255,0);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    pointer-events: none;
+  }
+
+  .product-card:hover::before { opacity: 1; }
+  .product-card:hover::after {
+    border-color: rgba(0,87,255,0.4);
+    box-shadow: inset 0 0 30px rgba(0,87,255,0.05);
+  }
+
+  .product-card:hover .card-icon { color: var(--blue); box-shadow: 0 0 20px rgba(0,87,255,0.3); }
+
+  .card-top { position: relative; z-index: 1; }
+  .card-bottom { position: relative; z-index: 1; }
+
+  .card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(0,87,255,0.12);
+    border: 1px solid rgba(0,87,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.3s, color 0.3s;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .card-name {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .card-cat {
+    font-family: var(--body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 1rem;
+  }
+
+  .card-desc {
+    font-family: var(--body);
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.7;
+  }
+
+  .card-link {
+    font-family: var(--body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 1.5rem;
+    text-decoration: none;
+  }
+
+  .card-link:hover { color: var(--blue); }
+  .card-link::after { content: '→'; }
+
+  /* STATS */
+  .stats-section {
+    padding: 8rem 3rem;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stats-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+
+  .stat-c {
+    text-align: center;
+    padding: 2rem 0;
+    border-right: 1px solid var(--border);
+  }
+
+  .stat-c:last-child { border-right: none; }
+
+  .stat-num-c {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--white);
+    display: block;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-shadow: 0 0 30px rgba(0,87,255,0.4);
+  }
+
+  .stat-label-c {
+    font-family: var(--body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-top: 0.75rem;
+    display: block;
+  }
+
+  /* HOW IT WORKS */
+  .how-section {
+    padding: 8rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 700px;
+    position: relative;
+  }
+
+  .steps-list::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--blue), transparent);
+  }
+
+  .step {
+    display: flex;
+    gap: 2rem;
+    padding: 2.5rem 0 2.5rem 0;
+    position: relative;
+  }
+
+  .step-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--blue);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 15px rgba(0,87,255,0.3);
+    animation: dotPulse 3s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 0.5s);
+  }
+
+  @keyframes dotPulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(0,87,255,0.3); }
+    50% { box-shadow: 0 0 25px rgba(0,87,255,0.6); }
+  }
+
+  .step-text { }
+  .step-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--white);
+    margin-bottom: 0.4rem;
+  }
+  .step-desc {
+    font-family: var(--body);
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.7;
+  }
+
+  /* MANIFESTO / ABOUT */
+  .about-section {
+    padding: 8rem 3rem;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+  }
+
+  .about-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .about-quote {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    color: var(--white);
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+
+  .about-quote span { color: var(--blue); }
+
+  .about-body-c {
+    font-family: var(--body);
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.9;
+    margin-bottom: 1.5rem;
+  }
+
+  .about-founded-c {
+    display: inline-block;
+    font-family: var(--body);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    padding: 8px 16px;
+    border: 1px solid rgba(0,87,255,0.3);
+    border-radius: 100px;
+    background: rgba(0,87,255,0.06);
+  }
+
+  /* CTA */
+  .cta-section {
+    padding: 10rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-orb {
+    position: absolute;
+    width: 800px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(0,87,255,0.15) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    filter: blur(60px);
+    pointer-events: none;
+  }
+
+  .cta-inner-c {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .cta-title-c {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    color: var(--white);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 60px rgba(0,87,255,0.3);
+  }
+
+  .cta-sub-c {
+    font-family: var(--body);
+    font-size: 1rem;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 3rem;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+
+  /* Grid pattern */
+  footer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .footer-inner-c {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-logo-c {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--white);
+    text-shadow: 0 0 20px rgba(0,87,255,0.4);
+  }
+
+  .footer-email-c {
+    font-family: var(--body);
+    font-size: 0.85rem;
+    color: var(--blue);
+    text-decoration: none;
+    transition: text-shadow 0.2s;
+  }
+
+  .footer-email-c:hover { text-shadow: 0 0 20px rgba(0,87,255,0.5); }
+
+  .footer-meta-c {
+    font-family: var(--body);
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.1em;
+    text-align: right;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 0 1.5rem; }
+    .nav-links { display: none; }
+    .hero { padding: 0 1.5rem; }
+    .section { padding: 5rem 1.5rem; }
+    .products-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .stats-row .stat-c:nth-child(2) { border-right: none; }
+    .about-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .how-section { padding: 5rem 1.5rem; }
+    .cta-section { padding: 7rem 1.5rem; }
+    footer { padding: 2rem 1.5rem; }
+    .footer-meta-c { text-align: left; }
+    .stats-section { padding: 5rem 1.5rem; }
+    .about-section { padding: 5rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">STUDIO 217</a>
+  <ul class="nav-links">
+    <li><a href="#products">Products</a></li>
+    <li><a href="#stats">Metrics</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <a href="mailto:hello@studio217.ai" class="nav-btn">Get Started</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-orb"></div>
+  <div class="hero-content">
+    <div class="hero-badge fade-up">AI-Powered Travel Automation · Brooklyn, NY · Est. 2014</div>
+    <h1 class="hero-title fade-up">STUDIO<br>217</h1>
+    <div class="hero-glow-line fade-up"></div>
+    <p class="hero-sub fade-up">Where expertise meets automation. We build the AI infrastructure that makes travel operations frictionless.</p>
+    <div class="hero-actions fade-up">
+      <a href="mailto:hello@studio217.ai" class="btn-blue">Request a Demo</a>
+      <a href="#products" class="btn-ghost">Explore Products</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="section" id="products">
+  <div class="section-eyebrow fade-up">Our Products</div>
+  <h2 class="section-heading fade-up">Four tools.<br>One mission.</h2>
+  <p class="section-sub fade-up">Everything your travel operation needs to run on autopilot — built for scale, designed for precision.</p>
+
+  <div class="products-grid fade-up">
+
+    <div class="product-card">
+      <div class="card-top">
+        <div class="card-icon">✈</div>
+        <div class="card-name">AutoCheck</div>
+        <div class="card-cat">Auto Check-In</div>
+        <div class="card-desc">Automated 24-hour check-in for every flight. Zero manual effort. Zero missed windows. Perfect execution on every single booking.</div>
+      </div>
+      <div class="card-bottom">
+        <a href="#" class="card-link">Learn more</a>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="card-top">
+        <div class="card-icon">💳</div>
+        <div class="card-name">AuthFlow</div>
+        <div class="card-cat">CC Authorization</div>
+        <div class="card-desc">Intelligent credit card authorization for hotels. 3,400+ auths processed. Zero chargebacks. Full compliance, every time.</div>
+      </div>
+      <div class="card-bottom">
+        <a href="#" class="card-link">Learn more</a>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="card-top">
+        <div class="card-icon">📡</div>
+        <div class="card-name">FlyPal</div>
+        <div class="card-cat">Flight Tracking App</div>
+        <div class="card-desc">Real-time flight intelligence. Delays, gate changes, re-routes — surfaced instantly for agents and travelers. Know before your clients do.</div>
+      </div>
+      <div class="card-bottom">
+        <a href="#" class="card-link">Learn more</a>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="card-top">
+        <div class="card-icon">🤖</div>
+        <div class="card-name">Foster</div>
+        <div class="card-cat">AI Assistant</div>
+        <div class="card-desc">Your AI travel assistant. Foster handles repetitive operations with quiet precision — so your team can focus on what actually matters.</div>
+      </div>
+      <div class="card-bottom">
+        <a href="#" class="card-link">Learn more</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-section" id="stats">
+  <div class="stats-inner">
+    <div class="section-eyebrow fade-up" style="text-align:center; margin-bottom:3rem;">Live Metrics</div>
+    <div class="stats-row">
+      <div class="stat-c fade-up">
+        <span class="stat-num-c" data-target="247">0</span>
+        <span class="stat-label-c">Daily Check-Ins</span>
+      </div>
+      <div class="stat-c fade-up">
+        <span class="stat-num-c" data-target="99.2" data-suffix="%">0</span>
+        <span class="stat-label-c">Success Rate</span>
+      </div>
+      <div class="stat-c fade-up">
+        <span class="stat-num-c" data-target="3400" data-suffix="+">0</span>
+        <span class="stat-label-c">Hotel Auths Sent</span>
+      </div>
+      <div class="stat-c fade-up">
+        <span class="stat-num-c">$0</span>
+        <span class="stat-label-c">Missed Flights</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="section-eyebrow fade-up">How It Works</div>
+  <h2 class="section-heading fade-up">Automation on autopilot</h2>
+  <p class="section-sub fade-up">Our pipeline runs silently in the background, 24/7.</p>
+
+  <div class="steps-list fade-up">
+    <div class="step">
+      <div class="step-dot" style="--i:0">01</div>
+      <div class="step-text">
+        <div class="step-title">Booking Ingested</div>
+        <div class="step-desc">Studio 217 reads your travel queue — flights, hotels, reservations. Nothing manual, nothing missed.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot" style="--i:1">02</div>
+      <div class="step-text">
+        <div class="step-title">Automation Triggered</div>
+        <div class="step-desc">AutoCheck fires at T-24h. AuthFlow sends hotel authorizations. FlyPal monitors in real time.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot" style="--i:2">03</div>
+      <div class="step-text">
+        <div class="step-title">Foster Handles the Rest</div>
+        <div class="step-desc">Our AI assistant fields exceptions, answers queries, and resolves edge cases before they become problems.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot" style="--i:3">04</div>
+      <div class="step-text">
+        <div class="step-title">You Focus on Service</div>
+        <div class="step-desc">While we handle the operational grind, your team delivers the exceptional experiences that build loyalty.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div class="about-inner">
+    <div class="fade-up">
+      <h2 class="about-quote">
+        "We believe the future of travel is <span>automated</span>, invisible, and perfect."
+      </h2>
+    </div>
+    <div>
+      <p class="about-body-c fade-up">Studio 217 was founded in Brooklyn in 2014. We're not a software company that wandered into travel — we're travel operators who built the infrastructure we needed and couldn't find anywhere else.</p>
+      <p class="about-body-c fade-up">A decade later, our tools run silently behind hundreds of daily operations. The best automation is the kind you never think about.</p>
+      <span class="about-founded-c fade-up">Brooklyn, NY · Est. 2014</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-orb"></div>
+  <div class="cta-inner-c">
+    <h2 class="cta-title-c fade-up">Ready to<br>automate<br>everything?</h2>
+    <p class="cta-sub-c fade-up">Join the future of travel operations. One message to get started.</p>
+    <a href="mailto:hello@studio217.ai" class="btn-blue fade-up" style="font-size:0.95rem; padding:16px 44px;">hello@studio217.ai</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner-c">
+    <div class="footer-logo-c">STUDIO 217</div>
+    <a href="mailto:hello@studio217.ai" class="footer-email-c">hello@studio217.ai</a>
+    <div class="footer-meta-c">Brooklyn, NY · Est. 2014<br>Where Expertise Meets Automation</div>
+  </div>
+</footer>
+
+<script>
+  // FADE-UP INTERSECTION OBSERVER
+  const fadeEls = document.querySelectorAll('.fade-up');
+  const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        const siblings = [...entry.target.parentElement.querySelectorAll('.fade-up')];
+        const idx = siblings.indexOf(entry.target);
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, idx * 80);
+        fadeObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  fadeEls.forEach(el => fadeObserver.observe(el));
+
+  // COUNTER ANIMATION
+  function animateCounter(el) {
+    const target = parseFloat(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const isDecimal = target % 1 !== 0;
+    const duration = 1800;
+    const start = performance.now();
+
+    function update(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 4);
+      const value = target * eased;
+      el.textContent = (isDecimal ? value.toFixed(1) : Math.floor(value).toLocaleString()) + suffix;
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.target.dataset.target) {
+        animateCounter(entry.target);
+        counterObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-num-c[data-target]').forEach(el => counterObserver.observe(el));
+</script>
+</body>
+</html>

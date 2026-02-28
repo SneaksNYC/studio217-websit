@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio 217 — Bloomberg Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #00FF41;
+    --green-dim: #00cc33;
+    --green-glow: rgba(0,255,65,0.15);
+    --gold: #FFD700;
+    --gold-dim: #cc9900;
+    --bg: #000000;
+    --card: #0d0d0d;
+    --border: #1a1a1a;
+    --text: #cccccc;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* SCANLINE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+    animation: scanline 8s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100vh; }
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 56px;
+    background: rgba(0,0,0,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--green);
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .nav-cursor {
+    display: inline-block;
+    width: 10px;
+    height: 16px;
+    background: var(--green);
+    animation: blink 1s step-end infinite;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: #666;
+    text-decoration: none;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--green); }
+
+  .nav-cta {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--bg) !important;
+    background: var(--gold);
+    padding: 6px 16px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    transition: background 0.2s;
+  }
+
+  .nav-cta:hover { background: var(--gold-dim) !important; color: var(--bg) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 100px 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Grid overlay */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--green);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeIn 0.5s ease 0.3s forwards;
+  }
+
+  .hero-tag::before { content: '> '; }
+
+  .hero-title {
+    font-family: var(--mono);
+    font-size: clamp(3.5rem, 10vw, 9rem);
+    font-weight: 700;
+    color: var(--green);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    text-shadow: 0 0 40px rgba(0,255,65,0.3);
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeIn 0.6s ease 0.5s forwards;
+  }
+
+  .hero-sub {
+    font-family: var(--mono);
+    font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+    color: #888;
+    letter-spacing: 0.05em;
+    max-width: 600px;
+    min-height: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .hero-metrics {
+    display: flex;
+    gap: 3rem;
+    margin-top: 3rem;
+    opacity: 0;
+    animation: fadeIn 0.6s ease 1.5s forwards;
+  }
+
+  .metric {
+    border-left: 2px solid var(--green);
+    padding-left: 1rem;
+  }
+
+  .metric-value {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .metric-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-top: 2px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* TICKER */
+  .ticker-wrap {
+    background: var(--green);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 10px 0;
+    border-top: 1px solid var(--green-dim);
+    border-bottom: 1px solid var(--green-dim);
+  }
+
+  .ticker-content {
+    display: inline-block;
+    animation: ticker 30s linear infinite;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--bg);
+    letter-spacing: 0.1em;
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* SECTION BASE */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--green);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 300px;
+  }
+
+  /* PRODUCTS */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .product-card {
+    background: var(--card);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background 0.3s;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--green);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .product-card:hover { background: #111; }
+  .product-card:hover::before { transform: scaleX(1); }
+
+  .product-card:hover .product-hover { opacity: 1; }
+  .product-card:hover .product-name { color: var(--green); }
+
+  .product-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: #444;
+    letter-spacing: 0.2em;
+    margin-bottom: 1rem;
+  }
+
+  .product-name {
+    font-family: var(--mono);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #fff;
+    transition: color 0.3s;
+    margin-bottom: 0.5rem;
+  }
+
+  .product-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--green);
+    background: rgba(0,255,65,0.08);
+    border: 1px solid rgba(0,255,65,0.2);
+    padding: 3px 8px;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+
+  .product-hover {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .product-loading {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--green);
+    margin-bottom: 0.75rem;
+  }
+
+  .product-desc {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    color: #888;
+    line-height: 1.6;
+  }
+
+  .product-arrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--gold);
+    margin-top: 1.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* STATS */
+  .stats-section {
+    padding: 6rem 2rem;
+    background: #050505;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stats-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+  }
+
+  .stat-item {
+    padding: 3rem 2rem;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: var(--mono);
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 700;
+    color: var(--green);
+    text-shadow: 0 0 20px rgba(0,255,65,0.4);
+    display: block;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 0.75rem;
+    display: block;
+  }
+
+  /* MANIFESTO */
+  .manifesto-section {
+    padding: 8rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .manifesto-text {
+    font-family: var(--mono);
+    font-size: clamp(1rem, 2.5vw, 1.6rem);
+    color: #666;
+    line-height: 1.8;
+    max-width: 800px;
+  }
+
+  .manifesto-text em {
+    color: var(--green);
+    font-style: normal;
+  }
+
+  /* CTA */
+  .cta-section {
+    padding: 8rem 2rem;
+    background: #050505;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .cta-inner {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .cta-title {
+    font-family: var(--mono);
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .cta-title span { color: var(--green); }
+
+  .cta-sub {
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 3rem;
+  }
+
+  .btn-gold {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--gold);
+    padding: 16px 40px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+
+  .btn-gold:hover {
+    background: #fff;
+    transform: translateY(-2px);
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem 2rem;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-prompt {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--green);
+  }
+
+  .footer-prompt span {
+    animation: blink 1s step-end infinite;
+  }
+
+  .footer-meta {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: #444;
+    letter-spacing: 0.15em;
+    text-align: right;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-grid .stat-item:nth-child(2) { border-right: none; }
+    .hero-metrics { gap: 1.5rem; flex-wrap: wrap; }
+    .footer-inner { flex-direction: column; text-align: center; }
+    .footer-meta { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">STUDIO_217<span class="nav-cursor"></span></div>
+  <ul class="nav-links">
+    <li><a href="#products">PRODUCTS</a></li>
+    <li><a href="#stats">METRICS</a></li>
+    <li><a href="#about">ABOUT</a></li>
+    <li><a href="mailto:hello@studio217.ai" class="nav-cta">CONNECT</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-tag">AI-POWERED TRAVEL AUTOMATION // BROOKLYN, NY // EST. 2014</div>
+  <h1 class="hero-title">STUDIO<br>217</h1>
+  <p class="hero-sub" id="typewriter"></p>
+  <div class="hero-metrics">
+    <div class="metric">
+      <div class="metric-value">247+</div>
+      <div class="metric-label">Daily Check-Ins</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">99.2%</div>
+      <div class="metric-label">Success Rate</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">$0</div>
+      <div class="metric-label">Missed Flights</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">48h</div>
+      <div class="metric-label">Auto Check-In Window</div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-content">
+    247 CHECK-INS AUTOMATED &nbsp;·&nbsp; $0 MISSED FLIGHTS &nbsp;·&nbsp; 99.2% SUCCESS RATE &nbsp;·&nbsp; 3,400 HOTEL AUTHS SENT &nbsp;·&nbsp; AUTOCHECK ACTIVE &nbsp;·&nbsp; AUTHFLOW PROCESSING &nbsp;·&nbsp; FLYPAL TRACKING &nbsp;·&nbsp; FOSTER ONLINE &nbsp;·&nbsp; 247 CHECK-INS AUTOMATED &nbsp;·&nbsp; $0 MISSED FLIGHTS &nbsp;·&nbsp; 99.2% SUCCESS RATE &nbsp;·&nbsp; 3,400 HOTEL AUTHS SENT &nbsp;·&nbsp; AUTOCHECK ACTIVE &nbsp;·&nbsp; AUTHFLOW PROCESSING &nbsp;·&nbsp; FLYPAL TRACKING &nbsp;·&nbsp; FOSTER ONLINE &nbsp;·&nbsp;
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="section-label">TERMINAL / PRODUCTS [04]</div>
+  <div class="products-grid">
+
+    <div class="product-card">
+      <div>
+        <div class="product-num">01 // AUTOCHECK</div>
+        <div class="product-name">AutoCheck</div>
+        <div class="product-tag">AUTO CHECK-IN</div>
+      </div>
+      <div class="product-hover">
+        <div class="product-loading">&gt; LOADING MODULE...</div>
+        <div class="product-desc">Automated 24-hour check-in for every flight. Zero manual effort. Perfect execution on every booking.</div>
+        <div class="product-arrow">EXECUTE &gt;&gt;</div>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div>
+        <div class="product-num">02 // AUTHFLOW</div>
+        <div class="product-name">AuthFlow</div>
+        <div class="product-tag">CC AUTHORIZATION</div>
+      </div>
+      <div class="product-hover">
+        <div class="product-loading">&gt; LOADING MODULE...</div>
+        <div class="product-desc">Intelligent credit card authorization for hotels. 3,400+ auths processed. Zero chargebacks.</div>
+        <div class="product-arrow">EXECUTE &gt;&gt;</div>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div>
+        <div class="product-num">03 // FLYPAL</div>
+        <div class="product-name">FlyPal</div>
+        <div class="product-tag">FLIGHT TRACKING APP</div>
+      </div>
+      <div class="product-hover">
+        <div class="product-loading">&gt; LOADING MODULE...</div>
+        <div class="product-desc">Real-time flight intelligence. Delays, gates, re-routing — all surfaced instantly for agents and travelers.</div>
+        <div class="product-arrow">EXECUTE &gt;&gt;</div>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div>
+        <div class="product-num">04 // FOSTER</div>
+        <div class="product-name">Foster</div>
+        <div class="product-tag">AI ASSISTANT</div>
+      </div>
+      <div class="product-hover">
+        <div class="product-loading">&gt; LOADING MODULE...</div>
+        <div class="product-desc">Your AI travel assistant. Foster handles the repetitive work so your team can focus on what matters.</div>
+        <div class="product-arrow">EXECUTE &gt;&gt;</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-section" id="stats">
+  <div class="stats-inner">
+    <div class="section-label">SYSTEM METRICS // LIVE</div>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-num" data-target="247">0</span>
+        <span class="stat-label">CHECK-INS / DAILY</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" data-target="99.2" data-suffix="%">0</span>
+        <span class="stat-label">SUCCESS RATE</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" data-target="3400" data-prefix="">0</span>
+        <span class="stat-label">HOTEL AUTHS SENT</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">48H</span>
+        <span class="stat-label">AUTO CHECK-IN WINDOW</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MANIFESTO -->
+<section class="manifesto-section" id="about">
+  <div class="section-label">ABOUT // MANIFESTO</div>
+  <p class="manifesto-text">
+    We build the infrastructure that makes travel <em>frictionless</em>.<br><br>
+    Founded in <em>Brooklyn in 2014</em>, Studio 217 has spent a decade automating the tedious—
+    so travel professionals can focus on the exceptional.<br><br>
+    <em>Where expertise meets automation.</em>
+  </p>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-inner">
+    <h2 class="cta-title">READY TO<br><span>AUTOMATE EVERYTHING?</span></h2>
+    <p class="cta-sub">Join the future of travel operations. Book a demo and see Studio 217 in action.</p>
+    <a href="mailto:hello@studio217.ai" class="btn-gold">INITIALIZE CONTACT</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-prompt">$ hello@studio217.ai<span>_</span></div>
+    <div class="footer-meta">
+      STUDIO 217 // BROOKLYN, NY<br>
+      EST. 2014 // WHERE EXPERTISE MEETS AUTOMATION
+    </div>
+  </div>
+</footer>
+
+<script>
+  // TYPEWRITER
+  const phrases = [
+    "Where expertise meets automation.",
+    "AI-powered travel infrastructure.",
+    "AutoCheck. AuthFlow. FlyPal. Foster."
+  ];
+  let phraseIdx = 0, charIdx = 0, deleting = false;
+  const el = document.getElementById('typewriter');
+
+  function typewrite() {
+    const current = phrases[phraseIdx];
+    if (!deleting) {
+      el.textContent = current.substring(0, charIdx + 1);
+      charIdx++;
+      if (charIdx === current.length) {
+        deleting = true;
+        setTimeout(typewrite, 2500);
+        return;
+      }
+    } else {
+      el.textContent = current.substring(0, charIdx - 1);
+      charIdx--;
+      if (charIdx === 0) {
+        deleting = false;
+        phraseIdx = (phraseIdx + 1) % phrases.length;
+      }
+    }
+    setTimeout(typewrite, deleting ? 40 : 70);
+  }
+
+  setTimeout(typewrite, 1200);
+
+  // COUNTER ANIMATION
+  function animateCounter(el) {
+    const target = parseFloat(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const isDecimal = target % 1 !== 0;
+    const duration = 1500;
+    const start = performance.now();
+
+    function update(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = target * eased;
+      el.textContent = (isDecimal ? value.toFixed(1) : Math.floor(value).toLocaleString()) + suffix;
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.target.dataset.target) {
+        animateCounter(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-num[data-target]').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

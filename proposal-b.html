@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio 217 — Swiss Editorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --white: #FFFFFF;
+    --black: #0A0A0A;
+    --gold: #C9A84C;
+    --gold-light: #e8c97a;
+    --gray-bg: #F5F5F5;
+    --gray-text: #888;
+    --border: #E0E0E0;
+    --display: 'Cormorant Garamond', serif;
+    --body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--white);
+    color: var(--black);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* UTILITIES */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  hr.rule {
+    border: none;
+    border-top: 1px solid var(--border);
+    width: 100%;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4rem;
+    height: 64px;
+    background: rgba(255,255,255,0.97);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--black);
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--gold); }
+
+  .nav-cta {
+    font-family: var(--body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--black);
+    padding: 10px 28px;
+    text-decoration: none;
+    transition: background 0.25s;
+  }
+
+  .nav-cta:hover { background: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 4rem 8rem;
+    position: relative;
+    overflow: hidden;
+    background: var(--white);
+  }
+
+  .hero-eyebrow {
+    font-family: var(--body);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gray-text);
+    margin-bottom: 2rem;
+    padding-top: 120px;
+  }
+
+  .hero-title-studio {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(6rem, 18vw, 16rem);
+    color: var(--black);
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+    display: block;
+  }
+
+  .hero-title-num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(6rem, 18vw, 16rem);
+    color: var(--gold);
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+    display: block;
+  }
+
+  .hero-subtitle {
+    font-family: var(--body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gray-text);
+    margin-top: 2.5rem;
+    max-width: 500px;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 3rem;
+    right: 4rem;
+    font-family: var(--body);
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gray-text);
+    writing-mode: vertical-rl;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hero-scroll::before {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 60px;
+    background: var(--border);
+  }
+
+  /* INTRO STRIP */
+  .intro-strip {
+    padding: 5rem 4rem;
+    background: var(--gray-bg);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .intro-tagline {
+    font-family: var(--display);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--black);
+  }
+
+  .intro-tagline span { color: var(--gold); }
+
+  .intro-body {
+    font-family: var(--body);
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.9;
+  }
+
+  /* PRODUCTS */
+  .products-section {
+    padding: 8rem 4rem;
+  }
+
+  .products-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4rem;
+  }
+
+  .section-title {
+    font-family: var(--display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1;
+  }
+
+  .section-count {
+    font-family: var(--body);
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gray-text);
+  }
+
+  .product-item {
+    display: grid;
+    grid-template-columns: 100px 1fr auto;
+    align-items: baseline;
+    padding: 3rem 0;
+    border-top: 1px solid var(--border);
+    gap: 2rem;
+    cursor: pointer;
+    transition: background 0.25s;
+    position: relative;
+  }
+
+  .product-item::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .product-item:hover::before { transform: scaleX(1); }
+  .product-item:hover .product-num-large { color: var(--gold); }
+
+  .product-num-large {
+    font-family: var(--display);
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 300;
+    color: #ddd;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+
+  .product-info { }
+
+  .product-item-name {
+    font-family: var(--display);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 600;
+    color: var(--black);
+    margin-bottom: 0.5rem;
+  }
+
+  .product-item-desc {
+    font-family: var(--body);
+    font-size: 0.85rem;
+    color: #777;
+    line-height: 1.7;
+    max-width: 500px;
+  }
+
+  .product-item-cat {
+    font-family: var(--body);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gray-text);
+    white-space: nowrap;
+  }
+
+  /* MANIFESTO */
+  .manifesto {
+    padding: 10rem 4rem;
+    background: var(--white);
+    text-align: center;
+    position: relative;
+  }
+
+  .manifesto-quote {
+    font-family: var(--display);
+    font-size: clamp(1.6rem, 3.5vw, 3rem);
+    font-weight: 600;
+    font-style: italic;
+    color: var(--black);
+    line-height: 1.4;
+    max-width: 900px;
+    margin: 0 auto 3rem;
+  }
+
+  .manifesto-quote span { color: var(--gold); }
+
+  .manifesto-attr {
+    font-family: var(--body);
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gray-text);
+  }
+
+  /* STATS */
+  .stats-section {
+    padding: 8rem 4rem;
+    background: var(--gray-bg);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 4rem auto 0;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-family: var(--display);
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    display: block;
+  }
+
+  .stat-label-b {
+    font-family: var(--body);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #999;
+    margin-top: 0.75rem;
+    display: block;
+  }
+
+  /* ABOUT */
+  .about-section {
+    padding: 8rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .about-title {
+    font-family: var(--display);
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--black);
+    margin-bottom: 2rem;
+  }
+
+  .about-title span { color: var(--gold); }
+
+  .about-body {
+    font-family: var(--body);
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.9;
+    margin-bottom: 1.5rem;
+  }
+
+  .about-founded {
+    display: inline-block;
+    font-family: var(--body);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border-top: 1px solid var(--gold);
+    padding-top: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .about-visual {
+    background: var(--gray-bg);
+    aspect-ratio: 4/5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-visual-text {
+    font-family: var(--display);
+    font-size: 8rem;
+    font-weight: 700;
+    color: #eee;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .about-visual-badge {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    font-family: var(--body);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gray-text);
+    text-align: right;
+  }
+
+  /* CTA */
+  .cta-section {
+    padding: 10rem 4rem;
+    background: var(--black);
+    text-align: center;
+  }
+
+  .cta-title-b {
+    font-family: var(--display);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 2rem;
+  }
+
+  .cta-title-b span { color: var(--gold); }
+
+  .cta-sub-b {
+    font-family: var(--body);
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 3.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-editorial {
+    display: inline-block;
+    font-family: var(--body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 16px 48px;
+    text-decoration: none;
+    transition: background 0.25s, color 0.25s;
+  }
+
+  .btn-editorial:hover {
+    background: var(--white);
+    color: var(--black);
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem 4rem;
+    background: var(--black);
+    border-top: 1px solid #1a1a1a;
+  }
+
+  .footer-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .footer-logo-b {
+    font-family: var(--display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .footer-logo-b span { color: var(--gold); }
+
+  .footer-email {
+    font-family: var(--body);
+    font-size: 0.8rem;
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-email:hover { color: var(--gold); }
+
+  .footer-right {
+    font-family: var(--body);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #555;
+    text-align: right;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 0 2rem; }
+    .hero { padding: 0 2rem 6rem; }
+    .intro-strip { grid-template-columns: 1fr; padding: 4rem 2rem; gap: 2rem; }
+    .products-section { padding: 6rem 2rem; }
+    .product-item { grid-template-columns: 60px 1fr; }
+    .product-item-cat { display: none; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .about-section { grid-template-columns: 1fr; padding: 5rem 2rem; gap: 3rem; }
+    .about-visual { display: none; }
+    .manifesto { padding: 6rem 2rem; }
+    .cta-section { padding: 7rem 2rem; }
+    footer { padding: 2rem; }
+    .footer-right { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">S<span>–</span>217</a>
+  <a href="mailto:hello@studio217.ai" class="nav-cta">Get in Touch</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow reveal">AI-Powered Travel Automation · Brooklyn, NY</div>
+  <h1>
+    <span class="hero-title-studio reveal">STUDIO</span>
+    <span class="hero-title-num reveal">217</span>
+  </h1>
+  <p class="hero-subtitle reveal">Where expertise meets automation &nbsp;·&nbsp; Est. 2014</p>
+  <div class="hero-scroll">Scroll</div>
+</div>
+
+<hr class="rule">
+
+<!-- INTRO STRIP -->
+<div class="intro-strip">
+  <div class="intro-tagline reveal">
+    The infrastructure<br>behind <span>frictionless</span><br>travel.
+  </div>
+  <div class="intro-body reveal">
+    Studio 217 builds AI-powered tools that automate the most time-consuming parts of travel operations. From check-ins to authorizations, our products work silently in the background — so nothing gets missed.
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- PRODUCTS -->
+<section class="products-section" id="products">
+  <div class="products-header">
+    <h2 class="section-title reveal">Products</h2>
+    <span class="section-count reveal">04 SOLUTIONS</span>
+  </div>
+
+  <div class="product-item reveal">
+    <div class="product-num-large">01</div>
+    <div class="product-info">
+      <div class="product-item-name">AutoCheck</div>
+      <div class="product-item-desc">Automated 24-hour check-in for every flight in your queue. Never miss a window. Never touch a keyboard. Perfection by default.</div>
+    </div>
+    <div class="product-item-cat">Auto Check-In</div>
+  </div>
+
+  <div class="product-item reveal">
+    <div class="product-num-large">02</div>
+    <div class="product-info">
+      <div class="product-item-name">AuthFlow</div>
+      <div class="product-item-desc">Intelligent credit card authorization for hotel bookings. 3,400+ auths processed with zero chargebacks and full compliance.</div>
+    </div>
+    <div class="product-item-cat">CC Authorization</div>
+  </div>
+
+  <div class="product-item reveal">
+    <div class="product-num-large">03</div>
+    <div class="product-info">
+      <div class="product-item-name">FlyPal</div>
+      <div class="product-item-desc">Real-time flight intelligence for agents and travelers. Delays, gate changes, re-routes — surfaced instantly, actionable immediately.</div>
+    </div>
+    <div class="product-item-cat">Flight Tracking</div>
+  </div>
+
+  <div class="product-item reveal">
+    <div class="product-num-large">04</div>
+    <div class="product-info">
+      <div class="product-item-name">Foster</div>
+      <div class="product-item-desc">Your AI travel assistant. Foster handles repetitive operations with quiet precision so your team can focus on service excellence.</div>
+    </div>
+    <div class="product-item-cat">AI Assistant</div>
+  </div>
+
+</section>
+
+<hr class="rule">
+
+<!-- MANIFESTO -->
+<section class="manifesto" id="about">
+  <p class="manifesto-quote reveal">
+    "We believe the future of travel is <span>automated</span>,<br>invisible, and perfect."
+  </p>
+  <div class="manifesto-attr reveal">Studio 217 · Brooklyn · Est. 2014</div>
+</section>
+
+<hr class="rule">
+
+<!-- STATS -->
+<section class="stats-section" id="stats">
+  <div class="reveal" style="text-align:center; font-family:var(--body); font-size:0.68rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--gray-text); margin-bottom:1rem;">By The Numbers</div>
+  <div class="stats-grid">
+    <div class="reveal">
+      <span class="stat-number">247</span>
+      <span class="stat-label-b">Daily Check-Ins</span>
+    </div>
+    <div class="reveal">
+      <span class="stat-number">99.2%</span>
+      <span class="stat-label-b">Success Rate</span>
+    </div>
+    <div class="reveal">
+      <span class="stat-number">3.4K</span>
+      <span class="stat-label-b">Hotel Auths Sent</span>
+    </div>
+    <div class="reveal">
+      <span class="stat-number">$0</span>
+      <span class="stat-label-b">Missed Flights</span>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ABOUT -->
+<section class="about-section">
+  <div>
+    <h2 class="about-title reveal">Built in<br><span>Brooklyn.</span><br>Built to last.</h2>
+    <p class="about-body reveal">Studio 217 was founded in 2014 with one mission: eliminate the manual work that holds travel professionals back. A decade later, our tools process hundreds of automations daily — silently, perfectly.</p>
+    <p class="about-body reveal">We're not a software company that wandered into travel. We're travel operators who built the tools we wished existed.</p>
+    <span class="about-founded reveal">Brooklyn, NY · Est. 2014 · hello@studio217.ai</span>
+  </div>
+  <div class="about-visual reveal">
+    <div class="about-visual-text">217</div>
+    <div class="about-visual-badge">Studio 217<br>Brooklyn, NY</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title-b reveal">Ready to<br>automate<br><span>everything?</span></h2>
+  <p class="cta-sub-b reveal">Let's build something precise together.</p>
+  <a href="mailto:hello@studio217.ai" class="btn-editorial reveal">hello@studio217.ai</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-logo-b">Studio <span>217</span></div>
+    <a href="mailto:hello@studio217.ai" class="footer-email">hello@studio217.ai</a>
+    <div class="footer-right">Est. 2014 · Brooklyn, NY<br>Where Expertise Meets Automation</div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, (entry.target.dataset.delay || 0) * 100);
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+  reveals.forEach((el, i) => {
+    revealObserver.observe(el);
+  });
+
+  // Stagger siblings
+  document.querySelectorAll('.products-section .reveal, .stats-grid .reveal').forEach((el, i) => {
+    el.style.transitionDelay = (i * 0.1) + 's';
+  });
+</script>
+</body>
+</html>
