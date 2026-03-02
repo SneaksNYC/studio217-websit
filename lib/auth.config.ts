@@ -15,9 +15,12 @@ export const authConfig: NextAuthConfig = {
       const isLoggedIn = !!auth?.user
       const pathname = nextUrl.pathname
 
-      // Allow login page
-      if (pathname === '/') {
-        if (isLoggedIn) return Response.redirect(new URL('/dashboard', nextUrl))
+      // Allow public pages
+      const publicPaths = ['/', '/about']
+      if (publicPaths.includes(pathname)) {
+        if (pathname === '/' && isLoggedIn) {
+          return Response.redirect(new URL('/dashboard', nextUrl))
+        }
         return true
       }
 
