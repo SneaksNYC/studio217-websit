@@ -14,598 +14,618 @@
   <link rel="alternate icon" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #f7f4ef;
-      --bg-card: #efeae2;
-      --text: #1a1612;
-      --text-muted: #7a7068;
-      --accent: #1a1612;
-      --accent-alt: #c8a96e;
-      --border: #ddd8ce;
-      --white: #fdfcfa;
+      --bg:    #f8f5f0;
+      --paper: #f2ede5;
+      --stone: #e0d8cc;
+      --ash:   #9c9088;
+      --earth: #3d3328;
+      --ink:   #211c16;
+      --gold:  #a07848;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg);
-      color: var(--text);
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-size: 17px;
-      line-height: 1.6;
+      color: var(--ink);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.7;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── NAV ── */
+    /* ─── NAV ─── */
     nav {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      padding: 0 40px;
-      height: 64px;
+      background: rgba(248, 245, 240, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 0 64px;
+      height: 68px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
     .nav-logo {
-      font-family: 'Instrument Serif', serif;
-      font-size: 22px;
-      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 20px;
+      letter-spacing: 0.5px;
+      color: var(--ink);
       text-decoration: none;
-      letter-spacing: -0.3px;
     }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 32px;
+      gap: 40px;
       list-style: none;
     }
 
     .nav-links a {
       text-decoration: none;
-      color: var(--text-muted);
-      font-size: 15px;
-      font-weight: 500;
-      transition: color 0.2s;
+      color: var(--ash);
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      transition: color 0.3s;
     }
 
-    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover { color: var(--ink); }
 
     .btn-nav {
-      background: var(--text);
-      color: var(--bg) !important;
-      padding: 10px 22px;
+      color: var(--ink) !important;
+      border: 1px solid var(--stone) !important;
+      padding: 9px 24px !important;
       border-radius: 100px;
-      font-weight: 700;
-      font-size: 14px !important;
-      transition: opacity 0.2s !important;
+      letter-spacing: 0.8px !important;
+      transition: background 0.3s, border-color 0.3s, color 0.3s !important;
     }
 
-    .btn-nav:hover { opacity: 0.8; }
+    .btn-nav:hover {
+      background: var(--ink) !important;
+      border-color: var(--ink) !important;
+      color: var(--bg) !important;
+    }
 
-    /* ── HERO ── */
+    /* ─── HERO ─── */
     .hero {
-      max-width: 900px;
+      max-width: 880px;
       margin: 0 auto;
-      padding: 120px 40px 100px;
+      padding: 148px 64px 128px;
       text-align: center;
     }
 
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 6px 16px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 0.5px;
+    .hero-label {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 2.8px;
       text-transform: uppercase;
-      margin-bottom: 40px;
+      color: var(--ash);
+      margin-bottom: 52px;
     }
 
-    .hero-badge span { color: var(--accent-alt); }
-
     h1 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(52px, 8vw, 88px);
-      font-weight: 400;
-      line-height: 1.05;
-      letter-spacing: -2px;
-      color: var(--text);
-      margin-bottom: 28px;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(60px, 10vw, 108px);
+      line-height: 1.0;
+      letter-spacing: -1.5px;
+      color: var(--ink);
+      margin-bottom: 36px;
     }
 
     h1 em {
       font-style: italic;
-      color: var(--accent-alt);
+      color: var(--gold);
     }
 
     .hero-sub {
-      font-size: 20px;
-      color: var(--text-muted);
-      max-width: 560px;
-      margin: 0 auto 48px;
-      font-weight: 400;
-      line-height: 1.6;
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--ash);
+      max-width: 500px;
+      margin: 0 auto 60px;
+      line-height: 1.85;
     }
 
     .hero-ctas {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 28px;
       flex-wrap: wrap;
     }
 
     .btn-primary {
-      background: var(--text);
+      background: var(--ink);
       color: var(--bg);
-      padding: 16px 36px;
+      padding: 13px 36px;
       border-radius: 100px;
-      font-weight: 700;
-      font-size: 16px;
+      font-family: 'Jost', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
       text-decoration: none;
-      transition: opacity 0.2s, transform 0.2s;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.3s;
       display: inline-block;
     }
 
-    .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-primary:hover { opacity: 0.7; }
 
     .btn-secondary {
-      background: transparent;
-      color: var(--text-muted);
-      padding: 16px 28px;
-      border-radius: 100px;
-      font-weight: 600;
-      font-size: 16px;
-      text-decoration: none;
-      border: 1.5px solid var(--border);
-      transition: all 0.2s;
-      display: inline-block;
-    }
-
-    .btn-secondary:hover { border-color: var(--text); color: var(--text); }
-
-    /* ── SOCIAL PROOF ── */
-    .proof {
-      text-align: center;
-      padding: 24px 40px 80px;
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-    }
-
-    .proof-line {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-
-    .proof-dot { color: var(--border); }
-
-    /* ── DIVIDER ── */
-    .divider {
-      height: 1px;
-      background: var(--border);
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    /* ── PROBLEM ── */
-    .problem {
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 100px 40px;
-      text-align: center;
-    }
-
-    .problem h2 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(32px, 5vw, 52px);
-      font-weight: 400;
-      line-height: 1.2;
-      letter-spacing: -1px;
-      margin-bottom: 24px;
-    }
-
-    .problem p {
-      color: var(--text-muted);
-      font-size: 18px;
-      max-width: 580px;
-      margin: 0 auto;
-    }
-
-    /* ── FEATURES ── */
-    .features {
-      padding: 0 40px 120px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      overflow: hidden;
-    }
-
-    .feature-card {
-      background: var(--white);
-      padding: 48px 40px;
-      transition: background 0.2s;
-    }
-
-    .feature-card:hover { background: var(--bg); }
-
-    .feature-num {
+      color: var(--ash);
+      font-family: 'Jost', sans-serif;
       font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: var(--accent-alt);
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-
-    .feature-card h3 {
-      font-family: 'Instrument Serif', serif;
-      font-size: 26px;
       font-weight: 400;
-      letter-spacing: -0.5px;
-      margin-bottom: 14px;
-      line-height: 1.2;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-bottom: 1px solid var(--stone);
+      padding-bottom: 2px;
+      transition: color 0.3s, border-color 0.3s;
     }
 
-    .feature-card p {
-      color: var(--text-muted);
-      font-size: 15px;
-      line-height: 1.7;
-    }
+    .btn-secondary:hover { color: var(--ink); border-color: var(--ash); }
 
-    /* ── HOW IT WORKS ── */
-    .how {
-      padding: 100px 40px;
+    /* ─── HAIRLINE ─── */
+    .line {
+      height: 1px;
+      background: var(--stone);
       max-width: 1100px;
       margin: 0 auto;
     }
 
-    .section-label {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 20px;
+    /* ─── DISCIPLINES BAR ─── */
+    .disc-bar {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      flex-wrap: wrap;
     }
 
-    .how h2 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(36px, 5vw, 56px);
+    .disc-bar span {
+      font-size: 10px;
       font-weight: 400;
-      letter-spacing: -1.5px;
-      line-height: 1.1;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+    }
+
+    .disc-bar .sep { color: var(--stone); font-size: 14px; }
+
+    /* ─── INTRO ─── */
+    .intro {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 128px 64px;
+      text-align: center;
+    }
+
+    .intro h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(36px, 5vw, 54px);
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+
+    .intro h2 em { font-style: italic; color: var(--gold); }
+
+    .intro p {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--ash);
+      line-height: 1.9;
+    }
+
+    /* ─── SERVICES ─── */
+    .services-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 64px 148px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--ash);
       margin-bottom: 72px;
-      max-width: 600px;
+    }
+
+    .services-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .service-item {
+      padding-top: 8px;
+    }
+
+    .service-item:nth-child(1) { padding-right: 56px; border-right: 1px solid var(--stone); }
+    .service-item:nth-child(2) { padding: 8px 56px 0; border-right: 1px solid var(--stone); }
+    .service-item:nth-child(3) { padding-left: 56px; padding-top: 8px; }
+
+    .service-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: var(--stone);
+      margin-bottom: 28px;
+    }
+
+    .service-item h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 27px;
+      line-height: 1.25;
+      color: var(--ink);
+      margin-bottom: 16px;
+      letter-spacing: -0.2px;
+    }
+
+    .service-item p {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--ash);
+      line-height: 1.9;
+    }
+
+    .service-link {
+      display: inline-block;
+      margin-top: 28px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      padding-bottom: 2px;
+      transition: border-color 0.3s;
+    }
+
+    .service-link:hover { border-color: var(--gold); }
+
+    /* ─── PROCESS ─── */
+    .process-wrap {
+      background: var(--paper);
+      padding: 128px 64px;
+    }
+
+    .process-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .process-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 88px;
+      gap: 40px;
+    }
+
+    .process-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(36px, 5vw, 54px);
+      line-height: 1.15;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+    }
+
+    .process-header p {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--ash);
+      max-width: 280px;
+      line-height: 1.85;
+      text-align: right;
     }
 
     .steps {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 48px;
     }
 
+    .step:nth-child(1) { padding-right: 56px; border-right: 1px solid var(--stone); }
+    .step:nth-child(2) { padding: 0 56px; border-right: 1px solid var(--stone); }
+    .step:nth-child(3) { padding-left: 56px; }
+
     .step-num {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--bg-card);
-      border: 1.5px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--text-muted);
-      margin-bottom: 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 52px;
+      font-weight: 300;
+      color: var(--stone);
+      line-height: 1;
+      margin-bottom: 28px;
     }
 
     .step h3 {
-      font-family: 'Instrument Serif', serif;
-      font-size: 22px;
+      font-family: 'Cormorant Garamond', serif;
       font-weight: 400;
-      margin-bottom: 10px;
-      letter-spacing: -0.3px;
+      font-size: 22px;
+      color: var(--ink);
+      margin-bottom: 12px;
+      letter-spacing: -0.2px;
     }
 
     .step p {
-      color: var(--text-muted);
-      font-size: 15px;
-      line-height: 1.7;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--ash);
+      line-height: 1.9;
     }
 
-    /* ── QUOTE ── */
-    .quote-section {
-      background: var(--text);
-      color: var(--bg);
-      padding: 100px 40px;
+    /* ─── QUOTE ─── */
+    .quote-wrap {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 128px 64px;
       text-align: center;
     }
 
-    .quote-section blockquote {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(28px, 4vw, 48px);
-      font-weight: 400;
+    .quote-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 96px;
+      line-height: 0.6;
+      color: var(--stone);
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .quote-wrap blockquote {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
       font-style: italic;
-      line-height: 1.25;
-      max-width: 800px;
-      margin: 0 auto 32px;
-      letter-spacing: -1px;
-      color: #f7f4ef;
+      font-size: clamp(24px, 3.5vw, 36px);
+      line-height: 1.45;
+      color: var(--earth);
+      letter-spacing: -0.2px;
+      margin-bottom: 36px;
     }
 
     .quote-attr {
-      color: #7a7068;
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--ash);
     }
 
-    /* ── USE CASES ── */
-    .use-cases {
-      padding: 100px 40px;
+    /* ─── INDUSTRIES ─── */
+    .industries-wrap {
       max-width: 1100px;
       margin: 0 auto;
+      padding: 0 64px 148px;
     }
 
-    .use-cases h2 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(36px, 5vw, 52px);
-      font-weight: 400;
-      letter-spacing: -1.5px;
-      margin-bottom: 56px;
-      max-width: 500px;
+    .industries-wrap h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(36px, 4.5vw, 52px);
       line-height: 1.15;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      margin-bottom: 64px;
     }
 
-    .use-cases-grid {
+    .industries-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 24px;
     }
 
-    .use-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 40px;
-      transition: transform 0.2s, box-shadow 0.2s;
+    .industry-item {
+      padding: 40px 0;
+      border-top: 1px solid var(--stone);
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 40px;
+      align-items: baseline;
     }
 
-    .use-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(26,22,18,0.08);
+    .industry-item:nth-child(odd) {
+      padding-right: 64px;
+      border-right: 1px solid var(--stone);
     }
 
-    .use-card-icon {
-      font-size: 28px;
-      margin-bottom: 16px;
-      display: block;
-    }
+    .industry-item:nth-child(even) { padding-left: 64px; }
 
-    .use-card h3 {
-      font-family: 'Instrument Serif', serif;
-      font-size: 22px;
+    .industry-name {
+      font-family: 'Cormorant Garamond', serif;
       font-weight: 400;
-      letter-spacing: -0.4px;
-      margin-bottom: 10px;
+      font-size: 19px;
+      color: var(--ink);
+      line-height: 1.35;
     }
 
-    .use-card p {
-      color: var(--text-muted);
-      font-size: 15px;
-      line-height: 1.7;
+    .industry-desc {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--ash);
+      line-height: 1.9;
     }
 
-    /* ── CTA SECTION ── */
-    .cta-section {
-      padding: 100px 40px;
-      text-align: center;
-      max-width: 700px;
+    /* ─── CONTACT ─── */
+    .contact-wrap {
+      background: var(--paper);
+      padding: 128px 64px;
+    }
+
+    .contact-inner {
+      max-width: 1100px;
       margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 112px;
+      align-items: start;
     }
 
-    .cta-section h2 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(40px, 6vw, 68px);
-      font-weight: 400;
-      letter-spacing: -2px;
-      line-height: 1.05;
+    .contact-left h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(36px, 5vw, 54px);
+      line-height: 1.15;
+      color: var(--ink);
+      letter-spacing: -0.5px;
       margin-bottom: 24px;
     }
 
-    .cta-section h2 em {
-      font-style: italic;
-      color: var(--accent-alt);
+    .contact-left h2 em { font-style: italic; color: var(--gold); }
+
+    .contact-left p {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--ash);
+      line-height: 1.9;
+      margin-bottom: 36px;
     }
 
-    .cta-section p {
-      color: var(--text-muted);
-      font-size: 18px;
-      margin-bottom: 40px;
+    .contact-email {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
     }
 
-    /* ── FOOTER ── */
+    .contact-email:hover { border-color: var(--gold); }
+
+    .contact-form { display: flex; flex-direction: column; }
+
+    .form-field {
+      border-bottom: 1px solid var(--stone);
+      transition: border-color 0.3s;
+      margin-bottom: 4px;
+    }
+
+    .form-field:focus-within { border-color: var(--earth); }
+
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 18px 0;
+      background: transparent;
+      border: none;
+      font-family: 'Jost', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--ink);
+      outline: none;
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder {
+      color: var(--ash);
+    }
+
+    .contact-form textarea { resize: none; min-height: 96px; }
+
+    .form-submit { margin-top: 44px; }
+
+    /* ─── FOOTER ─── */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 44px 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      max-width: 1200px;
-      margin: 0 auto;
+      flex-wrap: wrap;
+      gap: 16px;
     }
 
     .footer-logo {
-      font-family: 'Instrument Serif', serif;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
       font-size: 18px;
-      color: var(--text);
+      color: var(--ink);
       text-decoration: none;
+    }
+
+    .footer-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--ash);
     }
 
     .footer-links {
       display: flex;
-      gap: 24px;
+      gap: 28px;
       list-style: none;
     }
 
     .footer-links a {
       text-decoration: none;
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 500;
-      transition: color 0.2s;
+      color: var(--ash);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.8px;
+      transition: color 0.3s;
     }
 
-    .footer-links a:hover { color: var(--text); }
+    .footer-links a:hover { color: var(--ink); }
 
     .footer-copy {
-      color: var(--text-muted);
-      font-size: 13px;
+      font-size: 11px;
+      color: var(--stone);
+      letter-spacing: 0.5px;
     }
 
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
+    /* ─── SCROLL REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── HERO ENTRANCE ─── */
+    @keyframes hIn {
+      from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .hero > * { animation: fadeUp 0.6s ease-out both; }
-    .hero > *:nth-child(1) { animation-delay: 0.05s; }
-    .hero > *:nth-child(2) { animation-delay: 0.15s; }
-    .hero > *:nth-child(3) { animation-delay: 0.25s; }
-    .hero > *:nth-child(4) { animation-delay: 0.35s; }
+    .hero .hero-label { animation: hIn 0.9s ease both; animation-delay: 0.1s; }
+    .hero h1          { animation: hIn 0.9s ease both; animation-delay: 0.25s; }
+    .hero .hero-sub   { animation: hIn 0.9s ease both; animation-delay: 0.42s; }
+    .hero .hero-ctas  { animation: hIn 0.9s ease both; animation-delay: 0.58s; }
 
-    /* ── FEATURE CTA ── */
-    .feature-cta {
-      display: inline-block;
-      margin-top: 20px;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--accent-alt);
-      text-decoration: none;
-      transition: opacity 0.2s;
-    }
-    .feature-cta:hover { opacity: 0.7; }
-
-    /* ── PRICING ── */
-    .pricing-section {
-      padding: 80px 40px;
-      max-width: 600px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .pricing-card {
-      background: var(--text);
-      color: var(--bg);
-      border-radius: 24px;
-      padding: 56px 48px;
-    }
-    .pricing-label {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--accent-alt);
-      margin-bottom: 20px;
-    }
-    .pricing-headline {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(28px, 5vw, 42px);
-      font-weight: 400;
-      line-height: 1.2;
-      margin-bottom: 32px;
-      color: #f7f4ef;
-    }
-    .pricing-headline strong { font-weight: 400; }
-    .pricing-headline span { font-size: 0.6em; color: var(--accent-alt); }
-    .pricing-list {
-      list-style: none;
-      text-align: left;
-      display: inline-block;
-      margin-bottom: 40px;
-    }
-    .pricing-list li {
-      padding: 8px 0;
-      font-size: 16px;
-      color: #d4cfc9;
-      font-weight: 500;
-    }
-    .pricing-card .btn-primary {
-      background: var(--accent-alt);
-      color: var(--text);
-    }
-    .pricing-card .btn-primary:hover { opacity: 0.9; }
-
-    /* ── CONTACT FORM ── */
-    .contact-form {
-      max-width: 540px;
-      margin: 40px auto 0;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      text-align: left;
-    }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    .contact-form input,
-    .contact-form textarea {
-      width: 100%;
-      padding: 14px 18px;
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-size: 15px;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .contact-form input:focus,
-    .contact-form textarea:focus {
-      border-color: var(--accent-alt);
-    }
-    .contact-form textarea { resize: vertical; }
-    .contact-form .btn-primary {
-      align-self: flex-start;
-      padding: 14px 36px;
-      font-size: 15px;
-    }
-
-    /* ── HAMBURGER MENU ── */
+    /* ─── HAMBURGER ─── */
     .nav-hamburger {
       display: none;
       flex-direction: column;
-      gap: 5px;
+      gap: 6px;
       cursor: pointer;
       background: none;
       border: none;
@@ -615,55 +635,84 @@
       align-items: center;
       justify-content: center;
     }
+
     .nav-hamburger span {
       display: block;
-      width: 24px;
-      height: 2px;
-      background: var(--text);
-      border-radius: 2px;
-      transition: transform 0.2s, opacity 0.2s;
+      width: 22px;
+      height: 1px;
+      background: var(--ink);
+      transition: transform 0.25s, opacity 0.25s;
     }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      .features-grid { grid-template-columns: 1fr; }
-      .steps { grid-template-columns: 1fr; gap: 32px; }
-      .use-cases-grid { grid-template-columns: 1fr; }
-      nav { padding: 0 20px; }
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 960px) {
+      nav { padding: 0 24px; }
       .nav-links { display: none; }
       .nav-links.open {
         display: flex;
         flex-direction: column;
         position: fixed;
-        top: 64px;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        top: 68px; left: 0; right: 0; bottom: 0;
         background: var(--bg);
-        padding: 40px 24px;
-        font-size: 22px;
-        gap: 24px;
+        padding: 48px 28px;
+        gap: 28px;
         z-index: 99;
-        border-top: 1px solid var(--border);
+        border-top: 1px solid var(--stone);
       }
-      .nav-links.open a { font-size: 20px; color: var(--text); font-weight: 600; }
+      .nav-links.open a { font-size: 18px; letter-spacing: 0; text-transform: none; color: var(--ink); }
       .nav-hamburger { display: flex; }
-      .hero { padding: 80px 24px 60px; }
-      .problem { padding: 60px 24px; }
-      .features { padding: 0 20px 80px; }
-      .how { padding: 60px 24px; }
-      .use-cases { padding: 60px 24px; }
-      .cta-section { padding: 60px 24px; }
-      .pricing-section { padding: 60px 24px; }
-      .pricing-card { padding: 40px 28px; }
-      .form-row { grid-template-columns: 1fr; }
-      footer { flex-direction: column; gap: 24px; text-align: center; padding: 40px 24px; }
-      .footer-links { flex-wrap: wrap; justify-content: center; }
+
+      .hero { padding: 80px 24px 64px; }
+
+      .disc-bar { padding: 24px; gap: 20px; }
+
+      .intro { padding: 80px 24px; }
+
+      .services-wrap { padding: 0 24px 100px; }
+      .services-list { grid-template-columns: 1fr; }
+      .service-item:nth-child(1),
+      .service-item:nth-child(2),
+      .service-item:nth-child(3) {
+        padding: 40px 0;
+        border-right: none;
+        border-top: 1px solid var(--stone);
+      }
+      .service-item:nth-child(1) { border-top: none; padding-top: 0; }
+
+      .process-wrap { padding: 80px 24px; }
+      .process-header { flex-direction: column; align-items: flex-start; }
+      .process-header p { text-align: left; }
+      .steps { grid-template-columns: 1fr; }
+      .step:nth-child(1),
+      .step:nth-child(2),
+      .step:nth-child(3) {
+        padding: 40px 0;
+        border-right: none;
+        border-top: 1px solid var(--stone);
+      }
+      .step:nth-child(1) { border-top: none; padding-top: 0; }
+
+      .quote-wrap { padding: 80px 24px; }
+
+      .industries-wrap { padding: 0 24px 100px; }
+      .industries-grid { grid-template-columns: 1fr; }
+      .industry-item { grid-template-columns: 1fr; gap: 8px; }
+      .industry-item:nth-child(odd),
+      .industry-item:nth-child(even) { padding: 32px 0; border-right: none; }
+
+      .contact-wrap { padding: 80px 24px; }
+      .contact-inner { grid-template-columns: 1fr; gap: 56px; }
+
+      footer { padding: 36px 24px; flex-direction: column; align-items: flex-start; gap: 12px; }
     }
 
-    /* ── ACCESSIBILITY ── */
     @media (prefers-reduced-motion: reduce) {
-      .hero > * { animation: none; }
+      .reveal, .hero .hero-label, .hero h1, .hero .hero-sub, .hero .hero-ctas {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
     }
   </style>
 </head>
@@ -673,182 +722,219 @@
   <nav>
     <a href="/" class="nav-logo">Studio217</a>
     <button class="nav-hamburger" aria-label="Toggle navigation" onclick="toggleMobileNav()">
-      <span></span>
-      <span></span>
-      <span></span>
+      <span></span><span></span><span></span>
     </button>
     <ul class="nav-links" id="nav-links">
       <li><a href="#services" onclick="closeMobileNav()">Services</a></li>
-      <li><a href="#how" onclick="closeMobileNav()">How it works</a></li>
+      <li><a href="#process" onclick="closeMobileNav()">Process</a></li>
       <li><a href="#contact" onclick="closeMobileNav()">Contact</a></li>
-      <li><a href="#contact" class="btn-nav" onclick="closeMobileNav()">Get started →</a></li>
+      <li><a href="#contact" class="btn-nav" onclick="closeMobileNav()">Get in touch</a></li>
     </ul>
   </nav>
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-badge">✦ <span>Where passion meets expertise</span></div>
-    <h1>Experience. Innovation.<br><em>Results.</em></h1>
+    <p class="hero-label">Where passion meets expertise</p>
+    <h1>Experience.<br>Innovation.<br><em>Results.</em></h1>
     <p class="hero-sub">
-      Studio217 is a consulting, AI innovation, and marketing company. We help brands deliver exceptional customer experiences, build AI tools that make teams more productive, and launch marketing that actually moves people.
+      Studio217 helps brands deliver exceptional customer experiences, build AI tools that make teams more productive, and launch marketing that actually moves people.
     </p>
     <div class="hero-ctas">
-      <a href="mailto:hello@studio217.ai" class="btn-primary">Start a conversation →</a>
-      <a href="#services" class="btn-secondary">See what we build</a>
+      <a href="mailto:hello@studio217.ai" class="btn-primary">Start a conversation</a>
+      <a href="#services" class="btn-secondary">Explore our work</a>
     </div>
   </section>
 
-  <div class="proof">
-    <div class="proof-line">
-      <span>CX consulting</span>
-      <span class="proof-dot">·</span>
-      <span>AI innovation</span>
-      <span class="proof-dot">·</span>
-      <span>Marketing & design</span>
-      <span class="proof-dot">·</span>
-      <span>Brand launches</span>
-    </div>
+  <div class="line"></div>
+
+  <div class="disc-bar">
+    <span>CX Consulting</span>
+    <span class="sep">·</span>
+    <span>AI Innovation</span>
+    <span class="sep">·</span>
+    <span>Marketing &amp; Design</span>
+    <span class="sep">·</span>
+    <span>Brand Launches</span>
   </div>
 
-  <div class="divider"></div>
+  <div class="line"></div>
 
-  <!-- PROBLEM -->
-  <section class="problem">
-    <h2>Three disciplines.<br>One <em style="font-style:italic; font-family:'Instrument Serif',serif;">obsession.</em></h2>
+  <!-- INTRO -->
+  <section class="intro reveal">
+    <h2>Three disciplines.<br>One <em>obsession.</em></h2>
     <p>We bring together customer experience consulting, AI-powered innovation, and marketing expertise under one roof. Whether you need to fix how you serve customers, build tools that make your team more productive, or launch a campaign that cuts through — we do all three, and we do them well.</p>
   </section>
 
-  <div class="divider"></div>
+  <div class="line"></div>
 
-  <!-- FEATURES -->
-  <section id="services" class="features">
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-num">01 — CX Consulting</div>
-        <h3>Service your customers will remember</h3>
-        <p>We audit and redesign your customer experience end-to-end — service quality, loyalty programs, satisfaction tracking, and every touchpoint in between.</p>
-        <a href="#contact" class="feature-cta">Learn more →</a>
-      </div>
-      <div class="feature-card">
-        <div class="feature-num">02 — AI Innovation</div>
-        <h3>Custom tools. Real productivity gains.</h3>
-        <p>We build AI-powered tools tailored to your workflows — automating the repetitive, surfacing the important, and making every person on your team more effective.</p>
-        <a href="#contact" class="feature-cta">Learn more →</a>
-      </div>
-      <div class="feature-card">
-        <div class="feature-num">03 — Marketing</div>
-        <h3>Design and launches that land.</h3>
-        <p>From brand identity to campaign execution — we bring the creative and strategic expertise to design marketing that resonates and launches that get noticed.</p>
-        <a href="#contact" class="feature-cta">Learn more →</a>
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="services-wrap">
+      <div class="section-label reveal">Services</div>
+      <div class="services-list">
+
+        <div class="service-item reveal">
+          <div class="service-num">01</div>
+          <h3>CX Consulting</h3>
+          <p>We audit and redesign your customer experience end-to-end — service quality, loyalty programs, satisfaction tracking, and every touchpoint in between.</p>
+          <a href="#contact" class="service-link">Learn more</a>
+        </div>
+
+        <div class="service-item reveal">
+          <div class="service-num">02</div>
+          <h3>AI Innovation</h3>
+          <p>We build AI-powered tools tailored to your workflows — automating the repetitive, surfacing the important, and making every person on your team more effective.</p>
+          <a href="#contact" class="service-link">Learn more</a>
+        </div>
+
+        <div class="service-item reveal">
+          <div class="service-num">03</div>
+          <h3>Marketing</h3>
+          <p>From brand identity to campaign execution — we bring the creative and strategic expertise to design marketing that resonates and launches that get noticed.</p>
+          <a href="#contact" class="service-link">Learn more</a>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section id="how" class="how">
-    <div class="section-label">How it works</div>
-    <h2>From kickoff to<br>live in weeks,<br>not months.</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <h3>We listen first</h3>
-        <p>We map your current workflows, pain points, and customer journey before writing a single line of code.</p>
+  <!-- PROCESS -->
+  <section id="process" class="process-wrap">
+    <div class="process-inner">
+      <div class="process-header reveal">
+        <h2>From kickoff<br>to live — in weeks,<br>not months.</h2>
+        <p>We move fast without cutting corners. Every engagement starts with deep listening and ends with something that actually works.</p>
       </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <h3>We build it fast</h3>
-        <p>Custom AI stack built for your business — not a generic chatbot slapped on your website.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <h3>You ship. We maintain.</h3>
-        <p>We handle updates, monitoring, and improvements so your team can focus on what they do best.</p>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">01</div>
+          <h3>We listen first</h3>
+          <p>We map your workflows, pain points, and customer journey before writing a single line of strategy or code.</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">02</div>
+          <h3>We build it fast</h3>
+          <p>Custom solutions built for your business — not templates, not generic tools, not a chatbot slapped on your website.</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">03</div>
+          <h3>You ship. We stay.</h3>
+          <p>We handle updates, monitoring, and improvements so your team can focus on what they do best.</p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- QUOTE -->
-  <section class="quote-section">
-    <blockquote>"They came in as consultants and left having built us an AI tool we use every single day. That's the difference."</blockquote>
-    <cite class="quote-attr">— Studio217 Client</cite>
+  <section class="quote-wrap reveal">
+    <span class="quote-mark">"</span>
+    <blockquote>They came in as consultants and left having built us an AI tool we use every single day. That's the difference.</blockquote>
+    <cite class="quote-attr">Studio217 Client</cite>
   </section>
 
-  <!-- USE CASES -->
-  <section class="use-cases">
-    <div class="section-label">Who we work with</div>
-    <h2>We've done this<br>before. Probably<br>for your industry.</h2>
-    <div class="use-cases-grid">
-      <div class="use-card">
-        <span class="use-card-icon">🛍️</span>
-        <h3>Retail & E-commerce</h3>
-        <p>Turn one-time shoppers into loyal regulars. We build retention programs and service experiences that keep customers coming back.</p>
-      </div>
-      <div class="use-card">
-        <span class="use-card-icon">✈️</span>
-        <h3>Travel & Hospitality</h3>
-        <p>Guest satisfaction is everything in this industry. We help hotels, agencies, and airlines deliver experiences worth talking about.</p>
-      </div>
-      <div class="use-card">
-        <span class="use-card-icon">🏢</span>
-        <h3>Financial & Professional Services</h3>
-        <p>Client trust is your product. We help firms build the service standards and loyalty systems that justify premium pricing.</p>
-      </div>
-      <div class="use-card">
-        <span class="use-card-icon">📱</span>
-        <h3>Tech & SaaS</h3>
-        <p>Churn is a customer experience problem. We diagnose it, fix onboarding, and design the touchpoints that turn users into advocates.</p>
+  <div class="line"></div>
+
+  <!-- INDUSTRIES -->
+  <section>
+    <div class="industries-wrap">
+      <h2 class="reveal">Built for<br>every industry.</h2>
+      <div class="industries-grid">
+
+        <div class="industry-item reveal">
+          <div class="industry-name">Retail &amp;<br>E-commerce</div>
+          <p class="industry-desc">Turn one-time shoppers into loyal regulars. We build retention programs and service experiences that keep customers coming back.</p>
+        </div>
+
+        <div class="industry-item reveal">
+          <div class="industry-name">Travel &amp;<br>Hospitality</div>
+          <p class="industry-desc">Guest satisfaction is everything in this industry. We help hotels, agencies, and airlines deliver experiences worth talking about.</p>
+        </div>
+
+        <div class="industry-item reveal">
+          <div class="industry-name">Financial &amp;<br>Professional Services</div>
+          <p class="industry-desc">Client trust is your product. We help firms build the service standards and loyalty systems that justify premium pricing.</p>
+        </div>
+
+        <div class="industry-item reveal">
+          <div class="industry-name">Tech<br>&amp; SaaS</div>
+          <p class="industry-desc">Churn is a customer experience problem. We diagnose it, fix onboarding, and design touchpoints that turn users into advocates.</p>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- PRICING -->
-  <!-- CTA / CONTACT FORM -->
-  <section id="contact" class="cta-section">
-    <h2>Ready to build<br>something real?</h2>
-    <p>Tell us where you are and where you want to go. We'll take it from there.</p>
+  <!-- CONTACT -->
+  <section id="contact" class="contact-wrap">
+    <div class="contact-inner">
 
-    <form action="https://formspree.io/f/hello@studio217.ai" method="POST" class="contact-form">
-      <div class="form-row">
-        <input type="text" name="name" placeholder="Your name" required />
-        <input type="email" name="email" placeholder="Work email" required />
+      <div class="contact-left reveal">
+        <h2>Ready to build<br>something <em>real?</em></h2>
+        <p>No templates, no generic decks. Just a real conversation about what you actually need — and a team that delivers.</p>
+        <a href="mailto:hello@studio217.ai" class="contact-email">hello@studio217.ai</a>
       </div>
-      <input type="text" name="company" placeholder="Company / Agency name" />
-      <textarea name="message" placeholder="What are you working on? What do you need?" rows="4" required></textarea>
-      <button type="submit" class="btn-primary">Get Started →</button>
-    </form>
+
+      <form action="https://formspree.io/f/hello@studio217.ai" method="POST" class="contact-form reveal">
+        <div class="form-field">
+          <input type="text" name="name" placeholder="Your name" required />
+        </div>
+        <div class="form-field">
+          <input type="email" name="email" placeholder="Work email" required />
+        </div>
+        <div class="form-field">
+          <input type="text" name="company" placeholder="Company" />
+        </div>
+        <div class="form-field">
+          <textarea name="message" placeholder="What are you working on?" rows="4" required></textarea>
+        </div>
+        <div class="form-submit">
+          <button type="submit" class="btn-primary">Send message</button>
+        </div>
+      </form>
+
+    </div>
   </section>
 
   <!-- FOOTER -->
-  <div class="divider"></div>
+  <div class="line"></div>
   <footer>
     <a href="/" class="footer-logo">Studio217</a>
-    <p style="font-family:'Instrument Serif',serif; font-style:italic; color:var(--text-muted); font-size:15px; margin-top:-8px;">Where passion meets expertise</p>
+    <span class="footer-tagline">Where passion meets expertise</span>
     <ul class="footer-links">
       <li><a href="#services">Services</a></li>
-      <li><a href="#how">How it works</a></li>
+      <li><a href="#process">Process</a></li>
       <li><a href="mailto:hello@studio217.ai">Contact</a></li>
     </ul>
     <p class="footer-copy">© 2026 Studio217</p>
   </footer>
 
-
   <script>
+    // ── Mobile nav
     function toggleMobileNav() {
-      const nav = document.getElementById('nav-links');
-      nav.classList.toggle('open');
+      document.getElementById('nav-links').classList.toggle('open');
     }
     function closeMobileNav() {
-      const nav = document.getElementById('nav-links');
-      nav.classList.remove('open');
+      document.getElementById('nav-links').classList.remove('open');
     }
-    // Close on outside click
     document.addEventListener('click', function(e) {
       const nav = document.getElementById('nav-links');
-      const hamburger = document.querySelector('.nav-hamburger');
-      if (nav.classList.contains('open') && !nav.contains(e.target) && !hamburger.contains(e.target)) {
+      const burger = document.querySelector('.nav-hamburger');
+      if (nav.classList.contains('open') && !nav.contains(e.target) && !burger.contains(e.target)) {
         nav.classList.remove('open');
       }
     });
+
+    // ── Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
 </body>
 </html>
