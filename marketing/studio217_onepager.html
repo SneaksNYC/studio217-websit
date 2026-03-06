@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STUDIO217 — Where passion meets expertise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f8f5f0;
+      --text: #3d3328;
+      --gold: #a07848;
+      --muted: #8a7a68;
+      --light-line: #e5dfd6;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 80px 48px 64px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 72px;
+      border-bottom: 1px solid var(--light-line);
+      padding-bottom: 40px;
+    }
+
+    .wordmark {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: 2rem;
+      letter-spacing: 0.18em;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    .tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--gold);
+      margin-top: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Section labels ── */
+    .section-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+    }
+
+    /* ── Services ── */
+    .services {
+      margin-bottom: 64px;
+    }
+
+    .service-item {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 0 20px;
+      align-items: start;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--light-line);
+    }
+
+    .service-item:first-of-type {
+      border-top: 1px solid var(--light-line);
+    }
+
+    .service-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 0.85rem;
+      color: var(--gold);
+      padding-top: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .service-content {}
+
+    .service-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .service-desc {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ── Two-column row ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 64px;
+    }
+
+    @media (max-width: 600px) {
+      .two-col { grid-template-columns: 1fr; gap: 40px; }
+    }
+
+    /* ── Why STUDIO217 ── */
+    .differentiator {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--light-line);
+    }
+
+    .differentiator:first-of-type {
+      border-top: 1px solid var(--light-line);
+    }
+
+    .diff-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    .diff-body {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── Process ── */
+    .process-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .process-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--light-line);
+      position: relative;
+    }
+
+    .process-step:first-of-type {
+      border-top: 1px solid var(--light-line);
+    }
+
+    .step-marker {
+      width: 28px;
+      min-width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem;
+      color: var(--gold);
+      margin-top: 2px;
+    }
+
+    .step-content {}
+
+    .step-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── Closing line ── */
+    .closing {
+      margin-bottom: 64px;
+      padding: 36px;
+      border: 1px solid var(--light-line);
+      background: rgba(160,120,72,0.04);
+      border-radius: 2px;
+    }
+
+    .closing p {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--light-line);
+      padding-top: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .footer-contact {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-contact a {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .footer-contact a:hover {
+      color: var(--gold);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--light-line);
+      margin: 0 0 48px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="wordmark">STUDIO217</div>
+      <div class="tagline">Where passion meets expertise</div>
+    </header>
+
+    <!-- Services -->
+    <section class="services">
+      <div class="section-label">What we do</div>
+
+      <div class="service-item">
+        <div class="service-num">01</div>
+        <div class="service-content">
+          <div class="service-name">CX Consulting</div>
+          <div class="service-desc">We map and redesign the full customer journey — identifying where experience breaks down and where it can become a genuine differentiator. Every touchpoint, reconsidered.</div>
+        </div>
+      </div>
+
+      <div class="service-item">
+        <div class="service-num">02</div>
+        <div class="service-content">
+          <div class="service-name">AI Innovation</div>
+          <div class="service-desc">We help organizations find where AI creates real leverage — then build toward it with intention. No hype, no vendor bias. Just honest strategy and thoughtful implementation.</div>
+        </div>
+      </div>
+
+      <div class="service-item">
+        <div class="service-num">03</div>
+        <div class="service-content">
+          <div class="service-name">Marketing</div>
+          <div class="service-desc">We sharpen brand positioning and build marketing that feels true — not just loud. From messaging architecture to content systems, we create the clarity that makes everything else easier.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why STUDIO217 + How We Work -->
+    <div class="two-col">
+
+      <!-- Why STUDIO217 -->
+      <div>
+        <div class="section-label">Why STUDIO217</div>
+
+        <div class="differentiator">
+          <div class="diff-title">Depth over volume</div>
+          <div class="diff-body">We take on a small number of engagements at a time. Every client gets our full attention — not a junior team running a playbook.</div>
+        </div>
+
+        <div class="differentiator">
+          <div class="diff-title">Honest over comfortable</div>
+          <div class="diff-body">We tell you what we actually see — not what you want to hear. Real value comes from clear assessment, not reassurance.</div>
+        </div>
+
+        <div class="differentiator">
+          <div class="diff-title">Built to last</div>
+          <div class="diff-body">We design solutions your team can own and operate. The goal is independence — not dependency.</div>
+        </div>
+      </div>
+
+      <!-- How We Work -->
+      <div>
+        <div class="section-label">How we work</div>
+
+        <div class="process-steps">
+          <div class="process-step">
+            <div class="step-marker">1</div>
+            <div class="step-content">
+              <div class="step-name">Discover</div>
+              <div class="step-desc">We listen before we prescribe. Deep conversations, careful observation, and honest diagnosis of what's actually happening.</div>
+            </div>
+          </div>
+
+          <div class="process-step">
+            <div class="step-marker">2</div>
+            <div class="step-content">
+              <div class="step-name">Design</div>
+              <div class="step-desc">We craft a clear strategy and build the systems, frameworks, and assets needed to bring it to life — tailored to your context.</div>
+            </div>
+          </div>
+
+          <div class="process-step">
+            <div class="step-marker">3</div>
+            <div class="step-content">
+              <div class="step-name">Deploy</div>
+              <div class="step-desc">We implement with care and measure what matters. We stay until the work is working — then hand it over fully.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Closing thought -->
+    <div class="closing">
+      <p>"We believe the best work happens when clarity meets craft — and when the people doing the work genuinely care about the outcome."</p>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-brand">STUDIO217</div>
+      <div class="footer-contact">
+        <a href="mailto:hello@studio217.ai">hello@studio217.ai</a>
+        <a href="https://studio217.ai" target="_blank">studio217.ai</a>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>
