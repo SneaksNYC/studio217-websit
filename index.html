@@ -47,7 +47,8 @@ section { padding: 120px 0; }
 /* ═══ NAV ═══ */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(10, 10, 15, 0.8);
+  background: rgba(10, 10, 15, 0.85);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
   padding: 16px 0;
@@ -68,11 +69,14 @@ nav .container {
 }
 .nav-links a:hover { color: var(--white); }
 .nav-cta {
-  background: var(--accent) !important; color: var(--white) !important;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%) !important;
+  background-size: 200% 200% !important; color: var(--white) !important;
   padding: 10px 24px !important; border-radius: 8px;
-  font-weight: 600 !important; transition: all 0.2s !important;
+  font-weight: 600 !important; transition: all 0.35s cubic-bezier(.25,.8,.25,1) !important;
+  animation: nav-shimmer 3s ease infinite;
 }
-.nav-cta:hover { background: var(--accent-light) !important; transform: translateY(-1px); }
+@keyframes nav-shimmer { 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
+.nav-cta:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 30px var(--accent-glow); }
 
 /* ═══ HERO ═══ */
 .hero {
@@ -102,11 +106,14 @@ nav .container {
 }
 .hero-badge .dot {
   width: 8px; height: 8px; background: var(--green);
-  border-radius: 50%; animation: blink 2s ease-in-out infinite;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(0,230,118,.7);
+  animation: pulse-badge 1.5s infinite;
 }
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+@keyframes pulse-badge {
+  0% { transform: scale(.95); box-shadow: 0 0 0 0 rgba(0,230,118,.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0,230,118,0); }
+  100% { transform: scale(.95); box-shadow: 0 0 0 0 rgba(0,230,118,0); }
 }
 .hero h1 {
   font-family: 'Space Grotesk', sans-serif;
@@ -116,6 +123,9 @@ nav .container {
   margin-bottom: 24px;
   background: linear-gradient(135deg, var(--white) 0%, var(--text-muted) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 .hero h1 em {
   font-style: normal;
@@ -125,23 +135,27 @@ nav .container {
 .hero p {
   font-size: 1.25rem; color: var(--text-muted);
   max-width: 600px; margin: 0 auto 48px;
-  line-height: 1.7;
+  line-height: 1.8; letter-spacing: 0.2px;
 }
 .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 .btn-primary {
-  background: var(--accent); color: var(--white);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  background-size: 200% 200%;
+  color: var(--white);
   padding: 16px 36px; border-radius: 10px; font-size: 1rem;
   font-weight: 600; text-decoration: none; border: none; cursor: pointer;
-  transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.35s cubic-bezier(.25,.8,.25,1);
+  display: inline-flex; align-items: center; gap: 8px;
+  animation: nav-shimmer 3s ease infinite;
 }
-.btn-primary:hover { background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-glow); }
+.btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 40px var(--accent-glow); }
 .btn-secondary {
   background: transparent; color: var(--text);
   padding: 16px 36px; border-radius: 10px; font-size: 1rem;
   font-weight: 600; text-decoration: none;
-  border: 1px solid var(--border); transition: all 0.3s;
+  border: 1px solid var(--border); transition: all 0.35s cubic-bezier(.25,.8,.25,1);
 }
-.btn-secondary:hover { border-color: var(--text-muted); background: var(--bg-card); }
+.btn-secondary:hover { border-color: var(--accent-light); background: linear-gradient(135deg, rgba(108,92,231,.08), rgba(108,92,231,.15)); }
 
 /* ═══ STATS BAR ═══ */
 .stats-bar {
@@ -340,8 +354,9 @@ nav .container {
 .contact-form textarea::placeholder {
   color: var(--text-dim);
 }
-.contact-form select { color: var(--text-dim); }
+.contact-form select { color: var(--text-dim); appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='7' viewBox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a87a0' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; background-size: 12px 7px; padding-right: 40px; }
 .contact-form select option { background: var(--bg-card); color: var(--text); }
+.contact-form input[type="email"]:not(:placeholder-shown):invalid { border-color: #ff6b6b; }
 .contact-form textarea { resize: vertical; min-height: 120px; }
 @media (max-width: 600px) { .form-row { flex-direction: column; } }
 
