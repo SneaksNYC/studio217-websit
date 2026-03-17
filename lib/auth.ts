@@ -1,25 +1,19 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
-import bcrypt from 'bcryptjs'
-import { readFileSync } from 'fs'
-import { join } from 'path'
+import { AuthDatabase } from './database'
 import { authConfig } from './auth.config'
 
 export interface User {
   id: string
   name: string
   email: string
-  password: string
   role: 'admin' | 'client'
   active: boolean
   createdAt: string
 }
 
-function getUsers(): User[] {
-  const filePath = join(process.cwd(), 'lib', 'users.json')
-  const raw = readFileSync(filePath, 'utf-8')
-  return JSON.parse(raw)
-}
+// Initialize database connection
+const authDb = new AuthDatabase();
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -33,25 +27,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
 
-        const users = getUsers()
-        const user = users.find(
-          (u) => u.email === credentials.email && u.active
+        const authResult = await authDb.authenticate(
+          credentials.email as string,
+          credentials.password as string
         )
 
-        if (!user) return null
-
-        const isValid = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        )
-
-        if (!isValid) return null
+        if (!authResult.success) return null
 
         return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
+          id: authResult.user.id.toString(),
+          name: authResult.user.name,
+          email: authResult.user.email,
+          role: authResult.user.role,
         }
       },
     }),

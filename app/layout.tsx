@@ -84,7 +84,7 @@ const organizationJsonLd = {
   },
   contactPoint: {
     '@type': 'ContactPoint',
-    email: 'hello@studio217.io',
+    email: 'hello@studio217.ai',
     contactType: 'customer service',
   },
   sameAs: ['https://studio217.ai'],
