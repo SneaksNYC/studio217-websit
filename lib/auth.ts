@@ -32,7 +32,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           credentials.password as string
         )
 
-        if (!authResult.success) return null
+        if (!authResult.success || !authResult.user) return null
 
         return {
           id: authResult.user.id.toString(),

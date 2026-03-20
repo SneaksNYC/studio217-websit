@@ -1,8 +1,9 @@
 import { handlers } from '@/lib/auth'
 import { getClientIP, rateLimit, createRateLimitResponse, resetRateLimit } from '@/lib/rateLimit'
+import { NextRequest } from 'next/server'
 
 // Wrap POST handler with rate limiting for authentication attempts
-async function rateLimitedPOST(request: Request) {
+async function rateLimitedPOST(request: NextRequest) {
   const clientIP = getClientIP(request);
   const url = new URL(request.url);
   
