@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
-import { AuthDatabase } from './database'
+import { AuthDatabase } from './database.js'
 import { authConfig } from './auth.config'
 
 export interface User {
