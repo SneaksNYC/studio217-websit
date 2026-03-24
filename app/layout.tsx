@@ -99,6 +99,7 @@ const organizationJsonLd = {
   slogan: 'We build what we use ourselves.',
 }
 
+// Force rebuild - 2026-03-24
 export default function RootLayout({
   children,
 }: {
