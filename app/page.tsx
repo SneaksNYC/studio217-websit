@@ -7,20 +7,21 @@ export default function Home() {
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-          --bg: #0a0a0f;
-          --bg-card: #12121a;
-          --bg-card-hover: #1a1a28;
-          --border: #1e1e2e;
-          --accent: #6c5ce7;
-          --accent-light: #a29bfe;
-          --accent-glow: rgba(108, 92, 231, 0.15);
-          --green: #00e676;
-          --green-glow: rgba(0, 230, 118, 0.1);
-          --orange: #ff9100;
-          --text: #e8e6f0;
-          --text-muted: #8a87a0;
-          --text-dim: #5a5770;
+          --bg: #faf9f7;
+          --bg-card: #ffffff;
+          --bg-card-hover: #f5f4f2;
+          --border: #e8e6e0;
+          --accent: #8B4513;
+          --accent-light: #A0522D;
+          --accent-dark: #654321;
+          --brown-primary: #8B4513;
+          --brown-secondary: #CD853F;
+          --brown-light: #DEB887;
+          --text: #2c2826;
+          --text-muted: #6b6562;
+          --text-light: #8a857f;
           --white: #ffffff;
+          --cream: #f9f7f4;
           --radius: 16px;
           --radius-sm: 10px;
         }
@@ -40,7 +41,7 @@ export default function Home() {
 
         nav {
           position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-          background: rgba(10, 10, 15, 0.85);
+          background: rgba(250, 249, 247, 0.95);
           -webkit-backdrop-filter: blur(20px);
           backdrop-filter: blur(20px);
           border-bottom: 1px solid var(--border);
@@ -51,52 +52,43 @@ export default function Home() {
         }
         .nav-logo {
           font-family: 'Space Grotesk', sans-serif;
-          font-size: 1.4rem; font-weight: 700; color: var(--white);
+          font-size: 1.4rem; font-weight: 700; color: var(--brown-primary);
           text-decoration: none; letter-spacing: -0.5px;
         }
-        .nav-logo span { color: var(--accent-light); }
+        .nav-logo span { color: var(--brown-secondary); }
         .nav-links { display: flex; gap: 32px; align-items: center; }
         .nav-links a {
           color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
           font-weight: 500; transition: color 0.2s;
         }
-        .nav-links a:hover { color: var(--white); }
+        .nav-links a:hover { color: var(--brown-primary); }
 
         .hero {
           padding: 180px 0 120px;
           text-align: center;
           position: relative;
           overflow: hidden;
-        }
-        .hero::before {
-          content: '';
-          position: absolute; top: -50%; left: -50%; right: -50%; bottom: -50%;
-          background: radial-gradient(circle at 50% 30%, var(--accent-glow) 0%, transparent 50%),
-                      radial-gradient(circle at 30% 70%, var(--green-glow) 0%, transparent 40%);
-          animation: pulse-bg 8s ease-in-out infinite alternate;
-        }
-        @keyframes pulse-bg {
-          0% { opacity: 0.5; }
-          100% { opacity: 1; }
+          background: linear-gradient(135deg, var(--cream) 0%, var(--bg) 100%);
         }
         .hero-content { position: relative; z-index: 1; }
         .hero-badge {
           display: inline-flex; align-items: center; gap: 8px;
-          background: var(--bg-card); border: 1px solid var(--border);
+          background: var(--white); border: 1px solid var(--border);
           padding: 8px 20px; border-radius: 100px;
-          font-size: 0.85rem; color: var(--accent-light);
+          font-size: 0.85rem; color: var(--brown-primary);
           margin-bottom: 32px; font-weight: 500;
+          box-shadow: 0 4px 20px rgba(139, 69, 19, 0.1);
         }
         .hero-badge .dot {
-          width: 8px; height: 8px; background: var(--green);
+          width: 8px; height: 8px; background: var(--brown-secondary);
           border-radius: 50%;
-          box-shadow: 0 0 0 0 rgba(0,230,118,.7);
+          box-shadow: 0 0 0 0 rgba(139,69,19,.7);
           animation: pulse-badge 1.5s infinite;
         }
         @keyframes pulse-badge {
-          0% { transform: scale(.95); box-shadow: 0 0 0 0 rgba(0,230,118,.7); }
-          70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0,230,118,0); }
-          100% { transform: scale(.95); box-shadow: 0 0 0 0 rgba(0,230,118,0); }
+          0% { transform: scale(.95); box-shadow: 0 0 0 0 rgba(139,69,19,.7); }
+          70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(139,69,19,0); }
+          100% { transform: scale(.95); box-shadow: 0 0 0 0 rgba(139,69,19,0); }
         }
         .hero h1 {
           font-family: 'Space Grotesk', sans-serif;
@@ -104,13 +96,11 @@ export default function Home() {
           font-weight: 800; line-height: 1.05;
           letter-spacing: -2px;
           margin-bottom: 24px;
-          background: linear-gradient(135deg, var(--white) 0%, var(--text-muted) 100%);
-          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+          color: var(--text);
         }
         .hero h1 em {
           font-style: normal;
-          background: linear-gradient(135deg, var(--accent-light), var(--green));
-          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+          color: var(--brown-primary);
         }
         .hero p {
           font-size: 1.25rem; color: var(--text-muted);
@@ -125,24 +115,25 @@ export default function Home() {
           margin-top: 64px;
         }
         .service-card {
-          background: var(--bg-card);
+          background: var(--white);
           border: 1px solid var(--border);
           border-radius: var(--radius);
           padding: 40px 32px;
           transition: all 0.4s cubic-bezier(.25,.8,.25,1);
           position: relative;
           overflow: hidden;
+          box-shadow: 0 4px 20px rgba(139, 69, 19, 0.08);
         }
         .service-card:hover {
           transform: translateY(-8px);
-          border-color: var(--accent);
-          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+          border-color: var(--brown-light);
+          box-shadow: 0 20px 60px rgba(139, 69, 19, 0.15);
         }
         .service-number {
           font-family: 'Space Grotesk', sans-serif;
           font-size: 0.8rem;
           font-weight: 600;
-          color: var(--accent-light);
+          color: var(--brown-primary);
           margin-bottom: 16px;
           letter-spacing: 1px;
         }
@@ -155,7 +146,7 @@ export default function Home() {
           font-family: 'Space Grotesk', sans-serif;
           font-size: 1.5rem;
           font-weight: 700;
-          color: var(--white);
+          color: var(--text);
           margin-bottom: 16px;
           letter-spacing: -0.5px;
         }
@@ -179,11 +170,11 @@ export default function Home() {
           content: '•';
           position: absolute;
           left: 0;
-          color: var(--accent-light);
+          color: var(--brown-primary);
         }
 
         .stats {
-          background: var(--bg-card);
+          background: var(--cream);
           border: 1px solid var(--border);
           border-radius: var(--radius);
           padding: 48px;
@@ -199,7 +190,7 @@ export default function Home() {
           font-family: 'Space Grotesk', sans-serif;
           font-size: 2.5rem;
           font-weight: 800;
-          color: var(--white);
+          color: var(--brown-primary);
           margin-bottom: 8px;
           letter-spacing: -1px;
         }
@@ -222,7 +213,7 @@ export default function Home() {
           font-family: 'Space Grotesk', sans-serif;
           font-size: 1.2rem;
           font-weight: 700;
-          color: var(--white);
+          color: var(--brown-primary);
           margin-bottom: 16px;
         }
         .process-step p {
@@ -234,18 +225,18 @@ export default function Home() {
           text-align: center;
           padding: 80px 0;
           border-top: 1px solid var(--border);
-          background: var(--bg-card);
+          background: var(--cream);
         }
         .footer-logo {
           font-family: 'Space Grotesk', sans-serif;
           font-size: 1.8rem;
           font-weight: 800;
-          color: var(--white);
+          color: var(--brown-primary);
           margin-bottom: 24px;
           letter-spacing: -1px;
         }
         .footer-contact {
-          color: var(--accent-light);
+          color: var(--brown-secondary);
           font-weight: 600;
           font-size: 1.1rem;
         }
@@ -295,7 +286,7 @@ export default function Home() {
             fontWeight: 800,
             textAlign: "center",
             marginBottom: "24px",
-            color: "var(--white)"
+            color: "var(--brown-primary)"
           }}>Four tools. One integrated approach.</h2>
           
           <div className="services-grid">
@@ -383,7 +374,7 @@ export default function Home() {
             fontWeight: 800,
             textAlign: "center",
             marginBottom: "64px",
-            color: "var(--white)"
+            color: "var(--brown-primary)"
           }}>Built by people who actually know travel ops</h2>
           
           <div className="process-grid">
