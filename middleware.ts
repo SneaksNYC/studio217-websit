@@ -1,14 +1,7 @@
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
-  const response = NextResponse.next()
-  
-  // Essential security headers only
-  response.headers.set('X-Frame-Options', 'DENY')
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  
-  return response
+export function middleware() {
+  return NextResponse.next()
 }
 
 export const config = {
