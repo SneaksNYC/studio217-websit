@@ -843,7 +843,7 @@ export default function Home() {
       `}</style>
 
       <nav>
-        <a href="/" className="nav-logo">Studio217</a>
+        <a href="/" className="nav-logo">STUDIO217</a>
         <ul className="nav-links">
           <li><a href="#services">Services</a></li>
           <li><a href="#process">Process</a></li>
@@ -855,7 +855,7 @@ export default function Home() {
       <section className="hero-wrap">
         <div className="hero-eyebrow reveal">NYC-Based Agency</div>
         <h1 className="reveal reveal-d1">Where Passion for Customer Experience Meets <em>Expertise</em></h1>
-        <p className="tagline reveal reveal-d2">Studio217 is a NYC-based agency that helps brands deliver exceptional customer experiences, build AI-powered tools, and scale their customer base.</p>
+        <p className="tagline reveal reveal-d2">STUDIO217 is a NYC-based agency that helps brands deliver exceptional customer experiences, build AI-powered tools, and scale their customer base.</p>
         <div className="hero-cta-row reveal reveal-d3">
           <a href="#contact" className="btn-cta">Start a project</a>
           <a href="#services" className="btn-ghost">Explore services</a>
@@ -977,7 +977,7 @@ export default function Home() {
       </section>
 
       <footer>
-        <p>© 2026 Studio217</p>
+        <p>© 2026 STUDIO217</p>
       </footer>
     </div>
   );
