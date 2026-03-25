@@ -9,26 +9,29 @@ export default function Home() {
         }
 
         body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-          background: #ffffff;
-          color: #333;
-          line-height: 1.6;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          background: #fefefe;
+          color: #5a5a5a;
+          line-height: 1.7;
+          font-weight: 400;
         }
 
         .container {
-          max-width: 1200px;
+          max-width: 1100px;
           margin: 0 auto;
-          padding: 0 20px;
+          padding: 0 24px;
         }
 
         header {
-          background: #ffffff;
-          padding: 1rem 0;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          background: rgba(255,255,255,0.95);
+          backdrop-filter: blur(20px);
+          padding: 20px 0;
+          box-shadow: 0 1px 20px rgba(0,0,0,0.03);
           position: fixed;
           width: 100%;
           top: 0;
           z-index: 1000;
+          border-bottom: 1px solid rgba(200,180,160,0.1);
         }
 
         nav {
@@ -38,173 +41,229 @@ export default function Home() {
         }
 
         .logo {
-          font-size: 1.8rem;
-          font-weight: bold;
-          color: #8B4513;
+          font-size: 1.6rem;
+          font-weight: 600;
+          color: #c8a882;
+          letter-spacing: -0.5px;
         }
 
         .nav-links {
           display: flex;
           list-style: none;
-          gap: 2rem;
+          gap: 2.5rem;
         }
 
         .nav-links a {
           text-decoration: none;
-          color: #666;
+          color: #8a8a8a;
           font-weight: 500;
-          transition: color 0.3s;
+          font-size: 0.95rem;
+          transition: all 0.4s ease;
         }
 
         .nav-links a:hover {
-          color: #8B4513;
+          color: #c8a882;
         }
 
         .hero {
-          background: linear-gradient(135deg, #f8f6f0 0%, #ffffff 100%);
-          padding: 120px 0 80px;
+          background: linear-gradient(135deg, #faf9f7 0%, #ffffff 50%, #f8f6f2 100%);
+          padding: 140px 0 100px;
           text-align: center;
         }
 
         .hero h1 {
-          font-size: 3.5rem;
-          font-weight: 700;
-          color: #333;
-          margin-bottom: 1rem;
-          line-height: 1.2;
+          font-size: 3.2rem;
+          font-weight: 300;
+          color: #4a4a4a;
+          margin-bottom: 1.5rem;
+          line-height: 1.3;
+          letter-spacing: -1px;
         }
 
         .hero .highlight {
-          color: #8B4513;
+          color: #d4b896;
+          font-weight: 400;
         }
 
         .hero p {
-          font-size: 1.3rem;
-          color: #666;
-          max-width: 600px;
-          margin: 0 auto 2rem;
+          font-size: 1.2rem;
+          color: #7a7a7a;
+          max-width: 580px;
+          margin: 0 auto 2.5rem;
+          font-weight: 300;
+          line-height: 1.8;
         }
 
         .cta-button {
-          background: #8B4513;
+          background: linear-gradient(135deg, #d4b896 0%, #c8a882 100%);
           color: white;
-          padding: 15px 30px;
+          padding: 16px 36px;
           border: none;
-          border-radius: 5px;
-          font-size: 1.1rem;
-          font-weight: 600;
+          border-radius: 25px;
+          font-size: 1rem;
+          font-weight: 500;
           cursor: pointer;
           text-decoration: none;
           display: inline-block;
-          transition: background 0.3s;
+          transition: all 0.4s ease;
+          box-shadow: 0 4px 20px rgba(212,184,150,0.2);
         }
 
         .cta-button:hover {
-          background: #A0522D;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(212,184,150,0.3);
         }
 
         .services {
-          padding: 80px 0;
-          background: #faf9f7;
+          padding: 100px 0;
+          background: #fafafa;
         }
 
         .services h2 {
           text-align: center;
-          font-size: 2.5rem;
-          color: #333;
-          margin-bottom: 3rem;
+          font-size: 2.2rem;
+          color: #4a4a4a;
+          margin-bottom: 3.5rem;
+          font-weight: 300;
+          letter-spacing: -0.5px;
         }
 
         .services-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 2rem;
-          margin-top: 2rem;
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 2.5rem;
+          margin-top: 3rem;
         }
 
         .service-card {
-          background: white;
-          padding: 2rem;
-          border-radius: 10px;
-          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+          background: rgba(255,255,255,0.8);
+          backdrop-filter: blur(10px);
+          padding: 2.5rem;
+          border-radius: 20px;
+          box-shadow: 0 2px 40px rgba(0,0,0,0.04);
           text-align: center;
-          transition: transform 0.3s;
+          transition: all 0.5s ease;
+          border: 1px solid rgba(200,180,160,0.08);
         }
 
         .service-card:hover {
-          transform: translateY(-5px);
+          transform: translateY(-8px);
+          box-shadow: 0 15px 60px rgba(0,0,0,0.08);
+        }
+
+        .service-icon {
+          width: 60px;
+          height: 60px;
+          background: linear-gradient(135deg, #f5f0ea 0%, #ede7e0 100%);
+          border-radius: 18px;
+          margin: 0 auto 1.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
         }
 
         .service-card h3 {
-          font-size: 1.5rem;
-          color: #8B4513;
+          font-size: 1.4rem;
+          color: #c8a882;
           margin-bottom: 1rem;
+          font-weight: 500;
         }
 
         .service-card p {
-          color: #666;
-          line-height: 1.6;
+          color: #7a7a7a;
+          line-height: 1.7;
+          font-weight: 300;
         }
 
         .about {
-          padding: 80px 0;
-          background: white;
+          padding: 100px 0;
+          background: rgba(255,255,255,0.5);
         }
 
         .about-content {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 3rem;
+          gap: 4rem;
           align-items: center;
         }
 
         .about h2 {
-          font-size: 2.5rem;
-          color: #333;
-          margin-bottom: 1.5rem;
+          font-size: 2.2rem;
+          color: #4a4a4a;
+          margin-bottom: 2rem;
+          font-weight: 300;
+          letter-spacing: -0.5px;
         }
 
         .about p {
-          color: #666;
+          color: #7a7a7a;
           font-size: 1.1rem;
-          line-height: 1.7;
-          margin-bottom: 1rem;
+          line-height: 1.8;
+          margin-bottom: 1.5rem;
+          font-weight: 300;
+        }
+
+        .about-image {
+          width: 100%;
+          height: 320px;
+          background: linear-gradient(135deg, #f8f6f2 0%, #f0ece7 100%);
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #c8a882;
+          font-size: 3rem;
+          box-shadow: 0 8px 40px rgba(0,0,0,0.05);
         }
 
         .contact {
-          padding: 80px 0;
-          background: #f8f6f0;
+          padding: 100px 0;
+          background: linear-gradient(135deg, #f8f6f2 0%, #ffffff 50%, #faf9f7 100%);
           text-align: center;
         }
 
         .contact h2 {
-          font-size: 2.5rem;
-          color: #333;
-          margin-bottom: 1rem;
+          font-size: 2.2rem;
+          color: #4a4a4a;
+          margin-bottom: 1.5rem;
+          font-weight: 300;
+          letter-spacing: -0.5px;
         }
 
         .contact p {
           font-size: 1.2rem;
-          color: #666;
-          margin-bottom: 2rem;
+          color: #7a7a7a;
+          margin-bottom: 2.5rem;
+          font-weight: 300;
         }
 
         .contact-info {
-          font-size: 1.3rem;
-          color: #8B4513;
-          font-weight: 600;
+          font-size: 1.4rem;
+          color: #d4b896;
+          font-weight: 500;
+          letter-spacing: -0.3px;
         }
 
         footer {
-          background: #8B4513;
-          color: white;
+          background: linear-gradient(135deg, #f0ece7 0%, #ede7e0 100%);
+          color: #8a8a8a;
           text-align: center;
-          padding: 2rem 0;
+          padding: 3rem 0;
+          font-weight: 300;
         }
 
         @media (max-width: 768px) {
+          .hero {
+            padding: 120px 0 80px;
+          }
+
           .hero h1 {
-            font-size: 2.5rem;
+            font-size: 2.4rem;
+          }
+
+          .hero p {
+            font-size: 1.1rem;
           }
 
           .nav-links {
@@ -213,10 +272,15 @@ export default function Home() {
 
           .about-content {
             grid-template-columns: 1fr;
+            gap: 2.5rem;
           }
 
           .services-grid {
             grid-template-columns: 1fr;
+          }
+
+          .services h2, .about h2, .contact h2 {
+            font-size: 1.8rem;
           }
         }
       `}</style>
@@ -235,7 +299,7 @@ export default function Home() {
       <section className="hero">
         <div className="container">
           <h1>AI Automation & <span className="highlight">Customer Service</span></h1>
-          <p>Studio217 delivers intelligent automation solutions that streamline your business operations and enhance customer experiences.</p>
+          <p>Studio217 delivers intelligent automation solutions that streamline your business operations and enhance customer experiences with gentle, thoughtful design.</p>
           <a href="#contact" className="cta-button">Get Started</a>
         </div>
       </section>
@@ -245,14 +309,17 @@ export default function Home() {
           <h2>Our Services</h2>
           <div className="services-grid">
             <div className="service-card">
+              <div className="service-icon">⚡</div>
               <h3>Process Automation</h3>
               <p>Streamline repetitive tasks and workflows with intelligent automation solutions tailored to your business needs.</p>
             </div>
             <div className="service-card">
+              <div className="service-icon">💬</div>
               <h3>Customer Support AI</h3>
               <p>Deploy smart chatbots and support systems that provide 24/7 customer service with human-like interactions.</p>
             </div>
             <div className="service-card">
+              <div className="service-icon">📊</div>
               <h3>Business Intelligence</h3>
               <p>Transform your data into actionable insights with AI-powered analytics and reporting solutions.</p>
             </div>
@@ -268,8 +335,8 @@ export default function Home() {
               <p>We specialize in creating custom AI solutions that solve real business problems. Our team combines technical expertise with deep industry knowledge to deliver automation that actually works.</p>
               <p>From customer service chatbots to complex workflow automation, we build solutions that scale with your business and deliver measurable results.</p>
             </div>
-            <div>
-              <img src="/api/placeholder/500/400" alt="Studio217 team" style={{width: '100%', height: '300px', objectFit: 'cover', borderRadius: '10px', background: '#f0f0f0'}} />
+            <div className="about-image">
+              ✨
             </div>
           </div>
         </div>
