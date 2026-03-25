@@ -7,7 +7,6 @@ export function middleware(request: NextRequest) {
   // Essential security headers only
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   
   return response
 }
