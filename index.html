@@ -1,445 +1,969 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Studio217 — AI Automation for the Travel Industry</title>
-<meta name="description" content="Studio217 builds intelligent travel automation tools. From automatic check-ins to hotel credit card authorizations, we handle the repetitive work so your travel team can focus on what matters.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio217 — Where Passion for Customer Care Meets Expertise</title>
+  <meta name="description" content="Studio217 is a NYC-based agency that helps brands deliver exceptional customer experiences, build AI-powered tools, and scale their customer base." />
+  <meta property="og:title" content="Studio217 - Customer Experience & AI Innovation" />
+  <meta property="og:description" content="CX consulting, AI innovation, and growth strategy - the agency that consults and builds." />
+  <meta property="og:image" content="https://STUDIO217.ai/og-image.jpg" />
+  <meta property="og:url" content="https://STUDIO217.ai" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
-  --bg: #0a0a0f;
-  --bg-card: #12121a;
-  --bg-card-hover: #1a1a28;
-  --border: #1e1e2e;
-  --accent: #6c5ce7;
-  --accent-light: #a29bfe;
-  --accent-glow: rgba(108, 92, 231, 0.15);
-  --green: #00e676;
-  --green-glow: rgba(0, 230, 118, 0.1);
-  --orange: #ff9100;
-  --text: #e8e6f0;
-  --text-muted: #8a87a0;
-  --text-dim: #5a5770;
-  --white: #ffffff;
-  --radius: 16px;
-  --radius-sm: 10px;
-}
+    :root {
+      --bg:    #f8f5f0;
+      --paper: #f2ede5;
+      --stone: #e0d8cc;
+      --ash:   #9c9088;
+      --earth: #3d3328;
+      --ink:   #211c16;
+      --gold:  #a07848;
+    }
 
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
+    html { scroll-behavior: smooth; }
 
-/* ═══ LAYOUT ═══ */
-.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-section { padding: 120px 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
 
-/* ═══ NAV ═══ */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(10, 10, 15, 0.85);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  padding: 16px 0;
-}
-nav .container {
-  display: flex; align-items: center; justify-content: space-between;
-}
-.nav-logo {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.4rem; font-weight: 700; color: var(--white);
-  text-decoration: none; letter-spacing: -0.5px;
-}
-.nav-logo span { color: var(--accent-light); }
-.nav-links { display: flex; gap: 32px; align-items: center; }
-.nav-links a {
-  color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
-  font-weight: 500; transition: color 0.2s;
-}
-.nav-links a:hover { color: var(--white); }
-.nav-cta {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%) !important;
-  background-size: 200% 200% !important; color: var(--white) !important;
-  padding: 10px 24px !important; border-radius: 8px;
-  font-weight: 600 !important; transition: all 0.35s cubic-bezier(.25,.8,.25,1) !important;
-  animation: nav-shimmer 3s ease infinite;
-}
-@keyframes nav-shimmer { 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
-.nav-cta:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 30px var(--accent-glow); }
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(248, 245, 240, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 0 64px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-/* ═══ HERO ═══ */
-.hero {
-  padding: 180px 0 120px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.hero::before {
-  content: '';
-  position: absolute; top: -50%; left: -50%; right: -50%; bottom: -50%;
-  background: radial-gradient(circle at 50% 30%, var(--accent-glow) 0%, transparent 50%),
-              radial-gradient(circle at 30% 70%, var(--green-glow) 0%, transparent 40%);
-  animation: pulse-bg 8s ease-in-out infinite alternate;
-}
-@keyframes pulse-bg {
-  0% { opacity: 0.5; }
-  100% { opacity: 1; }
-}
-.hero-content { position: relative; z-index: 1; }
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--bg-card); border: 1px solid var(--border);
-  padding: 8px 20px; border-radius: 100px;
-  font-size: 0.85rem; color: var(--accent-light);
-  margin-bottom: 32px; font-weight: 500;
-}
-.hero-badge .dot {
-  width: 8px; height: 8px; background: var(--green);
-  border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(0,230,118,.7);
-  animation: pulse-badge 1.5s infinite;
-}
-@keyframes pulse-badge {
-  0% { transform: scale(.95); box-shadow: 0 0 0 0 rgba(0,230,118,.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0,230,118,0); }
-  100% { transform: scale(.95); box-shadow: 0 0 0 0 rgba(0,230,118,0); }
-}
-.hero h1 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2.8rem, 6vw, 5rem);
-  font-weight: 800; line-height: 1.05;
-  letter-spacing: -2px;
-  margin-bottom: 24px;
-  background: linear-gradient(135deg, var(--white) 0%, var(--text-muted) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.hero h1 em {
-  font-style: normal;
-  background: linear-gradient(135deg, var(--accent-light), var(--green));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.hero p {
-  font-size: 1.25rem; color: var(--text-muted);
-  max-width: 600px; margin: 0 auto 48px;
-  line-height: 1.8; letter-spacing: 0.2px;
-}
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 36px;
+      letter-spacing: 0.5px;
+      color: var(--ink);
+      text-decoration: none;
+    }
 
-/* ═══ SERVICES ═══ */
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 32px;
-  margin-top: 64px;
-}
-.service-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 40px 32px;
-  transition: all 0.4s cubic-bezier(.25,.8,.25,1);
-  position: relative;
-  overflow: hidden;
-}
-.service-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, var(--accent-glow) 0%, var(--green-glow) 100%);
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-.service-card:hover {
-  transform: translateY(-8px);
-  border-color: var(--accent);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-.service-card:hover::before {
-  opacity: 0.1;
-}
-.service-card > * {
-  position: relative;
-  z-index: 1;
-}
-.service-number {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--accent-light);
-  margin-bottom: 16px;
-  letter-spacing: 1px;
-}
-.service-emoji {
-  font-size: 2.5rem;
-  margin-bottom: 24px;
-  display: block;
-}
-.service-card h3 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 16px;
-  letter-spacing: -0.5px;
-}
-.service-card p {
-  color: var(--text-muted);
-  line-height: 1.7;
-  margin-bottom: 24px;
-}
-.service-features {
-  list-style: none;
-  padding: 0;
-}
-.service-features li {
-  color: var(--text-muted);
-  margin-bottom: 8px;
-  padding-left: 20px;
-  position: relative;
-  font-size: 0.9rem;
-}
-.service-features li::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  color: var(--accent-light);
-}
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      list-style: none;
+    }
 
-/* ═══ STATS ═══ */
-.stats {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 48px;
-  margin: 64px 0;
-}
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 40px;
-  text-align: center;
-}
-.stat h4 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: var(--white);
-  margin-bottom: 8px;
-  letter-spacing: -1px;
-}
-.stat p {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  font-weight: 500;
-}
+    .nav-links a {
+      text-decoration: none;
+      color: var(--ash);
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
 
-/* ═══ PROCESS ═══ */
-.process-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 32px;
-  margin-top: 64px;
-}
-.process-step {
-  text-align: center;
-}
-.process-step h4 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 16px;
-}
-.process-step p {
-  color: var(--text-muted);
-  line-height: 1.6;
-}
+    .nav-links a:hover { color: var(--ink); }
 
-/* ═══ FOOTER ═══ */
-footer {
-  text-align: center;
-  padding: 80px 0;
-  border-top: 1px solid var(--border);
-  background: var(--bg-card);
-}
-.footer-logo {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--white);
-  margin-bottom: 24px;
-  letter-spacing: -1px;
-}
-.footer-contact {
-  color: var(--accent-light);
-  font-weight: 600;
-  font-size: 1.1rem;
-}
+    .btn-nav {
+      color: var(--ink) !important;
+      border: 1px solid var(--stone) !important;
+      padding: 9px 24px !important;
+      border-radius: 100px;
+      letter-spacing: 0.8px !important;
+      transition: background 0.3s, border-color 0.3s, color 0.3s !important;
+    }
 
-/* ═══ RESPONSIVE ═══ */
-@media (max-width: 768px) {
-  .nav-links { display: none; }
-  .hero { padding: 140px 0 100px; }
-  .hero h1 { font-size: 2.5rem; }
-  .hero p { font-size: 1.1rem; }
-  section { padding: 80px 0; }
-  .service-card { padding: 32px 24px; }
-  .stats { padding: 32px 24px; }
-  .stats-grid { gap: 24px; }
-}
-</style>
+    .btn-nav:hover {
+      background: var(--ink) !important;
+      border-color: var(--ink) !important;
+      color: var(--bg) !important;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 148px 64px 128px;
+      text-align: center;
+    }
+
+    .hero-tagline {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: clamp(13px, 1.4vw, 16px);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(60px, 10vw, 108px);
+      line-height: 1.0;
+      letter-spacing: -1.5px;
+      color: var(--ink);
+      margin-bottom: 36px;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--ash);
+      max-width: 500px;
+      margin: 0 auto 60px;
+      line-height: 1.85;
+    }
+
+    .hero-ctas {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 13px 36px;
+      border-radius: 100px;
+      font-family: 'Jost', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.3s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover { opacity: 0.7; }
+
+    .btn-secondary {
+      color: var(--ash);
+      font-family: 'Jost', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-bottom: 1px solid var(--stone);
+      padding-bottom: 2px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    .btn-secondary:hover { color: var(--ink); border-color: var(--ash); }
+
+    /* ─── HAIRLINE ─── */
+    .line {
+      height: 1px;
+      background: var(--stone);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ─── DISCIPLINES BAR ─── */
+    .disc-bar {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      flex-wrap: wrap;
+    }
+
+    .disc-bar span {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+    }
+
+    .disc-bar .sep { color: var(--stone); font-size: 14px; }
+
+    /* ─── INTRO ─── */
+    .intro {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 128px 64px;
+      text-align: center;
+    }
+
+    .intro h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(36px, 5vw, 54px);
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+
+    .intro h2 em { font-style: italic; color: var(--gold); }
+
+    .intro p {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--ash);
+      line-height: 1.9;
+    }
+
+    /* ─── SERVICES ─── */
+    .services-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 64px 148px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 72px;
+      text-align: center;
+    }
+
+    .services-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .service-item {
+      padding-top: 8px;
+    }
+
+    .service-item:nth-child(1) { padding-right: 56px; border-right: 1px solid var(--stone); }
+    .service-item:nth-child(2) { padding: 8px 56px 0; border-right: 1px solid var(--stone); }
+    .service-item:nth-child(3) { padding-left: 56px; padding-top: 8px; }
+
+    .service-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: var(--stone);
+      margin-bottom: 28px;
+    }
+
+    .service-item h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 27px;
+      line-height: 1.25;
+      color: var(--ink);
+      margin-bottom: 16px;
+      letter-spacing: -0.2px;
+    }
+
+    .service-item p {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--ash);
+      line-height: 1.9;
+    }
+
+    .services-intro {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(26px, 3.5vw, 38px);
+      color: var(--ink);
+      margin-bottom: 56px;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .industry-sub {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--ash);
+      margin-top: 12px;
+      margin-bottom: 48px;
+      max-width: 480px;
+      line-height: 1.8;
+    }
+
+    .service-link {
+      display: inline-block;
+      margin-top: 28px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      padding-bottom: 2px;
+      transition: border-color 0.3s;
+    }
+
+    .service-link:hover { border-color: var(--gold); }
+
+    /* ─── PROCESS ─── */
+    .process-wrap {
+      background: var(--paper);
+      padding: 128px 64px;
+    }
+
+    .process-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .process-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 88px;
+      gap: 40px;
+    }
+
+    .process-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(36px, 5vw, 54px);
+      line-height: 1.15;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+    }
+
+    .process-header p {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--ash);
+      max-width: 280px;
+      line-height: 1.85;
+      text-align: right;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .step:nth-child(1) { padding-right: 56px; border-right: 1px solid var(--stone); }
+    .step:nth-child(2) { padding: 0 56px; border-right: 1px solid var(--stone); }
+    .step:nth-child(3) { padding-left: 56px; }
+
+    .step-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 52px;
+      font-weight: 300;
+      color: var(--stone);
+      line-height: 1;
+      margin-bottom: 28px;
+    }
+
+    .step h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 22px;
+      color: var(--ink);
+      margin-bottom: 12px;
+      letter-spacing: -0.2px;
+    }
+
+    .step p {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--ash);
+      line-height: 1.9;
+    }
+
+    /* ─── QUOTE ─── */
+    .quote-wrap {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 128px 64px;
+      text-align: center;
+    }
+
+    .quote-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 96px;
+      line-height: 0.6;
+      color: var(--stone);
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .quote-wrap blockquote {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(24px, 3.5vw, 36px);
+      line-height: 1.45;
+      color: var(--earth);
+      letter-spacing: -0.2px;
+      margin-bottom: 36px;
+    }
+
+    .quote-attr {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+    }
+
+    /* ─── INDUSTRIES ─── */
+    .industries-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 64px 148px;
+    }
+
+    .industries-wrap h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(36px, 4.5vw, 52px);
+      line-height: 1.15;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      margin-bottom: 64px;
+    }
+
+    .industries-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .industry-item {
+      padding: 40px 0;
+      border-top: 1px solid var(--stone);
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 40px;
+      align-items: baseline;
+    }
+
+    .industry-item:nth-child(odd) {
+      padding-right: 64px;
+      border-right: 1px solid var(--stone);
+    }
+
+    .industry-item:nth-child(even) { padding-left: 64px; }
+
+    .industry-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 19px;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+
+    .industry-desc {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--ash);
+      line-height: 1.9;
+    }
+
+    /* ─── CONTACT ─── */
+    .contact-wrap {
+      background: var(--paper);
+      padding: 128px 64px;
+    }
+
+    .contact-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 112px;
+      align-items: start;
+    }
+
+    .contact-left h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(36px, 5vw, 54px);
+      line-height: 1.15;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      margin-bottom: 24px;
+    }
+
+    .contact-left h2 em { font-style: italic; color: var(--gold); }
+
+    .contact-left p {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--ash);
+      line-height: 1.9;
+      margin-bottom: 36px;
+    }
+
+    .contact-email {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+
+    .contact-email:hover { border-color: var(--gold); }
+
+    .contact-form { display: flex; flex-direction: column; }
+
+    .form-field {
+      border-bottom: 1px solid var(--stone);
+      transition: border-color 0.3s;
+      margin-bottom: 4px;
+    }
+
+    .form-field:focus-within { border-color: var(--earth); }
+
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 18px 0;
+      background: transparent;
+      border: none;
+      font-family: 'Jost', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--ink);
+      outline: none;
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder {
+      color: var(--ash);
+    }
+
+    .contact-form textarea { resize: none; min-height: 96px; }
+
+    .form-submit { margin-top: 44px; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 44px 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 18px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .footer-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--ash);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      text-decoration: none;
+      color: var(--ash);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.8px;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover { color: var(--ink); }
+
+    .footer-copy {
+      font-size: 11px;
+      color: var(--stone);
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .reveal.hidden {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── HERO ENTRANCE ─── */
+    @keyframes hIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero h1          { animation: hIn 0.9s ease both; animation-delay: 0.1s; }
+    .hero .hero-sub   { animation: hIn 0.9s ease both; animation-delay: 0.42s; }
+    .hero .hero-ctas  { animation: hIn 0.9s ease both; animation-delay: 0.58s; }
+
+    /* ─── HAMBURGER ─── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 8px;
+      min-height: 44px;
+      min-width: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-hamburger span {
+      display: block;
+      width: 22px;
+      height: 1px;
+      background: var(--ink);
+      transition: transform 0.25s, opacity 0.25s;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 960px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 68px; left: 0; right: 0; bottom: 0;
+        background: var(--bg);
+        padding: 48px 28px;
+        gap: 28px;
+        z-index: 99;
+        border-top: 1px solid var(--stone);
+      }
+      .nav-links.open a { font-size: 18px; letter-spacing: 0; text-transform: none; color: var(--ink); }
+      .nav-hamburger { display: flex; }
+
+      .hero { padding: 80px 24px 64px; }
+
+      .disc-bar { padding: 24px; gap: 20px; }
+
+      .intro { padding: 80px 24px; }
+
+      .services-wrap { padding: 0 24px 100px; }
+      .services-list { grid-template-columns: 1fr; }
+      .service-item:nth-child(1),
+      .service-item:nth-child(2),
+      .service-item:nth-child(3) {
+        padding: 40px 0;
+        border-right: none;
+        border-top: 1px solid var(--stone);
+      }
+      .service-item:nth-child(1) { border-top: none; padding-top: 0; }
+
+      .process-wrap { padding: 80px 24px; }
+      .process-header { flex-direction: column; align-items: flex-start; }
+      .process-header p { text-align: left; }
+      .steps { grid-template-columns: 1fr; }
+      .step:nth-child(1),
+      .step:nth-child(2),
+      .step:nth-child(3) {
+        padding: 40px 0;
+        border-right: none;
+        border-top: 1px solid var(--stone);
+      }
+      .step:nth-child(1) { border-top: none; padding-top: 0; }
+
+      .quote-wrap { padding: 80px 24px; }
+
+      .industries-wrap { padding: 0 24px 100px; }
+      .industries-grid { grid-template-columns: 1fr; }
+      .industry-item { grid-template-columns: 1fr; gap: 8px; }
+      .industry-item:nth-child(odd),
+      .industry-item:nth-child(even) { padding: 32px 0; border-right: none; }
+
+      .contact-wrap { padding: 80px 24px; }
+      .contact-inner { grid-template-columns: 1fr; gap: 56px; }
+
+      footer { padding: 36px 24px; flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .hero .hero-label, .hero h1, .hero .hero-sub, .hero .hero-ctas {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
 </head>
 <body>
-<nav>
-  <div class="container">
-    <a href="/" class="nav-logo">STUDIO<span>217</span></a>
-    <div class="nav-links">
-      <a href="#services">Products</a>
-      <a href="#process">How it Works</a>
-      <a href="#contact">Contact</a>
-      <a href="#contact" class="nav-cta">Get Early Access</a>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">STUDIO217</a>
+    <button class="nav-hamburger" aria-label="Toggle navigation" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#services" onclick="closeMobileNav()">Services</a></li>
+      <li><a href="#process" onclick="closeMobileNav()">Process</a></li>
+      <li><a href="#contact" onclick="closeMobileNav()">Contact</a></li>
+      <li><a href="#contact" class="btn-nav" onclick="closeMobileNav()">Get in touch</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1 class="hero-tagline" style="font-size:clamp(2.2rem,5vw,4rem);text-align:center;max-width:800px;margin:0 auto 1.5rem;line-height:1.2">Where passion for customer meets expertise</h1>
+    <p style="text-align:center;font-size:1.1rem;opacity:0.7;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.5rem">Built for every industry</p>
+    <p class="hero-sub">
+      STUDIO217 helps brands deliver exceptional customer experiences, build AI tools that make teams more effective, and generate the ideas that solve real business problems and scale customer bases.
+    </p>
+    <div class="hero-ctas">
+      <a href="mailto:hello@STUDIO217.ai" class="btn-primary">Start a conversation</a>
+      <a href="#services" class="btn-secondary">Explore our work</a>
     </div>
+  </section>
+
+  <div class="line"></div>
+
+  <div class="disc-bar">
+    <span>CX Consulting</span>
+    <span class="sep">·</span>
+    <span>AI Innovation</span>
+    <span class="sep">·</span>
+    <span>Growth Strategy</span>
+    <span class="sep">·</span>
+    <span>Idea Generation</span>
   </div>
-</nav>
 
-<section class="hero">
-  <div class="container">
-    <div class="hero-content">
-      <div class="hero-badge">
-        <div class="dot"></div>
-        Now in early access  ·  studio217.ai
-      </div>
-      <h1>AI automation for the <em>travel industry</em></h1>
-      <p>Studio217 builds intelligent tools that handle the repetitive work — so your travel team can focus on what actually matters.</p>
-    </div>
-  </div>
-</section>
+  <div class="line"></div>
 
-<section id="services">
-  <div class="container">
-    <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 800; text-align: center; margin-bottom: 24px; color: var(--white);">Four tools. One integrated approach.</h2>
-    
-    <div class="services-grid">
-      <div class="service-card">
-        <div class="service-number">01</div>
-        <span class="service-emoji">✈️</span>
-        <h3>AutoCheck</h3>
-        <p>Automatically checks in passengers the moment the window opens — across every major airline, every flight, every time.</p>
-        <ul class="service-features">
-          <li>American, Delta, United, Southwest + 7 more</li>
-          <li>Seat selection & boarding pass delivery</li>
-          <li>Google Sheets integration for your roster</li>
-          <li>Telegram alerts on every check-in</li>
-        </ul>
-      </div>
+  <!-- INTRO -->
+  <section class="intro reveal">
+    <h2>Three disciplines.<br>One <em>obsession.</em></h2>
+    <p>We bring together customer experience consulting, AI-powered innovation, and growth strategy under one roof. Whether you need to fix how you serve customers, build tools that make your team more effective, or generate the ideas that scale your customer base - we do all three, and we do them well.</p>
+  </section>
 
-      <div class="service-card">
-        <div class="service-number">02</div>
-        <span class="service-emoji">💳</span>
-        <h3>AuthFlow</h3>
-        <p>Automates hotel credit card authorization requests — finds the right contact, sends the form, tracks replies, follows up automatically.</p>
-        <ul class="service-features">
-          <li>Auto-discovers hotel email addresses</li>
-          <li>Sends branded CC auth request emails</li>
-          <li>Tracks replies & escalates if no response</li>
-          <li>Hotel directory built & maintained automatically</li>
-        </ul>
-      </div>
+  <div class="line"></div>
 
-      <div class="service-card">
-        <div class="service-number">03</div>
-        <span class="service-emoji">🛫</span>
-        <h3>FlyPal</h3>
-        <p>Real-time flight tracking with shareable codes. Send a link — anyone can watch your flight live, no app required.</p>
-        <ul class="service-features">
-          <li>Live flight status & tracking</li>
-          <li>Shareable codes for clients & families</li>
-          <li>Telegram notifications on delays & gates</li>
-          <li>Available at flypal.app</li>
-        </ul>
-      </div>
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="services-wrap">
+      <div class="section-label reveal">Services</div>
+      <p class="services-intro reveal">Three disciplines.<br>One integrated approach.</p>
+      <div class="services-list">
 
-      <div class="service-card">
-        <div class="service-number">04</div>
-        <span class="service-emoji">🤖</span>
-        <h3>Foster AI</h3>
-        <p>The AI agent infrastructure behind all Studio217 products — available as a platform to build your own travel automations.</p>
-        <ul class="service-features">
-          <li>Connect to any airline or hotel system</li>
-          <li>Build custom automation workflows</li>
-          <li>Telegram, email & Sheets built-in</li>
-          <li>No code required</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="stats">
-      <div class="stats-grid">
-        <div class="stat">
-          <h4>10+</h4>
-          <p>Airlines automated</p>
+        <div class="service-item reveal">
+          <div class="service-num">01</div>
+          <h3>CX Consulting</h3>
+          <p>We audit and redesign your customer experience end-to-end - service quality, loyalty programs, satisfaction tracking, and every touchpoint in between.</p>
+          <a href="#contact" class="service-link">Learn more</a>
         </div>
-        <div class="stat">
-          <h4>24/7</h4>
-          <p>Always running</p>
+
+        <div class="service-item reveal">
+          <div class="service-num">02</div>
+          <h3>AI Innovation</h3>
+          <p>We build AI-powered tools tailored to your workflows - automating the repetitive, surfacing the important, and making every person on your team more effective.</p>
+          <a href="#contact" class="service-link">Learn more</a>
         </div>
-        <div class="stat">
-          <h4>100%</h4>
-          <p>Hands-free check-ins</p>
+
+        <div class="service-item reveal">
+          <div class="service-num">03</div>
+          <h3>Growth</h3>
+          <p>We generate the ideas that solve real business problems and scale customer bases - brand positioning, growth strategy, and the creative thinking that turns potential into traction.</p>
+          <a href="#contact" class="service-link">Learn more</a>
         </div>
-        <div class="stat">
-          <h4>&lt;2s</h4>
-          <p>Avg. response time</p>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process" class="process-wrap">
+    <div class="process-inner">
+      <div class="process-header reveal">
+        <h2>From kickoff<br>to live - in weeks,<br>not months.</h2>
+        <p>We move fast without cutting corners. Every engagement starts with deep listening and ends with something that actually works.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">01</div>
+          <h3>We listen first</h3>
+          <p>We map your workflows, pain points, and customer journey before writing a single line of strategy or code.</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">02</div>
+          <h3>We build it fast</h3>
+          <p>Custom solutions built for your business - not templates, not generic tools, not a chatbot slapped on your website.</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">03</div>
+          <h3>You ship. We stay.</h3>
+          <p>We handle updates, monitoring, and improvements so your team can focus on what they do best.</p>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="process">
-  <div class="container">
-    <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 800; text-align: center; margin-bottom: 64px; color: var(--white);">Built by people who actually know travel ops</h2>
-    
-    <div class="process-grid">
-      <div class="process-step">
-        <h4>01 • Connect your roster</h4>
-        <p>Link your Google Sheet with passenger details, booking references, and hotel names. That's your source of truth.</p>
-      </div>
-      
-      <div class="process-step">
-        <h4>02 • We go to work</h4>
-        <p>Our agents monitor check-in windows, find hotel contacts, send authorization requests, and track replies — all automatically.</p>
-      </div>
-      
-      <div class="process-step">
-        <h4>03 • You get notified</h4>
-        <p>Every action shows up in Telegram instantly. Boarding passes, auth confirmations, delays — you're always in the loop.</p>
-      </div>
-      
-      <div class="process-step">
-        <h4>04 • Sheet stays updated</h4>
-        <p>Every result writes back in real time. Seats, statuses, emails found — full audit trail, always current.</p>
+  <!-- QUOTE -->
+  <section class="quote-wrap reveal">
+    <span class="quote-mark">"</span>
+    <blockquote>They came in as consultants and left having built us an AI tool we use every single day. That's the difference.</blockquote>
+    <cite class="quote-attr">STUDIO217 Client</cite>
+  </section>
+
+  <div class="line"></div>
+
+  <!-- INDUSTRIES -->
+  <section>
+    <div class="industries-wrap">
+      <h2 class="reveal">Built for<br>every industry.</h2>
+      <p class="industry-sub reveal">From retail to hospitality - if your business runs on customer relationships, we can help.</p>
+      <div class="industries-grid">
+
+        <div class="industry-item reveal">
+          <div class="industry-name">Retail &amp;<br>E-commerce</div>
+          <p class="industry-desc">Turn one-time shoppers into loyal regulars. We build retention programs and service experiences that keep customers coming back.</p>
+        </div>
+
+        <div class="industry-item reveal">
+          <div class="industry-name">Travel &amp;<br>Hospitality</div>
+          <p class="industry-desc">Guest satisfaction is everything in this industry. We help hotels, agencies, and airlines deliver experiences worth talking about.</p>
+        </div>
+
+        <div class="industry-item reveal">
+          <div class="industry-name">Financial &amp;<br>Professional Services</div>
+          <p class="industry-desc">Client trust is your product. We help firms build the service standards and loyalty systems that justify premium pricing.</p>
+        </div>
+
+        <div class="industry-item reveal">
+          <div class="industry-name">Tech<br>&amp; SaaS</div>
+          <p class="industry-desc">Churn is a customer experience problem. We diagnose it, fix onboarding, and design touchpoints that turn users into advocates.</p>
+        </div>
+
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<footer id="contact">
-  <div class="container">
-    <div class="footer-logo">Let's Automate</div>
-    <div class="footer-contact">hello@studio217.ai</div>
-  </div>
-</footer>
+  <!-- CONTACT -->
+  <section id="contact" class="contact-wrap">
+    <div class="contact-inner">
 
+      <div class="contact-left reveal">
+        <h2>Ready to build<br>something <em>real?</em></h2>
+        <p>No templates, no generic decks. Just a real conversation about what you actually need - and a team that delivers.</p>
+        <a href="mailto:hello@STUDIO217.ai" class="contact-email">hello@STUDIO217.ai</a>
+      </div>
+
+      <form action="https://formspree.io/f/hello@STUDIO217.ai" method="POST" class="contact-form reveal">
+        <div class="form-field">
+          <input type="text" name="name" placeholder="Your name" required />
+        </div>
+        <div class="form-field">
+          <input type="email" name="email" placeholder="Work email" required />
+        </div>
+        <div class="form-field">
+          <input type="text" name="company" placeholder="Company" />
+        </div>
+        <div class="form-field">
+          <textarea name="message" placeholder="What are you working on?" rows="4" required></textarea>
+        </div>
+        <div class="form-submit">
+          <button type="submit" class="btn-primary">Send message</button>
+        </div>
+      </form>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="line"></div>
+  <footer>
+    <a href="/" class="footer-logo">STUDIO217</a>
+    <span class="footer-tagline">Customer experience & AI innovation, together.</span>
+    <ul class="footer-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="mailto:hello@STUDIO217.ai">Contact</a></li>
+    </ul>
+    <p class="footer-copy">© 2026 STUDIO217</p>
+  </footer>
+
+  <script>
+    // ── Mobile nav
+    function toggleMobileNav() {
+      document.getElementById('nav-links').classList.toggle('open');
+    }
+    function closeMobileNav() {
+      document.getElementById('nav-links').classList.remove('open');
+    }
+    document.addEventListener('click', function(e) {
+      const nav = document.getElementById('nav-links');
+      const burger = document.querySelector('.nav-hamburger');
+      if (nav.classList.contains('open') && !nav.contains(e.target) && !burger.contains(e.target)) {
+        nav.classList.remove('open');
+      }
+    });
+
+    // ── Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
