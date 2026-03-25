@@ -4,7 +4,7 @@ import './globals.css'
 export const metadata: Metadata = {
   metadataBase: new URL('https://studio217.ai'),
   title: {
-    default: 'Studio217 — AI Automation & Customer Service for Travel',
+    default: 'Studio217 - AI Automation & Customer Service for Travel',
     template: '%s | Studio217',
   },
   description:
@@ -39,21 +39,21 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://studio217.ai',
     siteName: 'Studio217',
-    title: 'Studio217 — AI Automation & Customer Service for Travel',
+    title: 'Studio217 - AI Automation & Customer Service for Travel',
     description:
       'Studio217 builds AI-powered automation and customer service tools for travel agencies and tour operators. Based in NYC. We build what we use ourselves.',
     images: [
       {
-        url: '/opengraph-image',
+        url: 'https://studio217.ai/og-image.svg',
         width: 1200,
         height: 630,
-        alt: 'Studio217 — AI Automation for Travel Agencies',
+        alt: 'Studio217 - AI Automation & Customer Service',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Studio217 — AI Automation & Customer Service for Travel',
+    title: 'Studio217 - AI Automation & Customer Service for Travel',
     description:
       'AI-powered tools for travel agencies and tour operators. Built by practitioners, for practitioners.',
     images: ['/opengraph-image'],
