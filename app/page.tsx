@@ -1,29 +1,41 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 export default function Home() {
+  const [scrolled, setScrolled] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    setVisible(true);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <div>
       <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500&display=swap');
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-          --bg:    #f8f5f0;
-          --paper: #f2ede5;
-          --stone: #e0d8cc;
-          --ash:   #9c9088;
-          --earth: #3d3328;
-          --ink:   #211c16;
-          --gold:  #a07848;
+          --bg:      #ffffff;
+          --surface: #f7f7f5;
+          --border:  #e8e6e1;
+          --muted:   #a09d98;
+          --text:    #3d3a36;
+          --ink:     #1a1816;
+          --accent:  #6b7c6e;
         }
-
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap');
 
         html { scroll-behavior: smooth; }
 
         body {
           background: var(--bg);
-          color: var(--ink);
-          font-family: 'Jost', sans-serif;
+          color: var(--text);
+          font-family: 'Inter', -apple-system, sans-serif;
           font-weight: 300;
           font-size: 16px;
           line-height: 1.7;
@@ -34,153 +46,190 @@ export default function Home() {
           position: sticky;
           top: 0;
           z-index: 100;
-          background: rgba(248, 245, 240, 0.94);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
-          padding: 0 64px;
-          height: 68px;
+          background: rgba(255, 255, 255, 0.92);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          padding: 0 72px;
+          height: 72px;
           display: flex;
           align-items: center;
           justify-content: space-between;
+          border-bottom: 1px solid transparent;
+          transition: border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        nav.scrolled {
+          border-bottom-color: var(--border);
+          box-shadow: 0 1px 24px rgba(0,0,0,0.03);
         }
 
         .nav-logo {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: 'DM Serif Display', serif;
           font-weight: 400;
-          font-size: 36px;
-          letter-spacing: 0.5px;
+          font-size: 28px;
           color: var(--ink);
           text-decoration: none;
+          letter-spacing: -0.3px;
+          transition: opacity 0.3s;
         }
+
+        .nav-logo:hover { opacity: 0.7; }
 
         .nav-links {
           display: flex;
           align-items: center;
-          gap: 40px;
+          gap: 44px;
           list-style: none;
         }
 
         .nav-links a {
           text-decoration: none;
-          color: var(--ash);
-          font-size: 12px;
+          color: var(--muted);
+          font-size: 13px;
           font-weight: 400;
-          letter-spacing: 1.2px;
+          letter-spacing: 0.8px;
           text-transform: uppercase;
           transition: color 0.3s;
+          position: relative;
+        }
+
+        .nav-links a::after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 0;
+          width: 0;
+          height: 1px;
+          background: var(--ink);
+          transition: width 0.3s ease;
         }
 
         .nav-links a:hover { color: var(--ink); }
+        .nav-links a:hover::after { width: 100%; }
 
         .btn-nav {
           color: var(--ink) !important;
-          border: 1px solid var(--stone) !important;
-          padding: 9px 24px !important;
+          border: 1px solid var(--border) !important;
+          padding: 10px 28px !important;
           border-radius: 100px;
-          letter-spacing: 0.8px !important;
-          transition: background 0.3s, border-color 0.3s, color 0.3s !important;
+          transition: all 0.35s ease !important;
         }
+
+        .btn-nav::after { display: none !important; }
 
         .btn-nav:hover {
           background: var(--ink) !important;
           border-color: var(--ink) !important;
-          color: var(--bg) !important;
+          color: #fff !important;
         }
 
+        /* Hero */
         .hero-wrap {
-          padding: 168px 64px 108px;
-          max-width: 1000px;
+          padding: 180px 72px 120px;
+          max-width: 1060px;
           margin: 0 auto;
+          opacity: 0;
+          transform: translateY(32px);
+          animation: fadeUp 1s ease forwards;
+        }
+
+        @keyframes fadeUp {
+          to { opacity: 1; transform: translateY(0); }
         }
 
         .hero-wrap h1 {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: 'DM Serif Display', serif;
           font-weight: 400;
-          font-size: clamp(52px, 7vw, 88px);
-          line-height: 1.1;
+          font-size: clamp(48px, 6.5vw, 80px);
+          line-height: 1.08;
           color: var(--ink);
-          letter-spacing: -1px;
-          margin-bottom: 28px;
+          letter-spacing: -1.5px;
+          margin-bottom: 32px;
         }
 
         .hero-wrap .tagline {
-          font-size: 18px;
+          font-size: 17px;
           font-weight: 300;
-          color: var(--ash);
-          line-height: 1.7;
-          margin-bottom: 48px;
-          max-width: 520px;
+          color: var(--muted);
+          line-height: 1.75;
+          margin-bottom: 52px;
+          max-width: 500px;
         }
 
         .btn-cta {
           background: var(--ink);
-          color: var(--bg);
+          color: #fff;
           text-decoration: none;
-          padding: 16px 36px;
+          padding: 16px 40px;
           border-radius: 100px;
           font-size: 13px;
           font-weight: 400;
-          letter-spacing: 1.2px;
+          letter-spacing: 1px;
           text-transform: uppercase;
-          transition: all 0.3s;
+          transition: all 0.35s ease;
           display: inline-block;
         }
 
         .btn-cta:hover {
-          background: var(--earth);
-          transform: translateY(-1px);
+          background: var(--accent);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 32px rgba(107, 124, 110, 0.2);
         }
 
         .line {
-          width: 100%;
+          max-width: 1100px;
+          margin: 0 auto;
           height: 1px;
-          background: var(--stone);
-          margin: 0;
+          background: var(--border);
         }
 
+        /* Services */
         .services-wrap {
           max-width: 1100px;
           margin: 0 auto;
-          padding: 148px 64px;
+          padding: 160px 72px;
         }
 
         .section-label {
           font-size: 11px;
-          font-weight: 400;
-          letter-spacing: 3px;
+          font-weight: 500;
+          letter-spacing: 3.5px;
           text-transform: uppercase;
-          color: var(--ash);
-          margin-bottom: 24px;
+          color: var(--accent);
+          margin-bottom: 28px;
         }
 
         .services-intro {
-          font-family: 'Cormorant Garamond', serif;
-          font-weight: 300;
-          font-size: clamp(36px, 4.5vw, 52px);
+          font-family: 'DM Serif Display', serif;
+          font-weight: 400;
+          font-size: clamp(34px, 4.2vw, 50px);
           line-height: 1.15;
           color: var(--ink);
           letter-spacing: -0.5px;
-          margin-bottom: 80px;
+          margin-bottom: 88px;
         }
 
         .service-item {
-          padding: 40px 0;
-          border-top: 1px solid var(--stone);
+          padding: 44px 0;
+          border-top: 1px solid var(--border);
           display: grid;
-          grid-template-columns: 80px 320px 1fr auto;
-          gap: 40px;
+          grid-template-columns: 72px 280px 1fr auto;
+          gap: 44px;
           align-items: baseline;
+          transition: opacity 0.3s;
         }
 
+        .service-item:hover { opacity: 0.75; }
+
         .service-num {
-          font-family: 'Cormorant Garamond', serif;
-          font-weight: 300;
-          font-size: 18px;
-          color: var(--ash);
+          font-family: 'DM Serif Display', serif;
+          font-weight: 400;
+          font-size: 16px;
+          color: var(--muted);
         }
 
         .service-item h3 {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: 'DM Serif Display', serif;
           font-weight: 400;
           font-size: 24px;
           color: var(--ink);
@@ -190,16 +239,16 @@ export default function Home() {
         .service-item p {
           font-size: 14px;
           font-weight: 300;
-          color: var(--ash);
-          line-height: 1.9;
+          color: var(--muted);
+          line-height: 1.85;
         }
 
         .service-link {
           font-size: 11px;
-          font-weight: 400;
+          font-weight: 500;
           letter-spacing: 2px;
           text-transform: uppercase;
-          color: var(--ash);
+          color: var(--accent);
           text-decoration: none;
           transition: color 0.3s;
           white-space: nowrap;
@@ -207,9 +256,10 @@ export default function Home() {
 
         .service-link:hover { color: var(--ink); }
 
+        /* Process */
         .process-wrap {
-          background: var(--paper);
-          padding: 148px 64px;
+          background: var(--surface);
+          padding: 160px 72px;
         }
 
         .process-inner {
@@ -222,9 +272,9 @@ export default function Home() {
         }
 
         .process-header h2 {
-          font-family: 'Cormorant Garamond', serif;
-          font-weight: 300;
-          font-size: clamp(36px, 4.5vw, 52px);
+          font-family: 'DM Serif Display', serif;
+          font-weight: 400;
+          font-size: clamp(34px, 4.2vw, 50px);
           line-height: 1.15;
           color: var(--ink);
           letter-spacing: -0.5px;
@@ -234,96 +284,105 @@ export default function Home() {
         .process-header p {
           font-size: 14px;
           font-weight: 300;
-          color: var(--ash);
-          line-height: 1.9;
+          color: var(--muted);
+          line-height: 1.85;
         }
 
         .step {
-          margin-bottom: 56px;
+          margin-bottom: 60px;
+          padding-left: 32px;
+          border-left: 2px solid var(--border);
+          transition: border-color 0.4s;
         }
 
+        .step:hover { border-left-color: var(--accent); }
+
         .step-num {
-          font-family: 'Cormorant Garamond', serif;
-          font-weight: 300;
-          font-size: 18px;
-          color: var(--ash);
+          font-family: 'DM Serif Display', serif;
+          font-weight: 400;
+          font-size: 14px;
+          color: var(--accent);
           margin-bottom: 12px;
+          letter-spacing: 1px;
         }
 
         .step h3 {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: 'DM Serif Display', serif;
           font-weight: 400;
-          font-size: 24px;
+          font-size: 22px;
           color: var(--ink);
           line-height: 1.3;
-          margin-bottom: 8px;
+          margin-bottom: 10px;
         }
 
         .step p {
           font-size: 14px;
           font-weight: 300;
-          color: var(--ash);
-          line-height: 1.9;
+          color: var(--muted);
+          line-height: 1.85;
         }
 
+        /* Quote */
         .quote-wrap {
-          max-width: 740px;
+          max-width: 780px;
           margin: 0 auto;
-          padding: 128px 64px;
+          padding: 140px 72px;
           text-align: center;
         }
 
         .quote-mark {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 96px;
-          line-height: 0.6;
-          color: var(--stone);
+          font-family: 'DM Serif Display', serif;
+          font-size: 80px;
+          line-height: 0.5;
+          color: var(--accent);
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: 20px;
+          opacity: 0.5;
         }
 
         .quote-wrap blockquote {
-          font-family: 'Cormorant Garamond', serif;
-          font-weight: 300;
+          font-family: 'DM Serif Display', serif;
+          font-weight: 400;
           font-style: italic;
-          font-size: clamp(24px, 3.5vw, 36px);
+          font-size: clamp(22px, 3.2vw, 34px);
           line-height: 1.45;
-          color: var(--earth);
+          color: var(--text);
           letter-spacing: -0.2px;
           margin-bottom: 36px;
         }
 
         .quote-attr {
           font-size: 11px;
-          font-weight: 400;
-          letter-spacing: 2.5px;
+          font-weight: 500;
+          letter-spacing: 3px;
           text-transform: uppercase;
-          color: var(--ash);
+          color: var(--muted);
         }
 
+        /* Industries */
         .industries-wrap {
           max-width: 1100px;
           margin: 0 auto;
-          padding: 0 64px 148px;
+          padding: 0 72px 160px;
         }
 
         .industries-wrap h2 {
-          font-family: 'Cormorant Garamond', serif;
-          font-weight: 300;
-          font-size: clamp(36px, 4.5vw, 52px);
+          font-family: 'DM Serif Display', serif;
+          font-weight: 400;
+          font-size: clamp(34px, 4.2vw, 50px);
           line-height: 1.15;
           color: var(--ink);
           letter-spacing: -0.5px;
-          margin-bottom: 64px;
+          margin-bottom: 20px;
         }
 
         .industry-sub {
           font-size: 14px;
           font-weight: 300;
-          color: var(--ash);
-          line-height: 1.9;
+          color: var(--muted);
+          line-height: 1.85;
           margin-bottom: 80px;
-          max-width: 480px;
+          max-width: 460px;
         }
 
         .industries-grid {
@@ -332,23 +391,26 @@ export default function Home() {
         }
 
         .industry-item {
-          padding: 40px 0;
-          border-top: 1px solid var(--stone);
+          padding: 44px 0;
+          border-top: 1px solid var(--border);
           display: grid;
           grid-template-columns: 160px 1fr;
           gap: 40px;
           align-items: baseline;
+          transition: opacity 0.3s;
         }
+
+        .industry-item:hover { opacity: 0.7; }
 
         .industry-item:nth-child(odd) {
           padding-right: 64px;
-          border-right: 1px solid var(--stone);
+          border-right: 1px solid var(--border);
         }
 
         .industry-item:nth-child(even) { padding-left: 64px; }
 
         .industry-name {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: 'DM Serif Display', serif;
           font-weight: 400;
           font-size: 19px;
           color: var(--ink);
@@ -358,13 +420,14 @@ export default function Home() {
         .industry-desc {
           font-size: 13px;
           font-weight: 300;
-          color: var(--ash);
-          line-height: 1.9;
+          color: var(--muted);
+          line-height: 1.85;
         }
 
+        /* Contact */
         .contact-wrap {
-          background: var(--paper);
-          padding: 128px 64px;
+          background: var(--surface);
+          padding: 140px 72px;
         }
 
         .contact-inner {
@@ -374,9 +437,9 @@ export default function Home() {
         }
 
         .contact-inner h2 {
-          font-family: 'Cormorant Garamond', serif;
-          font-weight: 300;
-          font-size: clamp(36px, 4.5vw, 52px);
+          font-family: 'DM Serif Display', serif;
+          font-weight: 400;
+          font-size: clamp(34px, 4.2vw, 50px);
           line-height: 1.15;
           color: var(--ink);
           letter-spacing: -0.5px;
@@ -386,77 +449,94 @@ export default function Home() {
         .contact-inner p {
           font-size: 14px;
           font-weight: 300;
-          color: var(--ash);
-          line-height: 1.9;
-          margin-bottom: 48px;
-          max-width: 480px;
+          color: var(--muted);
+          line-height: 1.85;
+          margin-bottom: 52px;
+          max-width: 460px;
           margin-left: auto;
           margin-right: auto;
         }
 
         .contact-email {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: 'DM Serif Display', serif;
           font-size: 28px;
           font-weight: 400;
           color: var(--ink);
           text-decoration: none;
-          border-bottom: 1px solid var(--stone);
-          padding-bottom: 4px;
-          transition: border-color 0.3s;
+          position: relative;
+          transition: color 0.3s;
         }
 
-        .contact-email:hover {
-          border-color: var(--ash);
+        .contact-email::after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          background: var(--border);
+          transition: background 0.3s;
         }
 
+        .contact-email:hover { color: var(--accent); }
+        .contact-email:hover::after { background: var(--accent); }
+
+        /* Footer */
         footer {
           background: var(--bg);
-          padding: 64px;
+          padding: 72px;
           text-align: center;
         }
 
         footer p {
           font-size: 11px;
           font-weight: 400;
-          letter-spacing: 2px;
+          letter-spacing: 2.5px;
           text-transform: uppercase;
-          color: var(--ash);
+          color: var(--muted);
         }
 
+        /* Mobile */
         @media (max-width: 900px) {
-          nav { padding: 0 32px; }
+          nav { padding: 0 28px; height: 64px; }
           .nav-links { gap: 20px; }
-          
-          .hero-wrap { padding: 120px 32px 80px; }
-          
-          .services-wrap { padding: 100px 32px; }
-          
+          .nav-logo { font-size: 24px; }
+
+          .hero-wrap { padding: 128px 28px 80px; }
+
+          .line { margin: 0 28px; }
+
+          .services-wrap { padding: 100px 28px; }
           .service-item {
             grid-template-columns: 1fr;
-            gap: 16px;
-            text-align: left;
+            gap: 14px;
           }
-          
-          .process-wrap { padding: 100px 32px; }
+
+          .process-wrap { padding: 100px 28px; }
           .process-inner {
             grid-template-columns: 1fr;
-            gap: 60px;
+            gap: 64px;
           }
-          
-          .quote-wrap { padding: 80px 32px; }
-          
-          .industries-wrap { padding: 0 32px 100px; }
+
+          .quote-wrap { padding: 80px 28px; }
+
+          .industries-wrap { padding: 0 28px 100px; }
           .industries-grid { grid-template-columns: 1fr; }
-          .industry-item { grid-template-columns: 1fr; gap: 16px; }
+          .industry-item { grid-template-columns: 1fr; gap: 14px; }
           .industry-item:nth-child(odd) { padding-right: 0; border-right: none; }
           .industry-item:nth-child(even) { padding-left: 0; }
-          
-          .contact-wrap { padding: 100px 32px; }
-          footer { padding: 48px 32px; }
+
+          .contact-wrap { padding: 100px 28px; }
+          footer { padding: 48px 28px; }
+        }
+
+        @media (max-width: 600px) {
+          .nav-links li:not(:last-child) { display: none; }
+          .hero-wrap h1 { letter-spacing: -0.5px; }
         }
       `}</style>
 
-      <nav>
+      <nav className={scrolled ? "scrolled" : ""}>
         <a href="/" className="nav-logo">Studio217</a>
         <ul className="nav-links">
           <li><a href="#services">Services</a></li>
@@ -530,7 +610,7 @@ export default function Home() {
       </section>
 
       <section className="quote-wrap">
-        <span className="quote-mark">"</span>
+        <span className="quote-mark">&ldquo;</span>
         <blockquote>They came in as consultants and left having built us an AI tool we use every single day. That&apos;s the difference.</blockquote>
         <cite className="quote-attr">STUDIO217 Client</cite>
       </section>
