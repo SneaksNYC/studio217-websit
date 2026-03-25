@@ -44,7 +44,7 @@ export const metadata: Metadata = {
       'Studio217 builds AI-powered automation and customer service tools for travel agencies and tour operators. Based in NYC. We build what we use ourselves.',
     images: [
       {
-        url: '/preview-a.png',
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
         alt: 'Studio217 — AI Automation for Travel Agencies',
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     title: 'Studio217 — AI Automation & Customer Service for Travel',
     description:
       'AI-powered tools for travel agencies and tour operators. Built by practitioners, for practitioners.',
-    images: ['/preview-a.png'],
+    images: ['/opengraph-image'],
     creator: '@studio217ai',
   },
   alternates: {
@@ -72,7 +72,7 @@ const organizationJsonLd = {
   '@type': 'Organization',
   name: 'Studio217',
   url: 'https://studio217.ai',
-  logo: 'https://studio217.ai/preview-a.png',
+  logo: 'https://studio217.ai/opengraph-image',
   description:
     'Studio217 is an AI automation agency based in New York City that designs and deploys AI-powered customer service and workflow automation tools specifically for travel agencies and tour operators.',
   foundingDate: '2023',
