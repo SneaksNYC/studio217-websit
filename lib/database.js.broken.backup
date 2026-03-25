@@ -1,11 +1,8 @@
-// Fixed database implementation - ES module compatible
+// Secure database implementation for user management
 // Replaces file-based user storage with proper database
 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import sqlite3 from 'sqlite3';
-import fs from 'fs';
-import path from 'path';
 
 // Database configurations for different environments
 const getDatabase = () => {
@@ -27,10 +24,10 @@ const getDatabase = () => {
 
 // SQLite implementation for development
 const initSQLiteDatabase = () => {
-  const Database = sqlite3.verbose().Database;
+  const sqlite3 = require('sqlite3').verbose();
   const dbPath = process.env.SQLITE_PATH || './studio217.db';
   
-  const db = new Database(dbPath);
+  const db = new sqlite3.Database(dbPath);
   
   // Initialize users table
   db.serialize(() => {
@@ -207,6 +204,8 @@ export class AuthDatabase {
 // Migrate existing users.json data to database
 export async function migrateUsersFromJSON() {
   try {
+    const fs = require('fs');
+    const path = require('path');
     const usersPath = path.join(process.cwd(), 'lib', 'users.json');
     
     if (!fs.existsSync(usersPath)) {
