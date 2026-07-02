@@ -412,6 +412,10 @@
           <label for="bkRooms">Rooms</label>
           <input id="bkRooms" type="number" min="1" max="9" value="1" required />
         </div>
+        <div class="full">
+          <label for="bkEmail">Email — your confirmation is sent here</label>
+          <input id="bkEmail" type="email" required placeholder="guest@email.com" autocomplete="email" />
+        </div>
 
         <div class="full">
           <label>Rate type</label>
@@ -720,9 +724,11 @@
 
   // ── Booking ─────────────────────────────────────────────────────────
   let bookLine = null;
+  let bookHotelName = "";
 
   function openBook(line, name) {
     bookLine = line;
+    bookHotelName = name || "";
     document.getElementById("bookTitle").textContent = `Reserve — ${name}`;
     document.getElementById("bkRooms").value = document.getElementById("rooms").value || "1";
     document.getElementById("bookSteps").textContent = "";
@@ -824,6 +830,8 @@
       rate_policy: ratePolicy(),
       checkin: document.getElementById("checkin").value || null,
       checkout: document.getElementById("checkout").value || null,
+      email: document.getElementById("bkEmail").value.trim() || null,
+      hotel_display_name: bookHotelName.replace(/[^A-Za-z0-9 &'\-./]/g, "").slice(0, 60) || null,
       dry_run: dryRun,
     };
     if (gtype === "CC") {
@@ -916,7 +924,13 @@
       renderSteps(data.steps, true);
       if (data.success && data.locator) {
         res.appendChild(el("div", { class: "locator-box" }, data.locator));
-        res.appendChild(el("div", { class: "warn-note", style: { textAlign: "center" } }, "Reservation confirmed — keep this reference for check-in."));
+        const mail = data.confirmation_email;
+        const note = mail && mail.sent
+          ? `Reservation confirmed — a confirmation email was sent to ${mail.to}.`
+          : (mail && !mail.sent
+              ? `Reservation confirmed — the confirmation email to ${mail.to} could not be sent, so save this code now.`
+              : "Reservation confirmed — keep this reference for check-in.");
+        res.appendChild(el("div", { class: "warn-note", style: { textAlign: "center" } }, note));
         btn.style.display = "none";
       } else {
         res.appendChild(el("div", { class: "locator-box failed" },
