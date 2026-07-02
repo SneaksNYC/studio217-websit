@@ -184,6 +184,36 @@
     .cc-hint.good { color: var(--ok); }
     .cc-hint.bad  { color: var(--err); }
 
+    .nr-inline {
+      margin-top: 8px; padding: 10px 14px; border-radius: 10px;
+      border: 1px solid #ecd2d0; background: #faf1f0; color: var(--err); font-size: 13px;
+    }
+    .nr-overlay {
+      position: fixed; inset: 0; z-index: 30;
+      background: rgba(33,28,22,0.5); backdrop-filter: blur(3px);
+      display: none; align-items: center; justify-content: center;
+    }
+    .nr-card {
+      background: var(--paper); border: 1px solid #ecd2d0; border-radius: 16px;
+      box-shadow: 0 24px 64px rgba(33,28,22,0.25);
+      padding: 28px 30px; max-width: 480px; width: 90%; text-align: center;
+    }
+    .nr-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 24px; }
+
+    button.danger {
+      color: var(--err); border-color: #ecd2d0; background: transparent; cursor: pointer;
+      transition: all 0.2s;
+    }
+    button.danger:hover { background: #faf1f0; border-color: var(--err); }
+    button.danger.solid { background: var(--err); border-color: var(--err); color: #fff; }
+    button.danger.solid:hover { filter: brightness(0.92); }
+
+    .mg-summary {
+      background: var(--paper); border: 1px solid var(--stone); border-radius: 14px;
+      box-shadow: var(--shadow); padding: 18px 22px; font-size: 14.5px;
+    }
+    .mg-summary .code { font-family: ui-monospace, monospace; letter-spacing: 0.2em; color: var(--gold-dark); font-size: 16px; }
+
     .step-list { margin: 6px 0 0; padding: 0; list-style: none; border: 1px solid var(--stone); border-radius: 12px; overflow: hidden; }
     .step-list li { display: flex; gap: 12px; align-items: baseline; padding: 9px 14px; border-bottom: 1px solid var(--stone); font-size: 13px; background: var(--panel2); }
     .step-list li:last-child { border-bottom: none; }
@@ -262,22 +292,71 @@
       <label for="checkin">Check-in</label>
       <input id="checkin" type="date" required />
     </div>
-    <div style="grid-column: span 1;">
-      <label for="nights">Nights</label>
-      <input id="nights" type="number" min="1" max="30" value="1" required />
+    <div style="grid-column: span 2;">
+      <label for="checkout">Check-out</label>
+      <input id="checkout" type="date" required />
     </div>
     <div style="grid-column: span 1;">
       <label for="rooms">Rooms</label>
       <input id="rooms" type="number" min="1" max="9" value="1" required />
     </div>
-    <div style="grid-column: span 1;">
-      <button class="primary" id="searchBtn" type="submit">Search</button>
-    </div>
-    <div class="wide" style="grid-column: span 6;">
+    <div class="wide" style="grid-column: span 5;">
       <label for="hotelName">Hotel name (optional)</label>
       <input id="hotelName" placeholder="MARRIOTT" style="text-transform: uppercase;" />
     </div>
+    <div style="grid-column: span 1;">
+      <button class="primary" id="searchBtn" type="submit">Search</button>
+    </div>
   </form>
+
+  <!-- Manage an existing reservation -->
+  <div style="text-align: center; margin-top: 26px;">
+    <button class="ghost" id="manageToggle" onclick="toggleManage()">Manage an existing reservation</button>
+  </div>
+  <div id="managePanel" style="display: none; margin-top: 18px;">
+    <form class="search" onsubmit="event.preventDefault(); findReservation();">
+      <div style="grid-column: span 2;">
+        <label for="mgLoc">Confirmation code</label>
+        <input id="mgLoc" maxlength="6" placeholder="ABC123" pattern="[A-Za-z0-9]{6}" required style="text-transform: uppercase; letter-spacing: 0.15em;" />
+      </div>
+      <div style="grid-column: span 1;">
+        <button class="primary" id="mgFindBtn" type="submit">Find</button>
+      </div>
+      <div class="wide" style="grid-column: span 3; align-self: center; color: var(--ash); font-size: 12.5px;">
+        Retrieve your reservation to change dates or cancel.
+      </div>
+    </form>
+
+    <div id="mgInfo" style="margin-top: 14px;"></div>
+
+    <div id="mgActions" style="display: none;">
+      <div class="search" style="margin-top: 14px;">
+        <div style="grid-column: span 2;">
+          <label for="mgIn">New check-in</label>
+          <input id="mgIn" type="date" />
+        </div>
+        <div style="grid-column: span 2;">
+          <label for="mgOut">New check-out</label>
+          <input id="mgOut" type="date" />
+        </div>
+        <div style="grid-column: span 2;">
+          <button class="primary" type="button" onclick="mgChange(true)">Preview date change</button>
+        </div>
+        <div class="wide" style="grid-column: span 4; align-self: center; color: var(--ash); font-size: 12.5px;">
+          Or cancel the reservation entirely — refunds follow the rate's conditions.
+        </div>
+        <div style="grid-column: span 2;">
+          <button type="button" class="danger" onclick="mgCancel(true)">Preview cancellation</button>
+        </div>
+      </div>
+      <div id="mgSteps" style="margin-top: 12px;"></div>
+      <div class="btn-row" style="margin-top: 12px;">
+        <button class="primary gold" id="mgChangeConfirm" type="button" style="display:none; width:auto; padding: 11px 22px;" onclick="mgChange(false)">Confirm new dates</button>
+        <button class="danger solid" id="mgCancelConfirm" type="button" style="display:none; width:auto; padding: 11px 22px;" onclick="mgCancel(false)">Confirm cancellation — final</button>
+      </div>
+      <div id="mgResult"></div>
+    </div>
+  </div>
 
   <div class="results" id="results" style="display: none;">
     <h2>Available properties <button class="ghost" onclick="loadMore()" id="moreBtn" style="display:none;">Show more</button></h2>
@@ -335,6 +414,18 @@
         </div>
 
         <div class="full">
+          <label>Rate type</label>
+          <div class="radio-row">
+            <label><input type="radio" name="bkPolicy" value="REF" checked onchange="togglePolicy()" /> Refundable / flexible</label>
+            <label><input type="radio" name="bkPolicy" value="NONREF" onchange="togglePolicy()" /> Non-refundable</label>
+          </div>
+          <div id="nrInline" class="nr-inline" style="display: none;">
+            ⚠ You are choosing a <strong>non-refundable</strong> rate. Once confirmed, this reservation
+            <strong>cannot be refunded</strong> — no money back if you cancel or don't show up.
+          </div>
+        </div>
+
+        <div class="full">
           <label>Guarantee</label>
           <div class="radio-row">
             <label><input type="radio" name="bkGtype" value="CC" checked onchange="toggleGuarantee()" /> Credit card</label>
@@ -387,6 +478,23 @@
         <button class="primary gold" id="bkConfirmBtn" type="button" style="display:none;" onclick="confirmBooking()">Confirm reservation</button>
       </div>
       <p class="warn-note">Nothing is charged or reserved until you confirm. Review shows the exact reservation instructions first.</p>
+
+      <!-- Non-refundable acknowledgment overlay -->
+      <div id="nrOverlay" class="nr-overlay" style="display: none;">
+        <div class="nr-card">
+          <h3 style="color: var(--err); margin: 0 0 10px;">Non-refundable rate</h3>
+          <p style="margin: 0 0 18px; font-size: 14.5px;">
+            You are about to book a <strong>non-refundable</strong> reservation.<br />
+            <strong>It cannot be refunded</strong> after confirmation — cancelling or not showing up
+            means the full amount is kept by the hotel.
+          </p>
+          <div class="btn-row" style="justify-content: center; margin-top: 0;">
+            <button type="button" onclick="closeNrOverlay()" style="width: auto; padding: 10px 20px;">Go back</button>
+            <button type="button" class="primary" style="width: auto; padding: 10px 20px; background: var(--err); border-color: var(--err);"
+                    onclick="acceptNonRefundable()">I understand — book non-refundable</button>
+          </div>
+        </div>
+      </div>
     </form>
   </div>
 </div>
@@ -425,10 +533,23 @@
   // ── API base: the reservation engine runs on the Studio217 operations machine ──
   const API = "http://127.0.0.1:8077";
 
-  // Default check-in to tomorrow
+  // Default stay: tomorrow → day after
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   document.getElementById("checkin").value = tomorrow.toISOString().slice(0, 10);
+  const dayAfter = new Date();
+  dayAfter.setDate(dayAfter.getDate() + 2);
+  document.getElementById("checkout").value = dayAfter.toISOString().slice(0, 10);
+  // keep check-out after check-in
+  document.getElementById("checkin").addEventListener("change", () => {
+    const ci = document.getElementById("checkin").value;
+    const co = document.getElementById("checkout");
+    if (co.value <= ci) {
+      const d = new Date(ci);
+      d.setDate(d.getDate() + 1);
+      co.value = d.toISOString().slice(0, 10);
+    }
+  });
 
   async function checkStatus() {
     const pill = document.getElementById("status");
@@ -494,7 +615,7 @@
     const body = {
       city: document.getElementById("city").value.trim().toUpperCase(),
       checkin: document.getElementById("checkin").value,
-      nights: parseInt(document.getElementById("nights").value, 10),
+      checkout: document.getElementById("checkout").value,
       rooms: parseInt(document.getElementById("rooms").value, 10),
       hotel_name: document.getElementById("hotelName").value.trim() || null,
     };
@@ -626,6 +747,22 @@
     document.getElementById("agtFields").style.display = cc ? "none" : "block";
     document.getElementById("bkConfirmBtn").style.display = "none";
   }
+
+  function ratePolicy() {
+    return document.querySelector("input[name=bkPolicy]:checked").value;
+  }
+  function togglePolicy() {
+    // the note pops up the moment non-refundable is chosen
+    document.getElementById("nrInline").style.display = ratePolicy() === "NONREF" ? "block" : "none";
+    document.getElementById("bkConfirmBtn").style.display = "none";
+  }
+  function closeNrOverlay() {
+    document.getElementById("nrOverlay").style.display = "none";
+  }
+  function acceptNonRefundable() {
+    closeNrOverlay();
+    proceedBooking();
+  }
   document.getElementById("bookForm").addEventListener("input", () => {
     document.getElementById("bkConfirmBtn").style.display = "none";
   });
@@ -684,6 +821,9 @@
       first_name: document.getElementById("bkFirst").value.trim().toUpperCase(),
       title: document.getElementById("bkTitle").value,
       guarantee_type: gtype,
+      rate_policy: ratePolicy(),
+      checkin: document.getElementById("checkin").value || null,
+      checkout: document.getElementById("checkout").value || null,
       dry_run: dryRun,
     };
     if (gtype === "CC") {
@@ -755,7 +895,16 @@
     }
   }
 
-  async function confirmBooking() {
+  function confirmBooking() {
+    if (ratePolicy() === "NONREF") {
+      // hard stop: explicit acknowledgment before a non-refundable booking
+      document.getElementById("nrOverlay").style.display = "flex";
+      return;
+    }
+    proceedBooking();
+  }
+
+  async function proceedBooking() {
     const btn = document.getElementById("bkConfirmBtn");
     const prev = document.getElementById("bkPreviewBtn");
     btn.disabled = true; prev.disabled = true;
@@ -780,6 +929,131 @@
       btn.textContent = "Confirm reservation";
     }
   }
+
+  // ── Manage an existing reservation ──────────────────────────────────
+  let mgLocator = null;
+
+  function toggleManage() {
+    const p = document.getElementById("managePanel");
+    p.style.display = p.style.display === "none" ? "block" : "none";
+    if (p.style.display === "block") document.getElementById("mgLoc").focus();
+  }
+
+  function mgResetConfirms() {
+    document.getElementById("mgChangeConfirm").style.display = "none";
+    document.getElementById("mgCancelConfirm").style.display = "none";
+  }
+  ["mgIn", "mgOut"].forEach(id =>
+    document.getElementById(id).addEventListener("input", mgResetConfirms));
+
+  async function findReservation() {
+    const btn = document.getElementById("mgFindBtn");
+    const loc = document.getElementById("mgLoc").value.trim().toUpperCase();
+    btn.disabled = true; btn.textContent = "Finding…";
+    const info = document.getElementById("mgInfo");
+    info.textContent = "";
+    document.getElementById("mgActions").style.display = "none";
+    document.getElementById("mgSteps").textContent = "";
+    document.getElementById("mgResult").textContent = "";
+    mgResetConfirms();
+    try {
+      const r = await fetch(`${API}/api/reservation/${loc}`);
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.detail || `HTTP ${r.status}`);
+      if (!data.success) {
+        info.appendChild(el("div", { class: "err" }, `Reservation ${loc} could not be retrieved — check the code.`));
+        return;
+      }
+      mgLocator = loc;
+      const s = data.summary || {};
+      const box = el("div", { class: "mg-summary" });
+      box.appendChild(el("div", { class: "code" }, loc));
+      if (s.guest) box.appendChild(el("div", {}, `Guest: ${s.guest}`));
+      if (s.checkin && s.checkout) box.appendChild(el("div", {}, `Stay: ${s.checkin} → ${s.checkout}`));
+      box.appendChild(el("div", { style: { color: "var(--ash)", fontSize: "12.5px" } },
+        s.has_hotel ? "Hotel reservation found — you can change the dates or cancel below."
+                    : "No hotel segment found in this reservation."));
+      const det = el("details", { style: { marginTop: "8px" } });
+      det.appendChild(el("summary", {}, "Full reservation details"));
+      det.appendChild(el("pre", { class: "raw" }, data.raw || ""));
+      box.appendChild(det);
+      info.appendChild(box);
+      if (s.has_hotel) document.getElementById("mgActions").style.display = "block";
+    } catch (e) {
+      info.appendChild(el("div", { class: "err" }, `Error: ${e.message}`));
+    } finally {
+      btn.disabled = false; btn.textContent = "Find";
+    }
+  }
+
+  function mgRenderSteps(steps, showRaw) {
+    const box = document.getElementById("mgSteps");
+    box.textContent = "";
+    const ul = el("ul", { class: "step-list" });
+    for (const s of steps) {
+      const li = el("li");
+      li.appendChild(el("span", { class: "lbl" }, s.label));
+      li.appendChild(el("span", { class: "cmd-txt" }, s.command));
+      if (showRaw) li.appendChild(el("span", { class: s.error ? "bad" : "ok" }, s.error ? `✗ ${s.error}` : "✓"));
+      ul.appendChild(li);
+    }
+    box.appendChild(ul);
+  }
+
+  async function mgPost(kind, dryRun) {
+    const body = { dry_run: dryRun };
+    if (kind === "change") {
+      body.checkin = document.getElementById("mgIn").value;
+      body.checkout = document.getElementById("mgOut").value;
+      if (!body.checkin || !body.checkout) throw new Error("Pick the new check-in and check-out dates first.");
+    }
+    const r = await fetch(`${API}/api/reservation/${mgLocator}/${kind}`, {
+      method: "POST",
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify(body),
+    });
+    const data = await r.json();
+    if (r.status === 422) {
+      const msg = (data.detail || []).map(d => d.msg).join("; ");
+      throw new Error(msg || "Validation failed");
+    }
+    if (!r.ok) throw new Error(data.detail || `HTTP ${r.status}`);
+    return data;
+  }
+
+  async function mgRun(kind, dryRun) {
+    const res = document.getElementById("mgResult");
+    res.textContent = "";
+    try {
+      const data = await mgPost(kind, dryRun);
+      mgRenderSteps(data.steps, !dryRun);
+      if (dryRun) {
+        if (data.success) {
+          mgResetConfirms();
+          document.getElementById(kind === "change" ? "mgChangeConfirm" : "mgCancelConfirm").style.display = "inline-block";
+        } else {
+          res.appendChild(el("div", { class: "locator-box failed" },
+            `Cannot prepare this ${kind === "change" ? "date change" : "cancellation"} — step "${data.failed_step}" failed. Reservation unchanged.`));
+        }
+      } else if (data.success) {
+        mgResetConfirms();
+        res.appendChild(el("div", { class: "locator-box" },
+          kind === "change" ? "Dates changed" : "Cancelled"));
+        res.appendChild(el("div", { class: "warn-note", style: { textAlign: "center" } },
+          kind === "change"
+            ? `Reservation ${mgLocator} now runs ${document.getElementById("mgIn").value} → ${document.getElementById("mgOut").value}.`
+            : `Reservation ${mgLocator} has been cancelled. Refunds follow the rate conditions of the original booking.`));
+      } else {
+        res.appendChild(el("div", { class: "locator-box failed" },
+          `The ${kind === "change" ? "date change" : "cancellation"} could not be completed (step "${data.failed_step}"). The reservation is unchanged.`));
+      }
+    } catch (e) {
+      res.appendChild(el("div", { class: "locator-box failed" }, `Error: ${e.message}`));
+    }
+  }
+
+  function mgChange(dryRun) { mgRun("change", dryRun); }
+  function mgCancel(dryRun) { mgRun("cancel", dryRun); }
 </script>
 
 </body>
