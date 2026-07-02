@@ -5,6 +5,12 @@ const nextConfig = {
   },
   compress: true,
   poweredByHeader: false,
+  async rewrites() {
+    return [
+      // Unlisted reservations console (static page in public/)
+      { source: '/booking', destination: '/booking/index.html' },
+    ]
+  },
 }
 
 export default nextConfig
