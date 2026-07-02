@@ -417,6 +417,21 @@
           <input id="bkEmail" type="email" required placeholder="guest@email.com" autocomplete="email" />
         </div>
 
+        <div>
+          <label for="bkLoyalty">Hotel loyalty number (optional)</label>
+          <input id="bkLoyalty" placeholder="HH12345678" maxlength="20" pattern="[A-Za-z0-9]{2,20}" style="text-transform: uppercase;" autocomplete="off" />
+        </div>
+        <div>
+          <label for="bkCorp">Corporate rate code (optional)</label>
+          <input id="bkCorp" placeholder="IBM123" maxlength="15" pattern="[A-Za-z0-9]{1,15}" style="text-transform: uppercase;" autocomplete="off" />
+        </div>
+        <div class="full" style="margin-top: -6px;">
+          <div style="font-size: 12px; color: var(--ash);">
+            Add your loyalty number to earn points and status credit with the hotel, exactly as if you booked
+            on the hotel's own website. A corporate code applies your company's negotiated rate.
+          </div>
+        </div>
+
         <div class="full">
           <label>Rate type</label>
           <div class="radio-row">
@@ -832,6 +847,8 @@
       checkout: document.getElementById("checkout").value || null,
       email: document.getElementById("bkEmail").value.trim() || null,
       hotel_display_name: bookHotelName.replace(/[^A-Za-z0-9 &'\-./]/g, "").slice(0, 60) || null,
+      loyalty_number: document.getElementById("bkLoyalty").value.trim().toUpperCase() || null,
+      corp_code: document.getElementById("bkCorp").value.trim().toUpperCase() || null,
       dry_run: dryRun,
     };
     if (gtype === "CC") {
