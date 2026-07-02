@@ -394,6 +394,9 @@
     <button class="close" onclick="closeBook()">×</button>
     <h3 id="bookTitle">Reserve</h3>
 
+    <div id="bkDealNote" style="display:none; margin: -6px 0 14px; padding: 10px 14px; border-radius: 10px;
+         border: 1px solid var(--gold); background: #f7f1e8; color: var(--gold-dark); font-size: 13px;"></div>
+
     <form id="bookForm" onsubmit="event.preventDefault(); previewBooking();">
       <div class="book-grid">
         <div>
@@ -693,7 +696,15 @@
         const tr = document.createElement("tr");
         tr.appendChild(el("td", {}, h.line));
         const nameTd = el("td", {});
-        nameTd.appendChild(el("div", {}, h.name));
+        const nameLine = el("div", {}, h.name);
+        if (h.deal) {
+          nameLine.appendChild(el("span", { style: {
+            marginLeft: "8px", padding: "2px 9px", borderRadius: "100px", fontSize: "10px",
+            letterSpacing: "0.08em", background: "#f7f1e8", color: "var(--gold-dark)",
+            border: "1px solid var(--gold)", verticalAlign: "middle",
+          } }, "STUDIO217 RATE"));
+        }
+        nameTd.appendChild(nameLine);
         if (h.address) nameTd.appendChild(el("div", { style: { color: "var(--ash)", fontSize: "12px" } }, h.address));
         tr.appendChild(nameTd);
         tr.appendChild(el("td", {}, h.rating ? `${h.rating.toFixed(1)} ★` : "—"));
@@ -702,7 +713,7 @@
         const actions = el("td", { class: "actions" });
         actions.appendChild(el("button", { onClick: () => showDetails(h.line, h.name) }, "Details"));
         actions.appendChild(el("button", { onClick: () => showRates(h.line, h.name) }, "Rates"));
-        actions.appendChild(el("button", { class: "book", onClick: () => openBook(h.line, h.name) }, "Reserve"));
+        actions.appendChild(el("button", { class: "book", onClick: () => openBook(h) }, "Reserve"));
         tr.appendChild(actions);
         tbody.appendChild(tr);
       }
@@ -740,11 +751,17 @@
   // ── Booking ─────────────────────────────────────────────────────────
   let bookLine = null;
   let bookHotelName = "";
+  let bookChain = "";
 
-  function openBook(line, name) {
-    bookLine = line;
-    bookHotelName = name || "";
-    document.getElementById("bookTitle").textContent = `Reserve — ${name}`;
+  function openBook(h) {
+    bookLine = h.line;
+    bookHotelName = h.name || "";
+    bookChain = h.chain || "";
+    const dealNote = document.getElementById("bkDealNote");
+    dealNote.style.display = h.deal ? "block" : "none";
+    if (h.deal) dealNote.textContent =
+      "A Studio217 negotiated rate applies to this hotel and is added to your reservation automatically.";
+    document.getElementById("bookTitle").textContent = `Reserve — ${h.name}`;
     document.getElementById("bkRooms").value = document.getElementById("rooms").value || "1";
     document.getElementById("bookSteps").textContent = "";
     document.getElementById("stepsWrap").style.display = "none";
@@ -849,6 +866,7 @@
       hotel_display_name: bookHotelName.replace(/[^A-Za-z0-9 &'\-./]/g, "").slice(0, 60) || null,
       loyalty_number: document.getElementById("bkLoyalty").value.trim().toUpperCase() || null,
       corp_code: document.getElementById("bkCorp").value.trim().toUpperCase() || null,
+      chain: bookChain || null,
       dry_run: dryRun,
     };
     if (gtype === "CC") {
