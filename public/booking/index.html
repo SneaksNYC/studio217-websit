@@ -451,7 +451,7 @@
     } catch (_e) {
       pill.textContent = "● console offline";
       pill.className = "status bad";
-      pill.title = "The reservation engine is not reachable — this console only works on the Studio217 operations machine.";
+      pill.title = "Cannot reach the reservation engine. If Chrome asks to allow access to your local network, click Allow and reload. This console only works on the Studio217 operations machine.";
     }
   }
   setInterval(checkStatus, 10000);
@@ -508,7 +508,7 @@
       const data = await r.json();
       renderResults(data);
     } catch (e) {
-      setError("The reservation engine is not reachable — this console only works on the Studio217 operations machine.");
+      setError("The reservation engine is not reachable. If Chrome asks to allow access to your local network, click Allow and try again — this console only works on the Studio217 operations machine.");
     } finally {
       btn.disabled = false;
       btn.textContent = "Search";
