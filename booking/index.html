@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>STUDIO217 — Private Reservations</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --bg:    #f8f5f0;
+      --paper: #ffffff;
+      --panel2:#f2ede5;
+      --stone: #e0d8cc;
+      --ash:   #9c9088;
+      --earth: #3d3328;
+      --ink:   #211c16;
+      --gold:  #a07848;
+      --gold-dark: #86633a;
+      --ok:  #3e7a4e;
+      --err: #b3453e;
+      --shadow: 0 1px 2px rgba(33,28,22,0.05), 0 8px 24px rgba(33,28,22,0.06);
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 400; }
+
+    /* ─── Password gate ─── */
+    #gate {
+      position: fixed; inset: 0; z-index: 100;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; text-align: center; padding: 24px;
+    }
+    #gate .logo { font-family: 'Cormorant Garamond', serif; font-size: 40px; letter-spacing: 0.5px; }
+    #gate .sub {
+      font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--ash); margin: 6px 0 40px;
+    }
+    #gate form { display: flex; flex-direction: column; gap: 14px; width: min(320px, 86vw); }
+    #gate input {
+      background: var(--paper); border: 1px solid var(--stone); color: var(--ink);
+      padding: 13px 16px; border-radius: 10px; font-size: 18px; text-align: center;
+      letter-spacing: 0.35em; font-family: inherit; width: 100%;
+    }
+    #gate input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(160,120,72,0.12); }
+    #gate button {
+      background: var(--ink); border: 1px solid var(--ink); color: var(--bg);
+      padding: 12px; border-radius: 100px; font-size: 12px; font-family: inherit;
+      letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer;
+      transition: background 0.3s;
+    }
+    #gate button:hover { background: var(--earth); }
+    #gateErr { color: var(--err); font-size: 13px; min-height: 18px; margin-top: 4px; }
+    #gate.shake form { animation: shake 0.35s; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); } 75% { transform: translateX(8px); }
+    }
+
+    /* ─── App (hidden until unlocked) ─── */
+    #console { display: none; }
+
+    header {
+      padding: 22px 48px;
+      border-bottom: 1px solid var(--stone);
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(248,245,240,0.94);
+    }
+    header .brand { font-family: 'Cormorant Garamond', serif; font-size: 26px; }
+    header .brand .amp { color: var(--gold); font-style: italic; }
+    header .sub {
+      color: var(--ash); font-size: 10px; letter-spacing: 0.28em;
+      text-transform: uppercase; display: block; margin-top: 1px;
+    }
+    .status {
+      font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 5px 13px; border-radius: 100px;
+      border: 1px solid var(--stone); color: var(--ash); background: var(--panel2);
+    }
+    .status.ok  { color: var(--ok);  border-color: #cfe0d3; background: #f2f7f3; }
+    .status.bad { color: var(--err); border-color: #ecd2d0; background: #faf1f0; }
+
+    main { max-width: 1060px; margin: 0 auto; padding: 44px 48px 90px; }
+    .hero { text-align: center; margin-bottom: 34px; }
+    .hero h2 { font-size: 38px; margin: 0 0 6px; }
+    .hero p { color: var(--ash); margin: 0; font-size: 15px; }
+    .hero .rule { width: 48px; height: 1px; background: var(--gold); margin: 20px auto 0; }
+
+    form.search {
+      background: var(--paper); border: 1px solid var(--stone); border-radius: 16px;
+      box-shadow: var(--shadow); padding: 26px;
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; align-items: end;
+    }
+    label {
+      display: block; font-size: 10px; color: var(--ash); margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.16em; font-weight: 400;
+    }
+    input, select {
+      background: var(--paper); border: 1px solid var(--stone); color: var(--ink);
+      padding: 11px 14px; border-radius: 9px; font-size: 15px; width: 100%; font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input::placeholder { color: #cbc2b2; }
+    input:focus, select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(160,120,72,0.12); }
+    button { font-family: inherit; border-radius: 9px; font-size: 14px; border: 1px solid var(--stone); background: var(--paper); color: var(--ink); padding: 11px 14px; width: 100%; }
+    button.primary {
+      background: var(--ink); border-color: var(--ink); color: var(--bg);
+      font-weight: 400; letter-spacing: 0.08em; cursor: pointer; transition: background 0.3s;
+    }
+    button.primary:hover { background: var(--earth); }
+    button.primary:disabled { opacity: 0.45; cursor: wait; }
+    button.gold { background: var(--gold); border-color: var(--gold); }
+    button.gold:hover { background: var(--gold-dark); }
+    button.ghost {
+      background: transparent; cursor: pointer; font-size: 11.5px; padding: 6px 14px; width: auto;
+      color: var(--ash); border: 1px solid var(--stone); border-radius: 100px;
+      letter-spacing: 0.06em; transition: color 0.2s, border-color 0.2s;
+    }
+    button.ghost:hover { color: var(--ink); border-color: var(--gold); }
+
+    .results { margin-top: 38px; }
+    .results h2 { font-size: 24px; margin: 0 0 10px; }
+    .cmd { font-family: ui-monospace, "SF Mono", Menlo, monospace; color: var(--ash); font-size: 11.5px; margin-bottom: 10px; }
+
+    table {
+      width: 100%; border-collapse: collapse; background: var(--paper);
+      border: 1px solid var(--stone); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow);
+    }
+    th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--stone); font-size: 14.5px; }
+    th { background: var(--panel2); font-weight: 400; color: var(--ash); font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fbf8f3; }
+    td.rate { font-family: 'Cormorant Garamond', serif; font-size: 17px; }
+    td.actions { white-space: nowrap; text-align: right; }
+    td.actions button {
+      font-size: 11px; padding: 6px 13px; width: auto; cursor: pointer;
+      background: transparent; border: 1px solid var(--stone); border-radius: 100px;
+      color: var(--ash); margin-left: 6px; transition: all 0.2s; letter-spacing: 0.04em;
+    }
+    td.actions button:hover { color: var(--ink); border-color: var(--gold); }
+    td.actions button.book { color: var(--gold-dark); border-color: var(--gold); font-weight: 400; }
+    td.actions button.book:hover { background: var(--gold); color: #fff; }
+
+    .raw {
+      margin-top: 12px; background: var(--panel2); border: 1px solid var(--stone); border-radius: 12px;
+      padding: 16px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px;
+      color: #776e5f; white-space: pre-wrap; max-height: 320px; overflow: auto;
+    }
+    details summary { color: var(--ash); cursor: pointer; font-size: 12.5px; }
+    .err { color: var(--err); font-weight: 400; }
+
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(33,28,22,0.35); backdrop-filter: blur(3px);
+      display: none; align-items: center; justify-content: center; z-index: 10;
+    }
+    .modal {
+      background: var(--paper); border: 1px solid var(--stone); border-radius: 18px;
+      box-shadow: 0 24px 64px rgba(33,28,22,0.18); padding: 30px 32px;
+      max-width: 700px; width: 92%; max-height: 84vh; overflow: auto;
+    }
+    .modal h3 { margin: 0 0 18px; font-size: 24px; }
+    .modal pre { font-family: ui-monospace, monospace; font-size: 12px; color: #776e5f; white-space: pre-wrap; }
+    .modal .close { float: right; background: transparent; border: none; color: var(--ash); cursor: pointer; font-size: 20px; width: auto; padding: 0 4px; }
+    .modal .close:hover { color: var(--ink); }
+
+    .book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    .book-grid .full { grid-column: span 2; }
+    .radio-row { display: flex; gap: 22px; align-items: center; padding: 6px 0; }
+    .radio-row label { display: flex; gap: 8px; align-items: center; margin: 0; font-size: 14px; color: var(--ink); text-transform: none; letter-spacing: 0; cursor: pointer; }
+    .radio-row input[type=radio] { width: auto; accent-color: var(--gold); }
+    .cc-hint { font-size: 11.5px; margin-top: 5px; min-height: 15px; color: var(--ash); }
+    .cc-hint.good { color: var(--ok); }
+    .cc-hint.bad  { color: var(--err); }
+
+    .step-list { margin: 6px 0 0; padding: 0; list-style: none; border: 1px solid var(--stone); border-radius: 12px; overflow: hidden; }
+    .step-list li { display: flex; gap: 12px; align-items: baseline; padding: 9px 14px; border-bottom: 1px solid var(--stone); font-size: 13px; background: var(--panel2); }
+    .step-list li:last-child { border-bottom: none; }
+    .step-list .lbl { color: var(--ash); min-width: 78px; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.14em; }
+    .step-list .cmd-txt { font-family: ui-monospace, monospace; color: var(--ink); font-size: 12.5px; }
+    .step-list .ok  { color: var(--ok); margin-left: auto; }
+    .step-list .bad { color: var(--err); margin-left: auto; }
+
+    .locator-box {
+      margin-top: 18px; padding: 22px; text-align: center; border-radius: 14px;
+      border: 1px solid #cfe0d3; background: #f2f7f3; color: var(--ok);
+      font-family: 'Cormorant Garamond', serif; font-size: 30px; letter-spacing: 0.28em;
+    }
+    .locator-box.failed {
+      border-color: #ecd2d0; background: #faf1f0; color: var(--err);
+      font-family: inherit; font-size: 14.5px; letter-spacing: 0;
+    }
+    .warn-note { font-size: 12px; color: var(--ash); margin: 12px 0 0; }
+    .modal .btn-row { display: flex; gap: 10px; margin-top: 18px; }
+    .modal .btn-row button { width: auto; padding: 11px 24px; }
+    .review-title { font-size: 10px; color: var(--ash); text-transform: uppercase; letter-spacing: 0.16em; margin: 18px 0 8px; }
+
+    footer { text-align: center; color: var(--ash); font-size: 11.5px; letter-spacing: 0.06em; padding: 0 48px 44px; }
+    footer .mark { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--gold); }
+
+    @media (max-width: 760px) {
+      header, main { padding-left: 20px; padding-right: 20px; }
+      form.search { grid-template-columns: repeat(2, 1fr); }
+      form.search > div { grid-column: span 1 !important; }
+      form.search > div.wide { grid-column: span 2 !important; }
+      .book-grid { grid-template-columns: 1fr; }
+      .book-grid .full { grid-column: span 1; }
+      .results { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Password gate ─── -->
+<div id="gate">
+  <div class="logo">STUDIO217</div>
+  <div class="sub">Private Reservations</div>
+  <form onsubmit="event.preventDefault(); tryUnlock();">
+    <input id="gateInput" type="password" inputmode="numeric" autocomplete="off" placeholder="••••••" autofocus />
+    <button type="submit">Enter</button>
+    <div id="gateErr"></div>
+  </form>
+</div>
+
+<!-- ─── Booking console ─── -->
+<div id="console">
+<header>
+  <div>
+    <div class="brand">STUDIO217 <span class="amp">&amp;</span> Travel</div>
+    <span class="sub">Private Reservations</span>
+  </div>
+  <div>
+    <span id="status" class="status">checking…</span>
+    <button class="ghost" onclick="reconnect()">Reconnect</button>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h2>Find your stay</h2>
+    <p>Live availability and instant confirmation, worldwide.</p>
+    <div class="rule"></div>
+  </div>
+
+  <form class="search" onsubmit="event.preventDefault(); doSearch();">
+    <div style="grid-column: span 1;">
+      <label for="city">City code</label>
+      <input id="city" maxlength="3" placeholder="JFK" required style="text-transform: uppercase;" />
+    </div>
+    <div style="grid-column: span 2;">
+      <label for="checkin">Check-in</label>
+      <input id="checkin" type="date" required />
+    </div>
+    <div style="grid-column: span 1;">
+      <label for="nights">Nights</label>
+      <input id="nights" type="number" min="1" max="30" value="1" required />
+    </div>
+    <div style="grid-column: span 1;">
+      <label for="rooms">Rooms</label>
+      <input id="rooms" type="number" min="1" max="9" value="1" required />
+    </div>
+    <div style="grid-column: span 1;">
+      <button class="primary" id="searchBtn" type="submit">Search</button>
+    </div>
+    <div class="wide" style="grid-column: span 6;">
+      <label for="hotelName">Hotel name (optional)</label>
+      <input id="hotelName" placeholder="MARRIOTT" style="text-transform: uppercase;" />
+    </div>
+  </form>
+
+  <div class="results" id="results" style="display: none;">
+    <h2>Available properties <button class="ghost" onclick="loadMore()" id="moreBtn" style="display:none;">Show more</button></h2>
+    <div class="cmd" id="cmd"></div>
+    <div id="errBox"></div>
+    <table id="hotels" style="display: none;">
+      <thead><tr>
+        <th>#</th><th>Hotel</th><th>Rating</th><th>Distance</th><th>Nightly from</th><th></th>
+      </tr></thead>
+      <tbody id="hotelsBody"></tbody>
+    </table>
+    <details style="margin-top: 16px;">
+      <summary>Technical response</summary>
+      <pre class="raw" id="raw"></pre>
+    </details>
+  </div>
+</main>
+
+<footer>
+  <span class="mark">STUDIO217</span> · Brooklyn, New York · Reservations processed on our live booking system
+</footer>
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="close" onclick="closeModal()">×</button>
+    <h3 id="modalTitle">Hotel</h3>
+    <pre id="modalBody">loading…</pre>
+  </div>
+</div>
+
+<!-- Booking modal -->
+<div class="modal-bg" id="bookBg" onclick="closeBook(event)">
+  <div class="modal" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="bookTitle">
+    <button class="close" onclick="closeBook()">×</button>
+    <h3 id="bookTitle">Reserve</h3>
+
+    <form id="bookForm" onsubmit="event.preventDefault(); previewBooking();">
+      <div class="book-grid">
+        <div>
+          <label for="bkLast">Guest last name</label>
+          <input id="bkLast" required pattern="[A-Za-z][A-Za-z \-']{0,24}" placeholder="SMITH" style="text-transform: uppercase;" />
+        </div>
+        <div>
+          <label for="bkFirst">Guest first name</label>
+          <input id="bkFirst" required pattern="[A-Za-z][A-Za-z \-']{0,24}" placeholder="JOHN" style="text-transform: uppercase;" />
+        </div>
+        <div>
+          <label for="bkTitle">Title</label>
+          <select id="bkTitle"><option>MR</option><option>MS</option><option>MRS</option></select>
+        </div>
+        <div>
+          <label for="bkRooms">Rooms</label>
+          <input id="bkRooms" type="number" min="1" max="9" value="1" required />
+        </div>
+
+        <div class="full">
+          <label>Guarantee</label>
+          <div class="radio-row">
+            <label><input type="radio" name="bkGtype" value="CC" checked onchange="toggleGuarantee()" /> Credit card</label>
+            <label><input type="radio" name="bkGtype" value="AGT" onchange="toggleGuarantee()" /> Agency account</label>
+          </div>
+        </div>
+
+        <div id="ccFields" class="full">
+          <div class="book-grid" style="margin-bottom: 0;">
+            <div>
+              <label for="bkVendor">Card</label>
+              <select id="bkVendor">
+                <option value="VI">Visa</option>
+                <option value="CA">Mastercard</option>
+                <option value="AX">Amex</option>
+                <option value="DS">Discover</option>
+                <option value="DC">Diners</option>
+              </select>
+            </div>
+            <div>
+              <label for="bkCcNum">Card number</label>
+              <input id="bkCcNum" inputmode="numeric" placeholder="4111 1111 1111 1111" autocomplete="off" maxlength="23" />
+              <div id="ccHint" class="cc-hint"></div>
+            </div>
+            <div>
+              <label for="bkExpM">Exp month</label>
+              <input id="bkExpM" type="number" min="1" max="12" placeholder="06" />
+            </div>
+            <div>
+              <label for="bkExpY">Exp year (YY)</label>
+              <input id="bkExpY" type="number" min="26" max="40" placeholder="27" />
+            </div>
+          </div>
+        </div>
+
+        <div id="agtFields" class="full" style="display: none;">
+          <label for="bkIata">IATA / ARC number (optional)</label>
+          <input id="bkIata" inputmode="numeric" pattern="\d{7,10}" placeholder="99999992" />
+        </div>
+      </div>
+
+      <div id="stepsWrap" style="display:none;">
+        <div class="review-title">Reservation review</div>
+        <div id="bookSteps"></div>
+      </div>
+      <div id="bookResult"></div>
+
+      <div class="btn-row">
+        <button class="primary" id="bkPreviewBtn" type="submit">Review reservation</button>
+        <button class="primary gold" id="bkConfirmBtn" type="button" style="display:none;" onclick="confirmBooking()">Confirm reservation</button>
+      </div>
+      <p class="warn-note">Nothing is charged or reserved until you confirm. Review shows the exact reservation instructions first.</p>
+    </form>
+  </div>
+</div>
+
+<script>
+  // ── Access gate ─────────────────────────────────────────────────────
+  const GATE_HASH = "533d88472ebe1a248ac7ce5cce1ffbe7010ddeb1198dae75dd8afb1e571f8688";
+  const GATE_KEY = "s217_reservations";
+
+  async function sha256Hex(text) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+  async function tryUnlock() {
+    const input = document.getElementById("gateInput");
+    const hash = await sha256Hex(input.value.trim());
+    if (hash === GATE_HASH) {
+      sessionStorage.setItem(GATE_KEY, GATE_HASH);
+      unlock();
+    } else {
+      const gate = document.getElementById("gate");
+      document.getElementById("gateErr").textContent = "Incorrect code";
+      input.value = "";
+      gate.classList.remove("shake");
+      void gate.offsetWidth; // restart animation
+      gate.classList.add("shake");
+    }
+  }
+  function unlock() {
+    document.getElementById("gate").style.display = "none";
+    document.getElementById("console").style.display = "block";
+    checkStatus();
+  }
+  if (sessionStorage.getItem(GATE_KEY) === GATE_HASH) unlock();
+
+  // ── API base: the reservation engine runs on the Studio217 operations machine ──
+  const API = "http://127.0.0.1:8077";
+
+  // Default check-in to tomorrow
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById("checkin").value = tomorrow.toISOString().slice(0, 10);
+
+  async function checkStatus() {
+    const pill = document.getElementById("status");
+    try {
+      const r = await fetch(`${API}/api/status`).then(r => r.json());
+      if (r.connected) {
+        pill.textContent = "● live";
+        pill.className = "status ok";
+      } else if (r.sabre_tab) {
+        pill.textContent = "● reconnecting…";
+        pill.className = "status";
+      } else if (r.login_page) {
+        pill.textContent = "● sign-in required";
+        pill.className = "status bad";
+      } else {
+        pill.textContent = "● offline";
+        pill.className = "status bad";
+      }
+      pill.title = r.detail || "";
+    } catch (_e) {
+      pill.textContent = "● console offline";
+      pill.className = "status bad";
+      pill.title = "The reservation engine is not reachable — this console only works on the Studio217 operations machine.";
+    }
+  }
+  setInterval(checkStatus, 10000);
+
+  // Safe DOM helpers (no innerHTML with untrusted data)
+  function el(tag, attrs = {}, text) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") n.className = v;
+      else if (k === "onClick") n.addEventListener("click", v);
+      else if (k === "style") Object.assign(n.style, v);
+      else n.setAttribute(k, v);
+    }
+    if (text !== undefined && text !== null) n.textContent = String(text);
+    return n;
+  }
+  function setError(msg) {
+    const box = document.getElementById("errBox");
+    box.textContent = "";
+    if (msg) box.appendChild(el("div", { class: "err" }, msg));
+  }
+
+  async function reconnect() {
+    document.getElementById("status").textContent = "connecting…";
+    try { await fetch(`${API}/api/connect`, { method: "POST" }); } catch (_e) {}
+    checkStatus();
+  }
+
+  async function doSearch() {
+    const btn = document.getElementById("searchBtn");
+    btn.disabled = true;
+    btn.textContent = "Searching…";
+    document.getElementById("results").style.display = "block";
+    document.getElementById("hotels").style.display = "none";
+    setError(null);
+    document.getElementById("cmd").textContent = "";
+    document.getElementById("raw").textContent = "";
+    document.getElementById("moreBtn").style.display = "none";
+
+    const body = {
+      city: document.getElementById("city").value.trim().toUpperCase(),
+      checkin: document.getElementById("checkin").value,
+      nights: parseInt(document.getElementById("nights").value, 10),
+      rooms: parseInt(document.getElementById("rooms").value, 10),
+      hotel_name: document.getElementById("hotelName").value.trim() || null,
+    };
+
+    try {
+      const r = await fetch(`${API}/api/search`, {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(body),
+      });
+      const data = await r.json();
+      renderResults(data);
+    } catch (e) {
+      setError("The reservation engine is not reachable — this console only works on the Studio217 operations machine.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Search";
+    }
+  }
+
+  async function loadMore() {
+    const btn = document.getElementById("moreBtn");
+    btn.disabled = true;
+    btn.textContent = "Loading…";
+    try {
+      const data = await fetch(`${API}/api/more`).then(r => r.json());
+      renderResults(data, /* append */ true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Show more";
+    }
+  }
+
+  function renderResults(data, append = false) {
+    document.getElementById("cmd").textContent = data.command || "";
+    document.getElementById("raw").textContent = data.raw || "(no response)";
+
+    if (data.error) setError(`Availability error: ${data.error}`);
+
+    const h2 = document.querySelector("#results h2");
+    const countSpan = document.getElementById("countInfo") || el("span", { id: "countInfo", style: { color: "var(--ash)", fontSize: "12px", marginLeft: "8px", fontFamily: "'Jost', sans-serif" } });
+    if (!countSpan.parentNode) h2.appendChild(countSpan);
+    const n = (data.hotels || []).length;
+    const unparsed = data.unparsed_lines || 0;
+    countSpan.textContent = unparsed > 0
+      ? `— ${n} shown, ${unparsed} unparsed (see technical response)`
+      : (n > 0 ? `— ${n} found` : "");
+
+    const tbody = document.getElementById("hotelsBody");
+    if (!append) tbody.textContent = "";
+
+    if (data.hotels && data.hotels.length) {
+      document.getElementById("hotels").style.display = "table";
+      document.getElementById("moreBtn").style.display = "inline-block";
+      for (const h of data.hotels) {
+        const tr = document.createElement("tr");
+        tr.appendChild(el("td", {}, h.line));
+        const nameTd = el("td", {});
+        nameTd.appendChild(el("div", {}, h.name));
+        if (h.address) nameTd.appendChild(el("div", { style: { color: "var(--ash)", fontSize: "12px" } }, h.address));
+        tr.appendChild(nameTd);
+        tr.appendChild(el("td", {}, h.rating ? `${h.rating.toFixed(1)} ★` : "—"));
+        tr.appendChild(el("td", {}, h.distance || "—"));
+        tr.appendChild(el("td", { class: "rate" }, `${h.currency} ${h.rate.toFixed(2)}`));
+        const actions = el("td", { class: "actions" });
+        actions.appendChild(el("button", { onClick: () => showDetails(h.line, h.name) }, "Details"));
+        actions.appendChild(el("button", { onClick: () => showRates(h.line, h.name) }, "Rates"));
+        actions.appendChild(el("button", { class: "book", onClick: () => openBook(h.line, h.name) }, "Reserve"));
+        tr.appendChild(actions);
+        tbody.appendChild(tr);
+      }
+    } else if (!append) {
+      const tr = el("tr");
+      tr.appendChild(el("td", { colspan: "6", style: { color: "var(--ash)", textAlign: "center", padding: "28px" } },
+        "No availability found for these dates — see technical response below."));
+      tbody.appendChild(tr);
+      document.getElementById("hotels").style.display = "table";
+    }
+  }
+
+  async function showDetails(line, name) {
+    openModal(`${name} — Description`, "loading…");
+    const data = await fetch(`${API}/api/details/${line}`).then(r => r.json());
+    document.getElementById("modalBody").textContent = data.raw || "(no response)";
+  }
+
+  async function showRates(line, name) {
+    openModal(`${name} — Rates`, "loading…");
+    const data = await fetch(`${API}/api/rates/${line}`).then(r => r.json());
+    document.getElementById("modalBody").textContent = data.raw || "(no response)";
+  }
+
+  function openModal(title, body) {
+    document.getElementById("modalTitle").textContent = title;
+    document.getElementById("modalBody").textContent = body;
+    document.getElementById("modalBg").style.display = "flex";
+  }
+  function closeModal(e) {
+    if (e && e.target.closest(".modal") && !e.target.classList.contains("close")) return;
+    document.getElementById("modalBg").style.display = "none";
+  }
+
+  // ── Booking ─────────────────────────────────────────────────────────
+  let bookLine = null;
+
+  function openBook(line, name) {
+    bookLine = line;
+    document.getElementById("bookTitle").textContent = `Reserve — ${name}`;
+    document.getElementById("bkRooms").value = document.getElementById("rooms").value || "1";
+    document.getElementById("bookSteps").textContent = "";
+    document.getElementById("stepsWrap").style.display = "none";
+    document.getElementById("bookResult").textContent = "";
+    document.getElementById("bkConfirmBtn").style.display = "none";
+    document.getElementById("bkPreviewBtn").textContent = "Review reservation";
+    document.getElementById("bookBg").style.display = "flex";
+    document.getElementById("bkLast").focus();
+  }
+  function closeBook(e) {
+    if (e && e.target.closest(".modal") && !e.target.classList.contains("close")) return;
+    document.getElementById("bookBg").style.display = "none";
+  }
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeBook(); closeModal(); }
+  });
+
+  function toggleGuarantee() {
+    const cc = document.querySelector("input[name=bkGtype]:checked").value === "CC";
+    document.getElementById("ccFields").style.display = cc ? "block" : "none";
+    document.getElementById("agtFields").style.display = cc ? "none" : "block";
+    document.getElementById("bkConfirmBtn").style.display = "none";
+  }
+  document.getElementById("bookForm").addEventListener("input", () => {
+    document.getElementById("bkConfirmBtn").style.display = "none";
+  });
+
+  // ── Card intelligence: format, detect vendor, Luhn feedback ────────
+  const CARD_NAMES = { VI: "Visa", CA: "Mastercard", AX: "Amex", DS: "Discover", DC: "Diners" };
+  function detectVendor(digits) {
+    if (/^4/.test(digits)) return "VI";
+    if (/^(5[1-5]|2[2-7])/.test(digits)) return "CA";
+    if (/^3[47]/.test(digits)) return "AX";
+    if (/^(6011|64[4-9]|65)/.test(digits)) return "DS";
+    if (/^(30[0-5]|36|38|39)/.test(digits)) return "DC";
+    return null;
+  }
+  function luhnOk(digits) {
+    let sum = 0;
+    for (let i = 0; i < digits.length; i++) {
+      let d = +digits[digits.length - 1 - i];
+      if (i % 2 === 1) { d *= 2; if (d > 9) d -= 9; }
+      sum += d;
+    }
+    return sum % 10 === 0;
+  }
+  function ccDigits() {
+    return document.getElementById("bkCcNum").value.replace(/\D/g, "");
+  }
+  document.getElementById("bkCcNum").addEventListener("input", (e) => {
+    const digits = ccDigits().slice(0, 19);
+    e.target.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ");
+
+    const hint = document.getElementById("ccHint");
+    const vendor = detectVendor(digits);
+    if (vendor) document.getElementById("bkVendor").value = vendor;
+
+    if (digits.length === 0) {
+      hint.textContent = "";
+      hint.className = "cc-hint";
+    } else if (digits.length < 13) {
+      hint.textContent = vendor ? CARD_NAMES[vendor] : "Keep typing…";
+      hint.className = "cc-hint";
+    } else if (!luhnOk(digits)) {
+      hint.textContent = "✗ This number doesn't check out — please verify";
+      hint.className = "cc-hint bad";
+    } else {
+      hint.textContent = `✓ ${vendor ? CARD_NAMES[vendor] : "Card"} ending ${digits.slice(-4)}`;
+      hint.className = "cc-hint good";
+    }
+  });
+
+  function bookPayload(dryRun) {
+    const gtype = document.querySelector("input[name=bkGtype]:checked").value;
+    const p = {
+      line: bookLine,
+      rooms: parseInt(document.getElementById("bkRooms").value, 10),
+      last_name: document.getElementById("bkLast").value.trim().toUpperCase(),
+      first_name: document.getElementById("bkFirst").value.trim().toUpperCase(),
+      title: document.getElementById("bkTitle").value,
+      guarantee_type: gtype,
+      dry_run: dryRun,
+    };
+    if (gtype === "CC") {
+      p.cc_vendor = document.getElementById("bkVendor").value;
+      p.cc_number = ccDigits();
+      p.cc_exp_month = parseInt(document.getElementById("bkExpM").value, 10);
+      p.cc_exp_year = parseInt(document.getElementById("bkExpY").value, 10);
+    } else {
+      const iata = document.getElementById("bkIata").value.trim();
+      if (iata) p.agt_iata = iata;
+    }
+    return p;
+  }
+
+  async function callBook(dryRun) {
+    const r = await fetch(`${API}/api/book`, {
+      method: "POST",
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify(bookPayload(dryRun)),
+    });
+    if (r.status === 422) {
+      const detail = await r.json();
+      const msg = (detail.detail || []).map(d => `${(d.loc || []).slice(1).join(".")}: ${d.msg}`).join("; ");
+      throw new Error(msg || "Validation failed");
+    }
+    if (!r.ok) {
+      const detail = await r.json().catch(() => ({}));
+      throw new Error(detail.detail || `HTTP ${r.status}`);
+    }
+    return r.json();
+  }
+
+  function renderSteps(steps, showRaw) {
+    document.getElementById("stepsWrap").style.display = "block";
+    const box = document.getElementById("bookSteps");
+    box.textContent = "";
+    const ul = el("ul", { class: "step-list" });
+    for (const s of steps) {
+      const li = el("li");
+      li.appendChild(el("span", { class: "lbl" }, s.label));
+      li.appendChild(el("span", { class: "cmd-txt" }, s.command));
+      if (showRaw) li.appendChild(el("span", { class: s.error ? "bad" : "ok" }, s.error ? `✗ ${s.error}` : "✓"));
+      ul.appendChild(li);
+      if (showRaw && s.raw) {
+        const rawLi = el("li");
+        const pre = el("pre", { style: { margin: "0", fontSize: "11px", color: "var(--ash)", whiteSpace: "pre-wrap", maxHeight: "120px", overflow: "auto", fontFamily: "ui-monospace, monospace" } }, s.raw);
+        rawLi.appendChild(pre);
+        ul.appendChild(rawLi);
+      }
+    }
+    box.appendChild(ul);
+  }
+
+  async function previewBooking() {
+    const btn = document.getElementById("bkPreviewBtn");
+    btn.disabled = true;
+    document.getElementById("bookResult").textContent = "";
+    try {
+      const data = await callBook(true);
+      renderSteps(data.steps, false);
+      document.getElementById("bkConfirmBtn").style.display = "inline-block";
+    } catch (e) {
+      const res = document.getElementById("bookResult");
+      res.textContent = "";
+      res.appendChild(el("div", { class: "err", style: { marginTop: "10px", fontSize: "13px" } }, `Cannot build reservation: ${e.message}`));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Update review";
+    }
+  }
+
+  async function confirmBooking() {
+    const btn = document.getElementById("bkConfirmBtn");
+    const prev = document.getElementById("bkPreviewBtn");
+    btn.disabled = true; prev.disabled = true;
+    btn.textContent = "Reserving…";
+    const res = document.getElementById("bookResult");
+    res.textContent = "";
+    try {
+      const data = await callBook(false);
+      renderSteps(data.steps, true);
+      if (data.success && data.locator) {
+        res.appendChild(el("div", { class: "locator-box" }, data.locator));
+        res.appendChild(el("div", { class: "warn-note", style: { textAlign: "center" } }, "Reservation confirmed — keep this reference for check-in."));
+        btn.style.display = "none";
+      } else {
+        res.appendChild(el("div", { class: "locator-box failed" },
+          `The reservation could not be completed (step "${data.failed_step || "?"}"). Nothing was booked — please retry from search.`));
+      }
+    } catch (e) {
+      res.appendChild(el("div", { class: "locator-box failed" }, `Reservation error: ${e.message}`));
+    } finally {
+      btn.disabled = false; prev.disabled = false;
+      btn.textContent = "Confirm reservation";
+    }
+  }
+</script>
+
+</body>
+</html>
