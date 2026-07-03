@@ -188,6 +188,32 @@
       margin-top: 8px; padding: 10px 14px; border-radius: 10px;
       border: 1px solid #ecd2d0; background: #faf1f0; color: var(--err); font-size: 13px;
     }
+    .muted-note { color: var(--ash); font-size: 13px; }
+    .rate-list { display: flex; flex-direction: column; gap: 10px; max-height: 340px; overflow-y: auto; padding-right: 4px; }
+    .rate-card {
+      border: 1px solid var(--stone); border-radius: 12px; padding: 14px 16px;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s;
+      display: flex; justify-content: space-between; gap: 14px; align-items: flex-start;
+      background: var(--paper);
+    }
+    .rate-card:hover { border-color: var(--gold); }
+    .rate-card.selected { border-color: var(--gold); background: #f7f1e8; }
+    .rate-card .rc-room { font-size: 14.5px; }
+    .rate-card .rc-meta { color: var(--ash); font-size: 12px; margin-top: 2px; }
+    .rate-card .rc-price { text-align: right; white-space: nowrap; }
+    .rate-card .rc-nightly { font-family: 'Cormorant Garamond', serif; font-size: 18px; }
+    .rate-card .rc-total { color: var(--ash); font-size: 11.5px; }
+    .pill-ref, .pill-nonref {
+      display: inline-block; padding: 1px 9px; border-radius: 100px; font-size: 10px;
+      letter-spacing: 0.06em; margin-top: 6px;
+    }
+    .pill-ref { background: #f2f7f3; color: var(--ok); border: 1px solid #cfe0d3; }
+    .pill-nonref { background: #faf1f0; color: var(--err); border: 1px solid #ecd2d0; }
+    .rate-terms {
+      margin-bottom: 14px; padding: 12px 16px; border-radius: 12px;
+      border: 1px solid var(--stone); background: var(--panel2); font-size: 13px;
+    }
+    .rate-terms .rt-title { font-size: 10px; color: var(--ash); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 6px; }
     .nr-overlay {
       position: fixed; inset: 0; z-index: 30;
       background: rgba(33,28,22,0.5); backdrop-filter: blur(3px);
@@ -397,7 +423,14 @@
     <div id="bkDealNote" style="display:none; margin: -6px 0 14px; padding: 10px 14px; border-radius: 10px;
          border: 1px solid var(--gold); background: #f7f1e8; color: var(--gold-dark); font-size: 13px;"></div>
 
-    <form id="bookForm" onsubmit="event.preventDefault(); previewBooking();">
+    <!-- Step 1: room & rate picker -->
+    <div id="ratePicker">
+      <div class="review-title">Choose your room &amp; rate</div>
+      <div id="rateList" class="rate-list"><div class="muted-note">Loading room options…</div></div>
+    </div>
+
+    <form id="bookForm" onsubmit="event.preventDefault(); previewBooking();" style="display:none;">
+      <div id="rateTerms" class="rate-terms"></div>
       <div class="book-grid">
         <div>
           <label for="bkLast">Guest last name</label>
@@ -412,8 +445,8 @@
           <select id="bkTitle"><option>MR</option><option>MS</option><option>MRS</option></select>
         </div>
         <div>
-          <label for="bkRooms">Rooms</label>
-          <input id="bkRooms" type="number" min="1" max="9" value="1" required />
+          <label>Rooms</label>
+          <input value="1 room" disabled style="color: var(--ash);" />
         </div>
         <div class="full">
           <label for="bkEmail">Email — your confirmation is sent here</label>
@@ -436,13 +469,8 @@
         </div>
 
         <div class="full">
-          <label>Rate type</label>
-          <div class="radio-row">
-            <label><input type="radio" name="bkPolicy" value="REF" checked onchange="togglePolicy()" /> Refundable / flexible</label>
-            <label><input type="radio" name="bkPolicy" value="NONREF" onchange="togglePolicy()" /> Non-refundable</label>
-          </div>
           <div id="nrInline" class="nr-inline" style="display: none;">
-            ⚠ You are choosing a <strong>non-refundable</strong> rate. Once confirmed, this reservation
+            ⚠ You selected a <strong>non-refundable</strong> rate. Once confirmed, this reservation
             <strong>cannot be refunded</strong> — no money back if you cancel or don't show up.
           </div>
         </div>
@@ -451,7 +479,7 @@
           <label>Guarantee</label>
           <div class="radio-row">
             <label><input type="radio" name="bkGtype" value="CC" checked onchange="toggleGuarantee()" /> Credit card</label>
-            <label><input type="radio" name="bkGtype" value="AGT" onchange="toggleGuarantee()" /> Agency account</label>
+            <label><input type="radio" name="bkGtype" value="IATA" onchange="toggleGuarantee()" /> Agency account</label>
           </div>
         </div>
 
@@ -484,8 +512,8 @@
         </div>
 
         <div id="agtFields" class="full" style="display: none;">
-          <label for="bkIata">IATA / ARC number (optional)</label>
-          <input id="bkIata" inputmode="numeric" pattern="\d{7,10}" placeholder="99999992" />
+          <div class="muted-note">The reservation is guaranteed with the Studio217 agency account — no card needed.
+          Note: some hotels only accept a credit card guarantee; if so the booking will say so and nothing is charged or held.</div>
         </div>
       </div>
 
@@ -752,23 +780,105 @@
   let bookLine = null;
   let bookHotelName = "";
   let bookChain = "";
+  let chosenRate = null;
+  let nonrefAck = false;
+
+  function stayNights() {
+    const a = new Date(document.getElementById("checkin").value);
+    const b = new Date(document.getElementById("checkout").value);
+    const n = Math.round((b - a) / 86400000);
+    return n > 0 ? n : 1;
+  }
 
   function openBook(h) {
     bookLine = h.line;
     bookHotelName = h.name || "";
     bookChain = h.chain || "";
+    chosenRate = null;
+    nonrefAck = false;
     const dealNote = document.getElementById("bkDealNote");
     dealNote.style.display = h.deal ? "block" : "none";
     if (h.deal) dealNote.textContent =
       "A Studio217 negotiated rate applies to this hotel and is added to your reservation automatically.";
     document.getElementById("bookTitle").textContent = `Reserve — ${h.name}`;
-    document.getElementById("bkRooms").value = document.getElementById("rooms").value || "1";
     document.getElementById("bookSteps").textContent = "";
     document.getElementById("stepsWrap").style.display = "none";
     document.getElementById("bookResult").textContent = "";
     document.getElementById("bkConfirmBtn").style.display = "none";
     document.getElementById("bkPreviewBtn").textContent = "Review reservation";
+    document.getElementById("bookForm").style.display = "none";
+    document.getElementById("ratePicker").style.display = "block";
     document.getElementById("bookBg").style.display = "flex";
+    loadRates();
+  }
+
+  async function loadRates() {
+    const list = document.getElementById("rateList");
+    list.textContent = "";
+    list.appendChild(el("div", { class: "muted-note" }, "Loading room options — this can take up to half a minute…"));
+    try {
+      const r = await fetch(`${API}/api/hotel_rates`, {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify({ line: bookLine }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.detail || `HTTP ${r.status}`);
+      if (!data.success || !data.rates.length) throw new Error(data.error || "No room options returned.");
+      renderRates(data.rates);
+    } catch (e) {
+      list.textContent = "";
+      list.appendChild(el("div", { class: "err", style: { fontSize: "13px" } },
+        `Could not load room options: ${e.message}`));
+    }
+  }
+
+  function renderRates(rates) {
+    const list = document.getElementById("rateList");
+    list.textContent = "";
+    const nights = stayNights();
+    for (const rt of rates) {
+      const card = el("div", { class: "rate-card" });
+      const left = el("div");
+      left.appendChild(el("div", { class: "rc-room" }, (rt.room || rt.plan || "Room").toLowerCase()
+        .replace(/\b\w/g, c => c.toUpperCase())));
+      const meta = [rt.meals ? rt.meals.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : null,
+                    rt.plan ? rt.plan : null].filter(Boolean).join(" · ");
+      if (meta) left.appendChild(el("div", { class: "rc-meta" }, meta));
+      left.appendChild(el("span", { class: rt.refundable ? "pill-ref" : "pill-nonref" },
+        rt.refundable
+          ? ("Refundable" + (rt.cancel_policy ? " · free cancel " + rt.cancel_policy.toLowerCase() : ""))
+          : "Non-refundable"));
+      card.appendChild(left);
+      const right = el("div", { class: "rc-price" });
+      right.appendChild(el("div", { class: "rc-nightly" }, `${rt.currency} ${rt.nightly.toFixed(2)}`));
+      right.appendChild(el("div", { class: "rc-total" }, "per night"));
+      if (rt.total != null) right.appendChild(el("div", { class: "rc-total" },
+        `${rt.currency} ${rt.total.toFixed(2)} total incl. taxes`));
+      card.appendChild(right);
+      card.addEventListener("click", () => selectRate(rt, card));
+      list.appendChild(card);
+    }
+  }
+
+  function selectRate(rt, card) {
+    chosenRate = rt;
+    nonrefAck = false;
+    [...document.querySelectorAll(".rate-card")].forEach(c => c.classList.remove("selected"));
+    card.classList.add("selected");
+    const terms = document.getElementById("rateTerms");
+    terms.textContent = "";
+    terms.appendChild(el("div", { class: "rt-title" }, "Your selection"));
+    terms.appendChild(el("div", {}, `${(rt.room || rt.plan || "").toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}` +
+      ` — ${rt.currency} ${rt.nightly.toFixed(2)}/night × ${stayNights()} night(s)` +
+      (rt.total != null ? ` · ${rt.currency} ${rt.total.toFixed(2)} total incl. taxes` : "")));
+    terms.appendChild(el("div", { style: { marginTop: "4px", color: rt.refundable ? "var(--ok)" : "var(--err)" } },
+      rt.refundable
+        ? "Refundable — free cancellation " + (rt.cancel_policy ? rt.cancel_policy.toLowerCase() : "per rate rules")
+        : "Non-refundable — cannot be refunded after confirmation"));
+    document.getElementById("nrInline").style.display = rt.refundable ? "none" : "block";
+    document.getElementById("bookForm").style.display = "block";
+    document.getElementById("bkConfirmBtn").style.display = "none";
     document.getElementById("bkLast").focus();
   }
   function closeBook(e) {
@@ -786,18 +896,11 @@
     document.getElementById("bkConfirmBtn").style.display = "none";
   }
 
-  function ratePolicy() {
-    return document.querySelector("input[name=bkPolicy]:checked").value;
-  }
-  function togglePolicy() {
-    // the note pops up the moment non-refundable is chosen
-    document.getElementById("nrInline").style.display = ratePolicy() === "NONREF" ? "block" : "none";
-    document.getElementById("bkConfirmBtn").style.display = "none";
-  }
   function closeNrOverlay() {
     document.getElementById("nrOverlay").style.display = "none";
   }
   function acceptNonRefundable() {
+    nonrefAck = true;
     closeNrOverlay();
     proceedBooking();
   }
@@ -851,15 +954,19 @@
   });
 
   function bookPayload(dryRun) {
+    if (!chosenRate) throw new Error("Pick a room & rate first.");
     const gtype = document.querySelector("input[name=bkGtype]:checked").value;
     const p = {
+      city: document.getElementById("city").value.trim().toUpperCase(),
       line: bookLine,
-      rooms: parseInt(document.getElementById("bkRooms").value, 10),
+      rate_line: chosenRate.rate_line,
+      rate_code: chosenRate.code || null,
+      nonref_ack: nonrefAck,
+      rooms: 1,
       last_name: document.getElementById("bkLast").value.trim().toUpperCase(),
       first_name: document.getElementById("bkFirst").value.trim().toUpperCase(),
       title: document.getElementById("bkTitle").value,
       guarantee_type: gtype,
-      rate_policy: ratePolicy(),
       checkin: document.getElementById("checkin").value || null,
       checkout: document.getElementById("checkout").value || null,
       email: document.getElementById("bkEmail").value.trim() || null,
@@ -874,9 +981,6 @@
       p.cc_number = ccDigits();
       p.cc_exp_month = parseInt(document.getElementById("bkExpM").value, 10);
       p.cc_exp_year = parseInt(document.getElementById("bkExpY").value, 10);
-    } else {
-      const iata = document.getElementById("bkIata").value.trim();
-      if (iata) p.agt_iata = iata;
     }
     return p;
   }
@@ -939,7 +1043,7 @@
   }
 
   function confirmBooking() {
-    if (ratePolicy() === "NONREF") {
+    if (chosenRate && !chosenRate.refundable && !nonrefAck) {
       // hard stop: explicit acknowledgment before a non-refundable booking
       document.getElementById("nrOverlay").style.display = "flex";
       return;
@@ -959,11 +1063,20 @@
       renderSteps(data.steps, true);
       if (data.success && data.locator) {
         res.appendChild(el("div", { class: "locator-box" }, data.locator));
+        const rt = data.rate || chosenRate;
+        if (rt) {
+          res.appendChild(el("div", { class: "warn-note", style: { textAlign: "center" } },
+            `${rt.currency} ${rt.nightly.toFixed(2)}/night × ${stayNights()} night(s)` +
+            (rt.total != null ? ` — ${rt.currency} ${rt.total.toFixed(2)} total incl. taxes` : "") +
+            (rt.refundable
+              ? ` · refundable${rt.cancel_policy ? " (" + rt.cancel_policy.toLowerCase() + ")" : ""}`
+              : " · non-refundable")));
+        }
         const mail = data.confirmation_email;
         const note = mail && mail.sent
-          ? `Reservation confirmed — a confirmation email was sent to ${mail.to}.`
+          ? `Reservation confirmed — the voucher was sent to ${mail.to}.`
           : (mail && !mail.sent
-              ? `Reservation confirmed — the confirmation email to ${mail.to} could not be sent, so save this code now.`
+              ? `Reservation confirmed — the voucher email to ${mail.to} could not be sent, so save this code now.`
               : "Reservation confirmed — keep this reference for check-in.");
         res.appendChild(el("div", { class: "warn-note", style: { textAlign: "center" } }, note));
         btn.style.display = "none";
