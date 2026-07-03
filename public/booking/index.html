@@ -550,9 +550,17 @@
 </div>
 
 <script>
-  // ── Access gate ─────────────────────────────────────────────────────
-  const GATE_HASH = "533d88472ebe1a248ac7ce5cce1ffbe7010ddeb1198dae75dd8afb1e571f8688";
-  const GATE_KEY = "s217_reservations";
+  // ── Access gate — per-person codes (hashes only; labels feed the ledger) ──
+  const GATE_USERS = {
+    "533d88472ebe1a248ac7ce5cce1ffbe7010ddeb1198dae75dd8afb1e571f8688": "HABIB",
+    "b0ce273273c1814178d983e362b80ba362ca0655e803578f7ad3aa84b6e3d610": "G1",
+    "4b9027b83007f69d0d2dcace5d827ca7f57d9f05dfc5b8efda94acbd81d2225c": "G2",
+    "57860d992476db012b98ac599a5eaab8ef2f87e9c0192022f7b48f237e45befe": "RUBA",
+    "44600f2341ae6ded9740bc4690ead9e72e46d1c032cd3202395227b75d2954ba": "G3",
+    "626996decf06d7a24777380166c0646e1f142336347f55b143d622abf27f7836": "LYNDSI",
+  };
+  const GATE_KEY = "s217_reservations_user";
+  let accessUser = null;
 
   async function sha256Hex(text) {
     const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -561,8 +569,9 @@
   async function tryUnlock() {
     const input = document.getElementById("gateInput");
     const hash = await sha256Hex(input.value.trim());
-    if (hash === GATE_HASH) {
-      sessionStorage.setItem(GATE_KEY, GATE_HASH);
+    if (GATE_USERS[hash]) {
+      accessUser = GATE_USERS[hash];
+      sessionStorage.setItem(GATE_KEY, hash);
       unlock();
     } else {
       const gate = document.getElementById("gate");
@@ -578,7 +587,10 @@
     document.getElementById("console").style.display = "block";
     checkStatus();
   }
-  if (sessionStorage.getItem(GATE_KEY) === GATE_HASH) unlock();
+  {
+    const saved = sessionStorage.getItem(GATE_KEY);
+    if (saved && GATE_USERS[saved]) { accessUser = GATE_USERS[saved]; unlock(); }
+  }
 
   // ── API base: the reservation engine runs on the Studio217 operations machine ──
   const API = "http://127.0.0.1:8077";
@@ -978,6 +990,7 @@
       loyalty_number: document.getElementById("bkLoyalty").value.trim().toUpperCase() || null,
       corp_code: document.getElementById("bkCorp").value.trim().toUpperCase() || null,
       chain: bookChain || null,
+      access_user: accessUser || null,
       dry_run: dryRun,
     };
     if (gtype === "CC") {
