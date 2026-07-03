@@ -820,7 +820,11 @@
       const r = await fetch(`${API}/api/hotel_rates`, {
         method: "POST",
         headers: {"content-type": "application/json"},
-        body: JSON.stringify({ line: bookLine }),
+        body: JSON.stringify({
+          line: bookLine,
+          checkin: document.getElementById("checkin").value || null,
+          checkout: document.getElementById("checkout").value || null,
+        }),
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.detail || `HTTP ${r.status}`);
