@@ -111,7 +111,11 @@
       background: var(--paper); border: 1px solid var(--stone); color: var(--ink);
       padding: 11px 14px; border-radius: 9px; font-size: 15px; width: 100%; font-family: inherit;
       transition: border-color 0.2s, box-shadow 0.2s;
+      min-width: 0; max-width: 100%;
     }
+    /* grid items must be allowed to shrink below their content's intrinsic
+       width (date inputs are wide by default) or columns blow out on phones */
+    form.search > div, .book-grid > div { min-width: 0; }
     input::placeholder { color: #cbc2b2; }
     input:focus, select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(160,120,72,0.12); }
     button { font-family: inherit; border-radius: 9px; font-size: 14px; border: 1px solid var(--stone); background: var(--paper); color: var(--ink); padding: 11px 14px; width: 100%; }
@@ -266,13 +270,35 @@
     footer .mark { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--gold); }
 
     @media (max-width: 760px) {
-      header, main { padding-left: 20px; padding-right: 20px; }
-      form.search { grid-template-columns: repeat(2, 1fr); }
+      html, body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
+      header { padding: 14px 16px; flex-wrap: wrap; gap: 10px; }
+      header .brand { font-size: 21px; }
+      main { padding: 26px 14px 70px; }
+      .hero h2 { font-size: 27px; }
+      .hero p { font-size: 13.5px; }
+      form.search { grid-template-columns: repeat(2, 1fr); padding: 16px; gap: 12px; border-radius: 14px; }
       form.search > div { grid-column: span 1 !important; }
       form.search > div.wide { grid-column: span 2 !important; }
-      .book-grid { grid-template-columns: 1fr; }
+      form.search > div.btncell { grid-column: span 2 !important; }
+      /* 16px inputs stop iOS zoom-on-focus (which made the page jump around) */
+      input, select, button { font-size: 16px; }
+      .modal { padding: 20px 14px; width: 94%; max-height: 88vh; border-radius: 14px; }
+      .modal h3 { font-size: 19px; }
+      .book-grid { grid-template-columns: 1fr; gap: 12px; }
       .book-grid .full { grid-column: span 1; }
-      .results { overflow-x: auto; }
+      .book-grid .book-grid { grid-template-columns: 1fr; }
+      .rate-card { flex-direction: column; gap: 8px; }
+      .rate-card .rc-price { text-align: left; white-space: normal; }
+      .rate-list { max-height: 46vh; }
+      .results { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .results table { min-width: 620px; }
+      th, td { padding: 10px 10px; font-size: 13px; }
+      td.actions button { margin-left: 4px; padding: 5px 9px; font-size: 11px; }
+      .step-list .cmd-txt { word-break: break-all; font-size: 11.5px; }
+      .nr-card { padding: 20px 16px; }
+      .modal .btn-row { flex-wrap: wrap; }
+      .modal .btn-row button { flex: 1 1 auto; }
+      footer { padding: 0 16px 36px; }
     }
   </style>
 </head>
@@ -330,7 +356,7 @@
       <label for="hotelName">Hotel name (optional)</label>
       <input id="hotelName" placeholder="MARRIOTT" style="text-transform: uppercase;" />
     </div>
-    <div style="grid-column: span 1;">
+    <div class="btncell" style="grid-column: span 1;">
       <button class="primary" id="searchBtn" type="submit">Search</button>
     </div>
   </form>
@@ -345,7 +371,7 @@
         <label for="mgLoc">Confirmation code</label>
         <input id="mgLoc" maxlength="6" placeholder="ABC123" pattern="[A-Za-z0-9]{6}" required style="text-transform: uppercase; letter-spacing: 0.15em;" />
       </div>
-      <div style="grid-column: span 1;">
+      <div class="btncell" style="grid-column: span 1;">
         <button class="primary" id="mgFindBtn" type="submit">Find</button>
       </div>
       <div class="wide" style="grid-column: span 3; align-self: center; color: var(--ash); font-size: 12.5px;">
@@ -365,13 +391,13 @@
           <label for="mgOut">New check-out</label>
           <input id="mgOut" type="date" />
         </div>
-        <div style="grid-column: span 2;">
+        <div class="btncell" style="grid-column: span 2;">
           <button class="primary" type="button" onclick="mgChange(true)">Preview date change</button>
         </div>
         <div class="wide" style="grid-column: span 4; align-self: center; color: var(--ash); font-size: 12.5px;">
           Or cancel the reservation entirely — refunds follow the rate's conditions.
         </div>
-        <div style="grid-column: span 2;">
+        <div class="btncell" style="grid-column: span 2;">
           <button type="button" class="danger" onclick="mgCancel(true)">Preview cancellation</button>
         </div>
       </div>
