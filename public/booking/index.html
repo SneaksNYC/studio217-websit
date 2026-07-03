@@ -592,8 +592,39 @@
     if (saved && GATE_USERS[saved]) { accessUser = GATE_USERS[saved]; unlock(); }
   }
 
-  // ── API base: the reservation engine runs on the Studio217 operations machine ──
-  const API = "http://127.0.0.1:8077";
+  // ── API base: tunnel address published at /engine.json, falling back to
+  // the operations machine itself. Every call carries the personal key.
+  let API = "http://127.0.0.1:8077";
+  let engineReady = false;
+
+  function keyHeaders() {
+    const h = sessionStorage.getItem(GATE_KEY);
+    return h ? { "x-s217-key": h } : {};
+  }
+  function apiFetch(path, opts = {}) {
+    opts.headers = Object.assign({}, opts.headers || {}, keyHeaders());
+    return fetch(API + path, opts);
+  }
+  async function initEngine() {
+    const candidates = [];
+    try {
+      const r = await fetch("/engine.json", { cache: "no-store" });
+      if (r.ok) { const j = await r.json(); if (j.engine) candidates.push(j.engine); }
+    } catch (_e) {}
+    candidates.push("http://127.0.0.1:8077");
+    for (const base of candidates) {
+      try {
+        const ctl = new AbortController();
+        const t = setTimeout(() => ctl.abort(), 5000);
+        const r = await fetch(base + "/api/status", { signal: ctl.signal, headers: keyHeaders() });
+        clearTimeout(t);
+        if (r.ok) { API = base; break; }
+      } catch (_e) {}
+    }
+    engineReady = true;
+    checkStatus();
+  }
+  initEngine();
 
   // Default stay: tomorrow → day after
   const tomorrow = new Date();
@@ -616,7 +647,7 @@
   async function checkStatus() {
     const pill = document.getElementById("status");
     try {
-      const r = await fetch(`${API}/api/status`).then(r => r.json());
+      const r = await apiFetch(`/api/status`).then(r => r.json());
       if (r.connected) {
         pill.textContent = "● live";
         pill.className = "status ok";
@@ -659,7 +690,7 @@
 
   async function reconnect() {
     document.getElementById("status").textContent = "connecting…";
-    try { await fetch(`${API}/api/connect`, { method: "POST" }); } catch (_e) {}
+    try { await apiFetch(`/api/connect`, { method: "POST" }); } catch (_e) {}
     checkStatus();
   }
 
@@ -683,7 +714,7 @@
     };
 
     try {
-      const r = await fetch(`${API}/api/search`, {
+      const r = await apiFetch(`/api/search`, {
         method: "POST",
         headers: {"content-type": "application/json"},
         body: JSON.stringify(body),
@@ -703,7 +734,7 @@
     btn.disabled = true;
     btn.textContent = "Loading…";
     try {
-      const data = await fetch(`${API}/api/more`).then(r => r.json());
+      const data = await apiFetch(`/api/more`).then(r => r.json());
       renderResults(data, /* append */ true);
     } finally {
       btn.disabled = false;
@@ -768,13 +799,13 @@
 
   async function showDetails(line, name) {
     openModal(`${name} — Description`, "loading…");
-    const data = await fetch(`${API}/api/details/${line}`).then(r => r.json());
+    const data = await apiFetch(`/api/details/${line}`).then(r => r.json());
     document.getElementById("modalBody").textContent = data.raw || "(no response)";
   }
 
   async function showRates(line, name) {
     openModal(`${name} — Rates`, "loading…");
-    const data = await fetch(`${API}/api/rates/${line}`).then(r => r.json());
+    const data = await apiFetch(`/api/rates/${line}`).then(r => r.json());
     document.getElementById("modalBody").textContent = data.raw || "(no response)";
   }
 
@@ -829,7 +860,7 @@
     list.textContent = "";
     list.appendChild(el("div", { class: "muted-note" }, "Loading room options — this can take up to half a minute…"));
     try {
-      const r = await fetch(`${API}/api/hotel_rates`, {
+      const r = await apiFetch(`/api/hotel_rates`, {
         method: "POST",
         headers: {"content-type": "application/json"},
         body: JSON.stringify({
@@ -1003,7 +1034,7 @@
   }
 
   async function callBook(dryRun) {
-    const r = await fetch(`${API}/api/book`, {
+    const r = await apiFetch(`/api/book`, {
       method: "POST",
       headers: {"content-type": "application/json"},
       body: JSON.stringify(bookPayload(dryRun)),
@@ -1136,7 +1167,7 @@
     document.getElementById("mgResult").textContent = "";
     mgResetConfirms();
     try {
-      const r = await fetch(`${API}/api/reservation/${loc}`);
+      const r = await apiFetch(`/api/reservation/${loc}`);
       const data = await r.json();
       if (!r.ok) throw new Error(data.detail || `HTTP ${r.status}`);
       if (!data.success) {
@@ -1186,7 +1217,7 @@
       body.checkout = document.getElementById("mgOut").value;
       if (!body.checkin || !body.checkout) throw new Error("Pick the new check-in and check-out dates first.");
     }
-    const r = await fetch(`${API}/api/reservation/${mgLocator}/${kind}`, {
+    const r = await apiFetch(`/api/reservation/${mgLocator}/${kind}`, {
       method: "POST",
       headers: {"content-type": "application/json"},
       body: JSON.stringify(body),
