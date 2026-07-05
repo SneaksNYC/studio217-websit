@@ -218,6 +218,19 @@
       border: 1px solid var(--stone); background: var(--panel2); font-size: 13px;
     }
     .rate-terms .rt-title { font-size: 10px; color: var(--ash); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 6px; }
+
+    /* Hotel details card */
+    .hotel-card { font-family: 'Jost', sans-serif; font-size: 14.5px; }
+    .hc-stars { color: var(--gold); font-size: 17px; letter-spacing: 0.15em; margin-bottom: 12px; }
+    .hc-starnum { color: var(--ash); font-size: 12px; letter-spacing: 0; font-family: 'Jost', sans-serif; }
+    .hc-deal {
+      margin-bottom: 14px; padding: 10px 14px; border-radius: 10px; font-size: 12.5px;
+      border: 1px solid var(--gold); background: #f7f1e8; color: var(--gold-dark);
+    }
+    .hc-grid { display: grid; grid-template-columns: 90px 1fr; gap: 9px 16px; padding: 14px 0; border-top: 1px solid var(--stone); border-bottom: 1px solid var(--stone); }
+    .hc-label { color: var(--ash); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em; padding-top: 2px; }
+    .hc-value { color: var(--ink); }
+    .hc-note { margin-top: 14px; color: var(--ash); font-size: 13px; }
     .nr-overlay {
       position: fixed; inset: 0; z-index: 30;
       background: rgba(33,28,22,0.5); backdrop-filter: blur(3px);
@@ -438,7 +451,7 @@
   <div class="modal" onclick="event.stopPropagation()">
     <button class="close" onclick="closeModal()">×</button>
     <h3 id="modalTitle">Hotel</h3>
-    <pre id="modalBody">loading…</pre>
+    <div id="modalBody"></div>
   </div>
 </div>
 
@@ -503,15 +516,8 @@
           </div>
         </div>
 
-        <div class="full">
-          <label>Guarantee</label>
-          <div class="radio-row">
-            <label><input type="radio" name="bkGtype" value="CC" checked onchange="toggleGuarantee()" /> Credit card</label>
-            <label><input type="radio" name="bkGtype" value="IATA" onchange="toggleGuarantee()" /> Agency account</label>
-          </div>
-        </div>
-
         <div id="ccFields" class="full">
+          <label>Payment — card guarantee</label>
           <div class="book-grid" style="margin-bottom: 0;">
             <div>
               <label for="bkVendor">Card</label>
@@ -539,10 +545,6 @@
           </div>
         </div>
 
-        <div id="agtFields" class="full" style="display: none;">
-          <div class="muted-note">The reservation is guaranteed with the Studio217 agency account — no card needed.
-          Note: some hotels only accept a credit card guarantee; if so the booking will say so and nothing is charged or held.</div>
-        </div>
       </div>
 
       <div id="stepsWrap" style="display:none;">
@@ -905,8 +907,7 @@
         tr.appendChild(el("td", {}, h.distance || "—"));
         tr.appendChild(el("td", { class: "rate" }, `${h.currency} ${h.rate.toFixed(2)}`));
         const actions = el("td", { class: "actions" });
-        actions.appendChild(el("button", { onClick: () => showDetails(h.line, h.name) }, "Details"));
-        actions.appendChild(el("button", { onClick: () => showRates(h.line, h.name) }, "Rates"));
+        actions.appendChild(el("button", { onClick: () => showDetails(h) }, "Details"));
         actions.appendChild(el("button", { class: "book", onClick: () => openBook(h) }, "Reserve"));
         tr.appendChild(actions);
         tbody.appendChild(tr);
@@ -920,16 +921,57 @@
     }
   }
 
-  async function showDetails(line, name) {
-    openModal(`${name} — Description`, "loading…");
-    const data = await apiFetch(`/api/details/${line}`).then(r => r.json());
-    document.getElementById("modalBody").textContent = data.raw || "(no response)";
+  // Fix Sabre text artifacts ("EQUIPPED W ITH") and shout-case, then title-case.
+  function prettify(text) {
+    if (!text) return "";
+    let t = String(text).replace(/\s+/g, " ").trim();
+    t = t.replace(/\b([A-Z]) ([A-Z]{2,})\b/g, (m, a, b) => {
+      const joined = a + b;
+      return /^(WITH|WHERE|WHICH|WHILE|ITH)$/.test(joined) || b === "ITH" ? a + b : m;
+    });
+    t = t.replace(/\bW ITH\b/g, "WITH");
+    return t.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
   }
 
-  async function showRates(line, name) {
-    openModal(`${name} — Rates`, "loading…");
-    const data = await apiFetch(`/api/rates/${line}`).then(r => r.json());
-    document.getElementById("modalBody").textContent = data.raw || "(no response)";
+  function showDetails(h) {
+    const body = document.getElementById("modalBody");
+    document.getElementById("modalTitle").textContent = prettify(h.name);
+    body.textContent = "";
+    const wrap = el("div", { class: "hotel-card" });
+
+    if (h.rating) {
+      const stars = "★".repeat(Math.round(h.rating)) + "☆".repeat(Math.max(0, 5 - Math.round(h.rating)));
+      const starRow = el("div", { class: "hc-stars" }, stars + "  ");
+      starRow.appendChild(el("span", { class: "hc-starnum" }, `${h.rating.toFixed(1)} / 5`));
+      wrap.appendChild(starRow);
+    }
+    if (h.deal) wrap.appendChild(el("div", { class: "hc-deal" }, "STUDIO217 RATE — negotiated rate applied automatically when you reserve"));
+
+    const rows = [
+      ["Address", prettify(h.address) || "—"],
+      ["Distance", h.distance ? h.distance.replace("MI", "miles").toLowerCase() + " from city reference point" : "—"],
+      ["From", `${h.currency} ${h.rate.toFixed(2)} per night`],
+      ["Stay", `${document.getElementById("checkin").value} → ${document.getElementById("checkout").value}`],
+    ];
+    const grid = el("div", { class: "hc-grid" });
+    for (const [k, v] of rows) {
+      grid.appendChild(el("div", { class: "hc-label" }, k));
+      grid.appendChild(el("div", { class: "hc-value" }, v));
+    }
+    wrap.appendChild(grid);
+
+    wrap.appendChild(el("div", { class: "hc-note" },
+      "Tap Reserve to see every available room and rate for your dates — with meal plan, " +
+      "refundable or non-refundable conditions, nightly price and total with taxes."));
+
+    const btnRow = el("div", { class: "btn-row", style: { marginTop: "18px" } });
+    const reserveBtn = el("button", { class: "primary gold", style: { width: "auto", padding: "11px 24px" },
+      onClick: () => { closeModal(); openBook(h); } }, "Reserve this hotel");
+    btnRow.appendChild(reserveBtn);
+    wrap.appendChild(btnRow);
+
+    body.appendChild(wrap);
+    document.getElementById("modalBg").style.display = "flex";
   }
 
   function openModal(title, body) {
@@ -1010,10 +1052,9 @@
     for (const rt of rates) {
       const card = el("div", { class: "rate-card" });
       const left = el("div");
-      left.appendChild(el("div", { class: "rc-room" }, (rt.room || rt.plan || "Room").toLowerCase()
-        .replace(/\b\w/g, c => c.toUpperCase())));
-      const meta = [rt.meals ? rt.meals.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : null,
-                    rt.plan ? rt.plan : null].filter(Boolean).join(" · ");
+      left.appendChild(el("div", { class: "rc-room" }, prettify(rt.room || rt.plan || "Room")));
+      const meta = [rt.meals ? prettify(rt.meals) : null,
+                    rt.plan ? prettify(rt.plan) : null].filter(Boolean).join(" · ");
       if (meta) left.appendChild(el("div", { class: "rc-meta" }, meta));
       left.appendChild(el("span", { class: rt.refundable ? "pill-ref" : "pill-nonref" },
         rt.refundable
@@ -1039,7 +1080,7 @@
     const terms = document.getElementById("rateTerms");
     terms.textContent = "";
     terms.appendChild(el("div", { class: "rt-title" }, "Your selection"));
-    terms.appendChild(el("div", {}, `${(rt.room || rt.plan || "").toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}` +
+    terms.appendChild(el("div", {}, `${prettify(rt.room || rt.plan || "")}` +
       ` — ${rt.currency} ${rt.nightly.toFixed(2)}/night × ${stayNights()} night(s)` +
       (rt.total != null ? ` · ${rt.currency} ${rt.total.toFixed(2)} total incl. taxes` : "")));
     terms.appendChild(el("div", { style: { marginTop: "4px", color: rt.refundable ? "var(--ok)" : "var(--err)" } },
@@ -1059,12 +1100,6 @@
     if (e.key === "Escape") { closeBook(); closeModal(); }
   });
 
-  function toggleGuarantee() {
-    const cc = document.querySelector("input[name=bkGtype]:checked").value === "CC";
-    document.getElementById("ccFields").style.display = cc ? "block" : "none";
-    document.getElementById("agtFields").style.display = cc ? "none" : "block";
-    document.getElementById("bkConfirmBtn").style.display = "none";
-  }
 
   function closeNrOverlay() {
     document.getElementById("nrOverlay").style.display = "none";
@@ -1127,7 +1162,7 @@
     if (!chosenRate) throw new Error("Pick a room & rate first.");
     const resolved = resolveCity(document.getElementById("city").value);
     if (!resolved) throw new Error("Destination not recognized — please search again.");
-    const gtype = document.querySelector("input[name=bkGtype]:checked").value;
+    const gtype = "CC";
     const p = {
       city: resolved.code,
       line: bookLine,
