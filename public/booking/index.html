@@ -336,9 +336,11 @@
   </div>
 
   <form class="search" onsubmit="event.preventDefault(); doSearch();">
-    <div style="grid-column: span 1;">
-      <label for="city">City code</label>
-      <input id="city" maxlength="3" placeholder="JFK" required style="text-transform: uppercase;" />
+    <div style="grid-column: span 2;">
+      <label for="city">Destination</label>
+      <input id="city" list="cityList" placeholder="Paris, New York, Dubai…" required autocomplete="off" />
+      <datalist id="cityList"></datalist>
+      <div id="cityHint" style="font-size: 11.5px; color: var(--ash); min-height: 15px; margin-top: 4px;"></div>
     </div>
     <div style="grid-column: span 2;">
       <label for="checkin">Check-in</label>
@@ -352,7 +354,7 @@
       <label for="rooms">Rooms</label>
       <input id="rooms" type="number" min="1" max="9" value="1" required />
     </div>
-    <div class="wide" style="grid-column: span 5;">
+    <div class="wide" style="grid-column: span 4;">
       <label for="hotelName">Hotel name (optional)</label>
       <input id="hotelName" placeholder="MARRIOTT" style="text-transform: uppercase;" />
     </div>
@@ -652,6 +654,94 @@
   }
   initEngine();
 
+  // ── Destination picker: type a city name, we translate to the GDS code ──
+  const CITIES = [
+    ["NYC","New York, USA"],["LAX","Los Angeles, USA"],["MIA","Miami, USA"],["CHI","Chicago, USA"],
+    ["SFO","San Francisco, USA"],["LAS","Las Vegas, USA"],["ORL","Orlando, USA"],["WAS","Washington DC, USA"],
+    ["BOS","Boston, USA"],["ATL","Atlanta, USA"],["DFW","Dallas, USA"],["HOU","Houston, USA"],
+    ["PHL","Philadelphia, USA"],["SEA","Seattle, USA"],["DEN","Denver, USA"],["PHX","Phoenix, USA"],
+    ["SAN","San Diego, USA"],["AUS","Austin, USA"],["BNA","Nashville, USA"],["MSY","New Orleans, USA"],
+    ["HNL","Honolulu, USA"],["YTO","Toronto, Canada"],["YMQ","Montreal, Canada"],["YVR","Vancouver, Canada"],
+    ["MEX","Mexico City, Mexico"],["CUN","Cancun, Mexico"],["SJD","Los Cabos, Mexico"],
+    ["PAR","Paris, France"],["NCE","Nice, France"],["LYS","Lyon, France"],["MRS","Marseille, France"],
+    ["LON","London, UK"],["MAN","Manchester, UK"],["EDI","Edinburgh, UK"],["DUB","Dublin, Ireland"],
+    ["MAD","Madrid, Spain"],["BCN","Barcelona, Spain"],["AGP","Malaga, Spain"],["SVQ","Seville, Spain"],
+    ["PMI","Palma de Mallorca, Spain"],["IBZ","Ibiza, Spain"],["VLC","Valencia, Spain"],
+    ["LIS","Lisbon, Portugal"],["OPO","Porto, Portugal"],["FAO","Faro / Algarve, Portugal"],
+    ["ROM","Rome, Italy"],["MIL","Milan, Italy"],["VCE","Venice, Italy"],["FLR","Florence, Italy"],
+    ["NAP","Naples, Italy"],["PSA","Pisa / Tuscany, Italy"],["CTA","Catania / Sicily, Italy"],
+    ["BER","Berlin, Germany"],["MUC","Munich, Germany"],["FRA","Frankfurt, Germany"],["HAM","Hamburg, Germany"],
+    ["CGN","Cologne, Germany"],["DUS","Dusseldorf, Germany"],["AMS","Amsterdam, Netherlands"],
+    ["BRU","Brussels, Belgium"],["LUX","Luxembourg"],["ZRH","Zurich, Switzerland"],["GVA","Geneva, Switzerland"],
+    ["VIE","Vienna, Austria"],["PRG","Prague, Czechia"],["BUD","Budapest, Hungary"],["WAW","Warsaw, Poland"],
+    ["KRK","Krakow, Poland"],["CPH","Copenhagen, Denmark"],["STO","Stockholm, Sweden"],["OSL","Oslo, Norway"],
+    ["HEL","Helsinki, Finland"],["REK","Reykjavik, Iceland"],["ATH","Athens, Greece"],["JTR","Santorini, Greece"],
+    ["JMK","Mykonos, Greece"],["HER","Crete (Heraklion), Greece"],["SKG","Thessaloniki, Greece"],
+    ["IST","Istanbul, Turkey"],["AYT","Antalya, Turkey"],["ESB","Ankara, Turkey"],
+    ["MOW","Moscow, Russia"],["LED","St Petersburg, Russia"],["KBP","Kyiv, Ukraine"],
+    ["BEG","Belgrade, Serbia"],["ZAG","Zagreb, Croatia"],["DBV","Dubrovnik, Croatia"],["SPU","Split, Croatia"],
+    ["OTP","Bucharest, Romania"],["SOF","Sofia, Bulgaria"],["TIA","Tirana, Albania"],
+    ["DXB","Dubai, UAE"],["AUH","Abu Dhabi, UAE"],["DOH","Doha, Qatar"],["RUH","Riyadh, Saudi Arabia"],
+    ["JED","Jeddah, Saudi Arabia"],["MED","Medina, Saudi Arabia"],["KWI","Kuwait City, Kuwait"],
+    ["BAH","Bahrain"],["MCT","Muscat, Oman"],["AMM","Amman, Jordan"],["BEY","Beirut, Lebanon"],
+    ["TLV","Tel Aviv, Israel"],["CAI","Cairo, Egypt"],["SSH","Sharm El Sheikh, Egypt"],["HRG","Hurghada, Egypt"],
+    ["CMN","Casablanca, Morocco"],["RAK","Marrakech, Morocco"],["RBA","Rabat, Morocco"],["FEZ","Fes, Morocco"],
+    ["AGA","Agadir, Morocco"],["TNG","Tangier, Morocco"],["TUN","Tunis, Tunisia"],["DJE","Djerba, Tunisia"],
+    ["ALG","Algiers, Algeria"],["ORN","Oran, Algeria"],["DKR","Dakar, Senegal"],["ABJ","Abidjan, Ivory Coast"],
+    ["LOS","Lagos, Nigeria"],["ACC","Accra, Ghana"],["NBO","Nairobi, Kenya"],["ZNZ","Zanzibar, Tanzania"],
+    ["ADD","Addis Ababa, Ethiopia"],["JNB","Johannesburg, South Africa"],["CPT","Cape Town, South Africa"],
+    ["MRU","Mauritius"],["SEZ","Seychelles"],["TYO","Tokyo, Japan"],["OSA","Osaka, Japan"],["UKY","Kyoto, Japan"],
+    ["SEL","Seoul, South Korea"],["BJS","Beijing, China"],["SHA","Shanghai, China"],["HKG","Hong Kong"],
+    ["TPE","Taipei, Taiwan"],["MFM","Macau"],["BKK","Bangkok, Thailand"],["HKT","Phuket, Thailand"],
+    ["CNX","Chiang Mai, Thailand"],["USM","Koh Samui, Thailand"],["SGN","Ho Chi Minh City, Vietnam"],
+    ["HAN","Hanoi, Vietnam"],["DAD","Da Nang, Vietnam"],["PNH","Phnom Penh, Cambodia"],["REP","Siem Reap, Cambodia"],
+    ["SIN","Singapore"],["KUL","Kuala Lumpur, Malaysia"],["PEN","Penang, Malaysia"],["JKT","Jakarta, Indonesia"],
+    ["DPS","Bali (Denpasar), Indonesia"],["MNL","Manila, Philippines"],["CEB","Cebu, Philippines"],
+    ["DEL","New Delhi, India"],["BOM","Mumbai, India"],["BLR","Bangalore, India"],["GOI","Goa, India"],
+    ["JAI","Jaipur, India"],["CMB","Colombo, Sri Lanka"],["MLE","Maldives (Male)"],["KTM","Kathmandu, Nepal"],
+    ["DAC","Dhaka, Bangladesh"],["ISB","Islamabad, Pakistan"],["KHI","Karachi, Pakistan"],["LHE","Lahore, Pakistan"],
+    ["SYD","Sydney, Australia"],["MEL","Melbourne, Australia"],["BNE","Brisbane, Australia"],["PER","Perth, Australia"],
+    ["AKL","Auckland, New Zealand"],["NAN","Fiji (Nadi)"],["PPT","Tahiti (Papeete)"],
+    ["SAO","Sao Paulo, Brazil"],["RIO","Rio de Janeiro, Brazil"],["BUE","Buenos Aires, Argentina"],
+    ["SCL","Santiago, Chile"],["LIM","Lima, Peru"],["CUZ","Cusco, Peru"],["BOG","Bogota, Colombia"],
+    ["CTG","Cartagena, Colombia"],["MDE","Medellin, Colombia"],["UIO","Quito, Ecuador"],["PTY","Panama City, Panama"],
+    ["SJO","San Jose, Costa Rica"],["HAV","Havana, Cuba"],["PUJ","Punta Cana, Dominican Republic"],
+    ["SDQ","Santo Domingo, Dominican Republic"],["MBJ","Montego Bay, Jamaica"],["AUA","Aruba"],
+    ["SXM","St Maarten"],["BGI","Barbados"],["NAS","Nassau, Bahamas"],
+  ];
+
+  {
+    const dl = document.getElementById("cityList");
+    for (const [code, name] of CITIES) {
+      const o = document.createElement("option");
+      o.value = `${name} (${code})`;
+      dl.appendChild(o);
+    }
+  }
+
+  function resolveCity(text) {
+    const t = (text || "").trim();
+    if (!t) return null;
+    const paren = t.match(/\(([A-Za-z]{3})\)\s*$/);
+    if (paren) return { code: paren[1].toUpperCase(), label: t.replace(/\s*\(.*$/, "") };
+    if (/^[A-Za-z]{3}$/.test(t)) {
+      const known = CITIES.find(c => c[0] === t.toUpperCase());
+      return { code: t.toUpperCase(), label: known ? known[1] : t.toUpperCase() };
+    }
+    const low = t.toLowerCase();
+    const starts = CITIES.find(c => c[1].toLowerCase().startsWith(low));
+    if (starts) return { code: starts[0], label: starts[1] };
+    const contains = CITIES.find(c => c[1].toLowerCase().includes(low));
+    if (contains) return { code: contains[0], label: contains[1] };
+    return null;
+  }
+
+  document.getElementById("city").addEventListener("input", () => {
+    const r = resolveCity(document.getElementById("city").value);
+    const hint = document.getElementById("cityHint");
+    hint.textContent = r ? `→ ${r.label} (${r.code})` : "";
+  });
+
   // Default stay: tomorrow → day after
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -721,6 +811,13 @@
   }
 
   async function doSearch() {
+    const resolved = resolveCity(document.getElementById("city").value);
+    if (!resolved) {
+      document.getElementById("results").style.display = "block";
+      document.getElementById("hotels").style.display = "none";
+      setError("Please pick a destination from the list — start typing a city name (e.g. Paris) and choose a suggestion.");
+      return;
+    }
     const btn = document.getElementById("searchBtn");
     btn.disabled = true;
     btn.textContent = "Searching…";
@@ -732,7 +829,7 @@
     document.getElementById("moreBtn").style.display = "none";
 
     const body = {
-      city: document.getElementById("city").value.trim().toUpperCase(),
+      city: resolved.code,
       checkin: document.getElementById("checkin").value,
       checkout: document.getElementById("checkout").value,
       rooms: parseInt(document.getElementById("rooms").value, 10),
@@ -1028,9 +1125,11 @@
 
   function bookPayload(dryRun) {
     if (!chosenRate) throw new Error("Pick a room & rate first.");
+    const resolved = resolveCity(document.getElementById("city").value);
+    if (!resolved) throw new Error("Destination not recognized — please search again.");
     const gtype = document.querySelector("input[name=bkGtype]:checked").value;
     const p = {
-      city: document.getElementById("city").value.trim().toUpperCase(),
+      city: resolved.code,
       line: bookLine,
       rate_line: chosenRate.rate_line,
       rate_code: chosenRate.code || null,
