@@ -54,6 +54,7 @@
       padding: 13px 16px; border-radius: 10px; font-size: 18px; text-align: center;
       letter-spacing: 0.35em; font-family: inherit; width: 100%;
     }
+    #gate input { height: auto; min-height: 52px; }
     #gate input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(160,120,72,0.12); }
     #gate button {
       background: var(--ink); border: 1px solid var(--ink); color: var(--bg);
@@ -112,13 +113,33 @@
       padding: 11px 14px; border-radius: 9px; font-size: 15px; width: 100%; font-family: inherit;
       transition: border-color 0.2s, box-shadow 0.2s;
       min-width: 0; max-width: 100%;
+      /* iOS Safari: kill native control styling or every row renders crooked */
+      -webkit-appearance: none; appearance: none;
+      height: 47px;
+      box-sizing: border-box;
+    }
+    input[type="date"] {
+      display: block;
+      text-align: left;
+      line-height: 1.4;
+    }
+    /* iOS centers the date value by default — force it left like other fields */
+    input[type="date"]::-webkit-date-and-time-value { text-align: left; margin: 0; }
+    select {
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%239c9088' stroke-width='1.6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      padding-right: 36px;
     }
     /* grid items must be allowed to shrink below their content's intrinsic
        width (date inputs are wide by default) or columns blow out on phones */
     form.search > div, .book-grid > div { min-width: 0; }
     input::placeholder { color: #cbc2b2; }
     input:focus, select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(160,120,72,0.12); }
-    button { font-family: inherit; border-radius: 9px; font-size: 14px; border: 1px solid var(--stone); background: var(--paper); color: var(--ink); padding: 11px 14px; width: 100%; }
+    button {
+      font-family: inherit; border-radius: 9px; font-size: 14px; border: 1px solid var(--stone);
+      background: var(--paper); color: var(--ink); padding: 11px 14px; width: 100%;
+      -webkit-appearance: none; appearance: none;
+    }
     button.primary {
       background: var(--ink); border-color: var(--ink); color: var(--bg);
       font-weight: 400; letter-spacing: 0.08em; cursor: pointer; transition: background 0.3s;
@@ -173,6 +194,7 @@
       background: var(--paper); border: 1px solid var(--stone); border-radius: 18px;
       box-shadow: 0 24px 64px rgba(33,28,22,0.18); padding: 30px 32px;
       max-width: 700px; width: 92%; max-height: 84vh; overflow: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .modal h3 { margin: 0 0 18px; font-size: 24px; }
     .modal pre { font-family: ui-monospace, monospace; font-size: 12px; color: #776e5f; white-space: pre-wrap; }
@@ -381,10 +403,9 @@
 
   <form class="search" onsubmit="event.preventDefault(); doSearch();">
     <div style="grid-column: span 2;">
-      <label for="city">Destination</label>
+      <label for="city">Destination <span id="cityHint" style="text-transform: none; letter-spacing: 0; color: var(--gold-dark);"></span></label>
       <input id="city" list="cityList" placeholder="Paris, New York, Dubai…" required autocomplete="off" />
       <datalist id="cityList"></datalist>
-      <div id="cityHint" style="font-size: 11.5px; color: var(--ash); min-height: 15px; margin-top: 4px;"></div>
     </div>
     <div style="grid-column: span 2;">
       <label for="checkin">Check-in</label>
