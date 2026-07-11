@@ -123,6 +123,10 @@
       text-align: left;
       line-height: 1.4;
     }
+    /* WebKit renders a native stepper on number fields even with appearance:none */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type="number"] { -moz-appearance: textfield; }
     /* iOS centers the date value by default — force it left like other fields */
     input[type="date"]::-webkit-date-and-time-value { text-align: left; margin: 0; }
     select {
@@ -156,7 +160,11 @@
     button.ghost:hover { color: var(--ink); border-color: var(--gold); }
 
     .results { margin-top: 38px; }
-    .results h2 { font-size: 24px; margin: 0 0 10px; }
+    .results h2 {
+      font-size: 24px; margin: 0 0 4px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .count-info { color: var(--ash); font-size: 12px; font-family: 'Jost', sans-serif; margin: 0 0 12px; }
     .cmd { font-family: ui-monospace, "SF Mono", Menlo, monospace; color: var(--ash); font-size: 11.5px; margin-bottom: 10px; }
 
     table {
@@ -496,6 +504,7 @@
 
 <footer>
   <span class="mark">STUDIO217</span> · Brooklyn, New York · Reservations processed on our live booking system
+  <span style="opacity: 0.45;">· v2.7</span>
 </footer>
 </div>
 
@@ -925,14 +934,18 @@
 
     if (data.error) setError(`Availability error: ${data.error}`);
 
+    // Count on its own quiet line under the heading (never crowds the title)
     const h2 = document.querySelector("#results h2");
-    const countSpan = document.getElementById("countInfo") || el("span", { id: "countInfo", style: { color: "var(--ash)", fontSize: "12px", marginLeft: "8px", fontFamily: "'Jost', sans-serif" } });
-    if (!countSpan.parentNode) h2.appendChild(countSpan);
+    let countEl = document.getElementById("countInfo");
+    if (!countEl) {
+      countEl = el("div", { id: "countInfo", class: "count-info" });
+      h2.insertAdjacentElement("afterend", countEl);
+    }
     const n = (data.hotels || []).length;
     const unparsed = data.unparsed_lines || 0;
-    countSpan.textContent = unparsed > 0
-      ? `— ${n} shown, ${unparsed} unparsed (see technical response)`
-      : (n > 0 ? `— ${n} found` : "");
+    countEl.textContent = unparsed > 0
+      ? `${n} properties shown · ${unparsed} unparsed (see technical response)`
+      : (n > 0 ? `${n} properties found` : "");
 
     const tbody = document.getElementById("hotelsBody");
     if (!append) tbody.textContent = "";
