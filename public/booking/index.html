@@ -677,6 +677,7 @@
     document.getElementById("gate").style.display = "none";
     document.getElementById("console").style.display = "block";
     checkStatus();
+    if (typeof recordLogin === "function") recordLogin();
   }
   {
     const saved = sessionStorage.getItem(GATE_KEY);
@@ -714,8 +715,21 @@
     }
     engineReady = true;
     checkStatus();
+    recordLogin();
   }
   initEngine();
+
+  // Tell the engine who just signed in (for the access log). Fire-and-forget;
+  // waits until the engine base is discovered so the key header lands.
+  let loginRecorded = false;
+  async function recordLogin() {
+    if (loginRecorded || !accessUser) return;
+    for (let i = 0; i < 20 && !engineReady; i++) await new Promise(r => setTimeout(r, 300));
+    try {
+      await apiFetch("/api/login", { method: "POST" });
+      loginRecorded = true;
+    } catch (_e) {}
+  }
 
   // ── Destination picker: type a city name, we translate to the GDS code ──
   const CITIES = [
