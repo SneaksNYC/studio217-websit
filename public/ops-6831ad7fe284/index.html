@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Studio217 · Ops</title>
+<style>
+  :root{
+    --bg:#f7f7f3; --panel:#ffffff; --ink:#1d2420; --muted:#5c665f; --line:#e3e5dd;
+    --accent:#1f7a56; --accent-soft:#e4f0ea;
+    --amber:#a06818; --amber-soft:#f7ecd9;
+    --red:#b3402f; --red-soft:#f6e4e0;
+    --grey-pill:#eceee8; --code-bg:#f0f2ec;
+    --shadow:0 1px 2px rgba(29,36,32,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#151a17; --panel:#1d2420; --ink:#e8ebe6; --muted:#98a49b; --line:#2c342e;
+      --accent:#5cc294; --accent-soft:#1f3229;
+      --amber:#dfa74e; --amber-soft:#33291a;
+      --red:#e07b6a; --red-soft:#38221e;
+      --grey-pill:#272e29; --code-bg:#242b26;
+      --shadow:none;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.55 "Segoe UI", system-ui, -apple-system, sans-serif}
+  code{font-family:ui-monospace, Consolas, monospace; font-size:.86em;
+    background:var(--code-bg); padding:1px 5px; border-radius:4px; word-break:break-all}
+
+  /* ---- Gate ---- */
+  #gate{min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; padding:20px}
+  #gate h1{font-size:18px; margin:0; letter-spacing:.02em}
+  #gate p{color:var(--muted); font-size:13px; margin:0}
+  #gate input{font:inherit; padding:9px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--panel); color:var(--ink); width:220px; text-align:center; letter-spacing:.1em}
+  #gate button{font:inherit; font-weight:600; padding:9px 22px; border:0; border-radius:8px;
+    background:var(--accent); color:#fff; cursor:pointer}
+  #gateErr{color:var(--red); font-size:13px; min-height:18px}
+  .shake{animation:shake .3s}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  /* ---- Shell ---- */
+  #board{display:none}
+  .shell{display:flex; min-height:100vh; max-width:1280px; margin:0 auto}
+  nav{flex:0 0 250px; border-right:1px solid var(--line); padding:26px 14px 40px;
+    position:sticky; top:0; align-self:flex-start; max-height:100vh; overflow-y:auto}
+  .brand{padding:0 10px 14px}
+  .brand h1{margin:0; font-size:17px}
+  .brand h1 span{color:var(--accent)}
+  .brand p{margin:3px 0 0; font-size:12px; color:var(--muted)}
+  #liveDot{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--muted); margin-right:5px; vertical-align:1px}
+  #liveDot.ok{background:var(--accent)} #liveDot.bad{background:var(--red)}
+  .navgroup{margin-top:16px}
+  .navgroup > p{margin:0 0 4px; padding:0 10px; font-family:ui-monospace, Consolas, monospace;
+    font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+  nav button{display:flex; align-items:center; gap:8px; width:100%; text-align:left; background:none;
+    border:0; border-radius:8px; padding:7px 10px; font:inherit; font-size:14px; color:var(--ink); cursor:pointer}
+  nav button:hover{background:var(--grey-pill)}
+  nav button.on{background:var(--accent-soft); color:var(--accent); font-weight:600}
+  nav button .dot{width:7px; height:7px; border-radius:50%; flex:0 0 auto}
+  .dot.g{background:var(--accent)} .dot.a{background:var(--amber)} .dot.n{background:var(--muted)}
+  nav button .cnt{margin-left:auto; font-size:11px; background:var(--amber-soft); color:var(--amber);
+    border-radius:99px; padding:0 7px; font-weight:600}
+
+  main{flex:1; padding:30px 36px 80px; min-width:0}
+  .panel{display:none; max-width:820px}
+  .panel.on{display:block}
+  .eyebrow{margin:0 0 6px; font-family:ui-monospace, Consolas, monospace; font-size:11px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+  .panel h2{margin:0 0 4px; font-size:26px; line-height:1.2}
+  .lede{margin:8px 0 0; color:var(--muted); max-width:62ch}
+  .headrow{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+  .pill{display:inline-block; padding:2px 11px; border-radius:99px; font-size:12px; font-weight:600; white-space:nowrap}
+  .pill.g{background:var(--accent-soft); color:var(--accent)}
+  .pill.a{background:var(--amber-soft); color:var(--amber)}
+  .pill.n{background:var(--grey-pill); color:var(--muted)}
+
+  .sub{margin-top:28px}
+  .sub h3{margin:0 0 10px; font-size:12px; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--muted); display:flex; align-items:center; gap:10px}
+  .sub h3::after{content:""; flex:1; height:1px; background:var(--line)}
+
+  ul.done{list-style:none; margin:0; padding:0}
+  ul.done li{position:relative; padding:7px 0 7px 24px; border-bottom:1px dashed var(--line)}
+  ul.done li:last-child{border-bottom:0}
+  ul.done li::before{content:"✓"; position:absolute; left:2px; top:7px; color:var(--accent); font-weight:700; font-size:13px}
+  .when{font-family:ui-monospace, Consolas, monospace; font-size:11px; color:var(--muted); margin-left:6px; white-space:nowrap}
+
+  dl.facts{margin:0; display:grid; grid-template-columns:minmax(120px,170px) 1fr; gap:6px 16px}
+  dl.facts dt{color:var(--muted); font-size:13.5px}
+  dl.facts dd{margin:0; min-width:0}
+
+  ul.pend{list-style:none; margin:0; padding:0; display:grid; gap:8px}
+  ul.pend li{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--amber);
+    border-radius:8px; padding:9px 12px; box-shadow:var(--shadow)}
+  ul.pend li.crit{border-left-color:var(--red)}
+  .owner{float:right; margin-left:10px; font-size:11px; font-weight:600; padding:1px 8px;
+    border-radius:99px; background:var(--amber-soft); color:var(--amber); white-space:nowrap}
+  .owner.foster{background:var(--accent-soft); color:var(--accent)}
+
+  .tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:24px}
+  .tile{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 16px; box-shadow:var(--shadow)}
+  .tile b{display:block; font-size:26px; font-variant-numeric:tabular-nums; line-height:1.1}
+  .tile span{font-size:12.5px; color:var(--muted)}
+  .tile.warn b{color:var(--amber)}
+  .note{margin-top:26px; background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:14px 18px; box-shadow:var(--shadow); font-size:14px; color:var(--muted)}
+  .note b{color:var(--ink)}
+
+  /* ---- Comments ---- */
+  .cmt{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 13px;
+    margin-bottom:8px; box-shadow:var(--shadow)}
+  .cmt .meta{font-size:11.5px; color:var(--muted); font-family:ui-monospace, Consolas, monospace; margin-bottom:4px}
+  .cmt .meta .st{float:right; font-weight:600}
+  .cmt .st.new{color:var(--amber)} .cmt .st.seen{color:var(--accent)}
+  .cmt .reply{margin-top:8px; padding:8px 10px; border-left:3px solid var(--accent);
+    background:var(--accent-soft); border-radius:0 6px 6px 0; font-size:14px}
+  .cmt .reply b{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:2px}
+  .cform{display:grid; gap:8px; margin-top:10px}
+  .cform textarea{font:inherit; padding:9px 12px; border:1px solid var(--line); border-radius:8px;
+    background:var(--panel); color:var(--ink); min-height:64px; resize:vertical; width:100%}
+  .cform .row{display:flex; align-items:center; gap:10px}
+  .cform button{font:inherit; font-weight:600; padding:7px 20px; border:0; border-radius:8px;
+    background:var(--accent); color:#fff; cursor:pointer}
+  .cform button:disabled{opacity:.5; cursor:default}
+  .cform .msg{font-size:13px; color:var(--muted)}
+  .empty{color:var(--muted); font-size:13.5px; font-style:italic}
+
+  @media (max-width:760px){
+    .shell{flex-direction:column}
+    nav{position:static; max-height:none; flex:none; border-right:0; border-bottom:1px solid var(--line);
+      padding:16px 12px 10px; display:flex; gap:2px 4px; flex-wrap:wrap}
+    .brand{flex:1 1 100%; padding-bottom:8px}
+    .navgroup{margin-top:4px; display:contents}
+    .navgroup > p{display:none}
+    nav button{width:auto; padding:5px 10px; font-size:13px; border:1px solid var(--line)}
+    main{padding:22px 16px 60px}
+    dl.facts{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>Studio<span style="color:var(--accent)">217</span> · Ops</h1>
+  <p>Private console — enter your access code.</p>
+  <input id="gateInput" type="password" autocomplete="off" placeholder="access code"
+         onkeydown="if(event.key==='Enter')tryUnlock()">
+  <button onclick="tryUnlock()">Enter</button>
+  <div id="gateErr"></div>
+</div>
+
+<div id="board">
+  <div class="shell">
+    <nav id="nav">
+      <div class="brand">
+        <h1>Studio<span>217</span> · Ops</h1>
+        <p><span id="liveDot"></span><span id="liveTxt">connecting…</span></p>
+        <p id="updatedTxt"></p>
+      </div>
+      <div id="navGroups"></div>
+    </nav>
+    <main id="main"></main>
+  </div>
+</div>
+
+<script>
+  // ── Gate: no secret lives in this page. The typed code is hashed and
+  // validated against the engine itself — wrong code gets a 403 from the API.
+  const GATE_KEY = "s217_ops_key";
+
+  async function sha256Hex(text){
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
+  }
+  function gateFail(msg){
+    const gate = document.getElementById("gate");
+    document.getElementById("gateErr").textContent = msg;
+    document.getElementById("gateInput").value = "";
+    gate.classList.remove("shake"); void gate.offsetWidth; gate.classList.add("shake");
+  }
+  async function tryUnlock(){
+    const input = document.getElementById("gateInput");
+    const hash = await sha256Hex(input.value.trim());
+    document.getElementById("gateErr").textContent = "Checking…";
+    await engineDiscovered;
+    let ok = false;
+    try{
+      const r = await fetch(API + "/api/ops/comments", {headers: {"x-s217-key": hash}});
+      ok = r.ok;
+      if (!ok && r.status !== 401 && r.status !== 403){
+        gateFail("Engine offline — try again in a minute."); return;
+      }
+    }catch(_e){ gateFail("Engine unreachable — try again in a minute."); return; }
+    if (ok){
+      sessionStorage.setItem(GATE_KEY, hash);
+      unlock();
+    } else {
+      gateFail("Incorrect code");
+    }
+  }
+  function unlock(){
+    document.getElementById("gate").style.display = "none";
+    document.getElementById("board").style.display = "block";
+    startBoard();
+  }
+
+  // ── Engine discovery: tunnel URL published at /engine.json ──
+  let API = "http://127.0.0.1:8077";
+  function keyHeaders(){
+    const h = sessionStorage.getItem(GATE_KEY);
+    return h ? {"x-s217-key": h} : {};
+  }
+  function apiFetch(path, opts = {}){
+    opts.headers = Object.assign({}, opts.headers || {}, keyHeaders());
+    return fetch(API + path, opts);
+  }
+  const engineDiscovered = (async function(){
+    const candidates = [];
+    try{
+      const r = await fetch("/engine.json", {cache:"no-store"});
+      if (r.ok){ const j = await r.json(); if (j.engine) candidates.push(j.engine); }
+    }catch(_e){}
+    candidates.push("http://127.0.0.1:8077");
+    for (const base of candidates){
+      try{
+        const ctl = new AbortController();
+        const t = setTimeout(() => ctl.abort(), 6000);
+        const r = await fetch(base + "/api/status", {signal:ctl.signal});
+        clearTimeout(t);
+        if (r.ok){ API = base; return; }
+      }catch(_e){}
+    }
+  })();
+
+  // Returning visit: stored key is revalidated against the engine, not the page.
+  (async function(){
+    if (!sessionStorage.getItem(GATE_KEY)) return;
+    await engineDiscovered;
+    try{
+      const r = await apiFetch("/api/ops/comments");
+      if (r.ok) unlock();
+      else sessionStorage.removeItem(GATE_KEY);
+    }catch(_e){}
+  })();
+
+  let started = false;
+  function startBoard(){
+    if (started) return;
+    started = true;
+    refresh(true);
+    setInterval(() => refresh(false), 60000);
+  }
+
+  // ── Rendering ──
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+
+  let lastPayload = "";
+  let currentTab = "overview";
+  let allComments = [];
+
+  async function refresh(first){
+    let board, comments;
+    try{
+      const [rb, rc] = await Promise.all([apiFetch("/api/ops/board"), apiFetch("/api/ops/comments")]);
+      if (!rb.ok) throw new Error("board " + rb.status);
+      board = await rb.json();
+      comments = rc.ok ? (await rc.json()).comments : [];
+      setLive(true, "engine online");
+    }catch(e){
+      setLive(false, "engine unreachable — showing last loaded state");
+      return;
+    }
+    const payload = JSON.stringify([board, comments]);
+    if (payload === lastPayload) return;   // nothing changed; don't disturb the page
+    if (document.activeElement && document.activeElement.tagName === "TEXTAREA" && !first) return;
+    lastPayload = payload;
+    allComments = comments;
+    render(board);
+  }
+  function setLive(ok, txt){
+    const d = document.getElementById("liveDot");
+    d.className = ok ? "ok" : "bad";
+    document.getElementById("liveTxt").textContent = txt;
+  }
+
+  function render(board){
+    document.getElementById("updatedTxt").textContent = "Board updated " + (board.updated || "—");
+    const navG = document.getElementById("navGroups");
+    const main = document.getElementById("main");
+    navG.textContent = ""; main.textContent = "";
+
+    const navBtn = (id, label, tone, badge) => {
+      const b = el("button"); b.dataset.t = id;
+      b.append(el("span", "dot " + (tone || "n")), document.createTextNode(label));
+      if (badge) b.append(el("span", "cnt", String(badge)));
+      b.onclick = () => show(id);
+      return b;
+    };
+    const newCount = allComments.filter(c => !c.reviewed).length;
+
+    // Nav: overview + groups
+    const g0 = el("div", "navgroup"); g0.append(el("p", null, "Start"),
+      navBtn("overview", "Overview", "g", newCount || null));
+    navG.append(g0);
+    (board.groups || []).forEach(g => {
+      const d = el("div", "navgroup"); d.append(el("p", null, g.name));
+      g.projects.forEach(p => {
+        const cnt = allComments.filter(c => c.project === p.id && !c.reviewed).length;
+        d.append(navBtn(p.id, p.name.split("—")[0].trim(), p.tone, cnt || null));
+      });
+      navG.append(d);
+    });
+
+    // Overview panel
+    const ov = el("section", "panel"); ov.id = "p-overview";
+    ov.append(el("p", "eyebrow", "Studio217 · all projects"), el("h2", null, "Overview"),
+      el("p", "lede", "Live board — I update it as work lands, and it refreshes here every minute. Leave me comments below or on any project tab; I review them at the start of every working session."));
+    const tiles = el("div", "tiles");
+    (board.tiles || []).forEach(t => {
+      const d = el("div", "tile" + (t.warn ? " warn" : ""));
+      d.append(el("b", null, t.n), el("span", null, t.label));
+      tiles.append(d);
+    });
+    ov.append(tiles);
+    if (board.rollup && board.rollup.length){
+      const s = el("div", "sub"); s.append(el("h3", null, "Waiting on you (rollup)"));
+      const ul = el("ul", "pend");
+      board.rollup.forEach(i => ul.append(pendLi(i)));
+      s.append(ul); ov.append(s);
+    }
+    if (board.note){
+      const n = el("div", "note");
+      n.append(el("b", null, "Fleet-critical: "), document.createTextNode(board.note));
+      ov.append(n);
+    }
+    ov.append(commentsSection("general", "Comments — general"));
+    main.append(ov);
+
+    // Project panels
+    (board.groups || []).forEach(g => g.projects.forEach(p => {
+      const s = el("section", "panel"); s.id = "p-" + p.id;
+      s.append(el("p", "eyebrow", g.name));
+      const hr = el("div", "headrow");
+      hr.append(el("h2", null, p.name), el("span", "pill " + (p.tone || "n"), p.status));
+      s.append(hr);
+      if (p.lede) s.append(el("p", "lede", p.lede));
+      if (p.done && p.done.length){
+        const d = el("div", "sub"); d.append(el("h3", null, "What was done"));
+        const ul = el("ul", "done");
+        p.done.forEach(item => {
+          const li = el("li", null, item.t);
+          if (item.when) li.append(el("span", "when", item.when));
+          ul.append(li);
+        });
+        d.append(ul); s.append(d);
+      }
+      if (p.facts && p.facts.length){
+        const d = el("div", "sub"); d.append(el("h3", null, "Operational facts"));
+        const dl = el("dl", "facts");
+        p.facts.forEach(([k, v]) => dl.append(el("dt", null, k), el("dd", null, v)));
+        d.append(dl); s.append(d);
+      }
+      if (p.pending && p.pending.length){
+        const d = el("div", "sub"); d.append(el("h3", null, "Pending"));
+        const ul = el("ul", "pend");
+        p.pending.forEach(i => ul.append(pendLi(i)));
+        d.append(ul); s.append(d);
+      }
+      s.append(commentsSection(p.id, "Comments"));
+      main.append(s);
+    }));
+
+    show(currentTab, true);
+  }
+
+  function pendLi(i){
+    const li = el("li", i.crit ? "crit" : null);
+    const o = el("span", "owner" + (i.owner === "Foster" ? " foster" : ""), i.owner);
+    li.append(o, document.createTextNode(i.t));
+    return li;
+  }
+
+  function commentsSection(projectId, title){
+    const d = el("div", "sub");
+    d.append(el("h3", null, title));
+    const list = allComments.filter(c => c.project === projectId);
+    if (!list.length) d.append(el("p", "empty", "No comments yet."));
+    list.slice().reverse().forEach(c => {
+      const box = el("div", "cmt");
+      const meta = el("div", "meta", c.ts.replace("T", " · "));
+      meta.append(el("span", "st " + (c.reviewed ? "seen" : "new"),
+        c.reviewed ? "✓ reviewed by Foster" : "● awaiting review"));
+      box.append(meta, el("div", null, c.text));
+      if (c.reply){
+        const r = el("div", "reply");
+        r.append(el("b", null, "Foster"), document.createTextNode(c.reply));
+        box.append(r);
+      }
+      d.append(box);
+    });
+    const form = el("div", "cform");
+    const ta = el("textarea"); ta.placeholder = "Leave a comment for Foster…";
+    const row = el("div", "row");
+    const btn = el("button", null, "Send comment");
+    const msg = el("span", "msg", "");
+    btn.onclick = async () => {
+      const text = ta.value.trim();
+      if (!text) return;
+      btn.disabled = true; msg.textContent = "Sending…";
+      try{
+        const r = await apiFetch("/api/ops/comment", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({project: projectId, text}),
+        });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        ta.value = ""; msg.textContent = "Sent — Foster will review it.";
+        lastPayload = ""; refresh(true);
+      }catch(e){
+        msg.textContent = "Could not send (" + e.message + ") — engine may be offline.";
+      }
+      btn.disabled = false;
+    };
+    row.append(btn, msg);
+    form.append(ta, row);
+    d.append(form);
+    return d;
+  }
+
+  function show(id, keep){
+    currentTab = id;
+    document.querySelectorAll(".panel").forEach(p => p.classList.toggle("on", p.id === "p-" + id));
+    document.querySelectorAll("nav button[data-t]").forEach(b => b.classList.toggle("on", b.dataset.t === id));
+    if (!keep) window.scrollTo({top: 0});
+  }
+</script>
+</body>
+</html>
