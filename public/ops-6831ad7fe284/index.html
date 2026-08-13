@@ -110,6 +110,35 @@
     padding:14px 18px; box-shadow:var(--shadow); font-size:14px; color:var(--muted)}
   .note b{color:var(--ink)}
 
+  /* ---- Check-in daily chart ---- */
+  .statline{font-size:14px; margin:0 0 12px}
+  .statline b{font-variant-numeric:tabular-nums}
+  .statline .okv{color:var(--accent)} .statline .badv{color:var(--red)}
+  .chartwrap{overflow-x:auto}
+  .chart{display:flex; gap:6px; align-items:flex-end; padding-top:6px; min-width:520px}
+  .cday{flex:1 0 32px; display:flex; flex-direction:column; align-items:center; gap:3px}
+  .cbars{display:flex; gap:3px; align-items:flex-end; height:72px}
+  .cbar{width:11px; border-radius:3px 3px 0 0}
+  .cbar.p{background:var(--accent)} .cbar.f{background:var(--red)}
+  .cnum{font-family:ui-monospace, Consolas, monospace; font-size:10.5px; color:var(--muted);
+    font-variant-numeric:tabular-nums; white-space:nowrap}
+  .cnum .p{color:var(--accent); font-weight:600} .cnum .f{color:var(--red); font-weight:600}
+  .clab{font-family:ui-monospace, Consolas, monospace; font-size:10px; color:var(--muted); white-space:nowrap}
+  .chartnote{font-size:12px; color:var(--muted); margin-top:8px}
+
+  /* ---- Approve / deny ---- */
+  .decide{margin-top:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .decide button{font:inherit; font-size:12.5px; font-weight:600; padding:3px 14px;
+    border-radius:99px; cursor:pointer; background:none}
+  .decide button.ok{border:1px solid var(--accent); color:var(--accent)}
+  .decide button.ok:hover{background:var(--accent-soft)}
+  .decide button.no{border:1px solid var(--red); color:var(--red)}
+  .decide button.no:hover{background:var(--red-soft)}
+  .decchip{font-size:12px; font-weight:600; padding:2px 10px; border-radius:99px}
+  .decchip.ok{background:var(--accent-soft); color:var(--accent)}
+  .decchip.no{background:var(--red-soft); color:var(--red)}
+  .decnote{font-size:12px; color:var(--muted)}
+
   /* ---- Comments ---- */
   .cmt{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 13px;
     margin-bottom:8px; box-shadow:var(--shadow)}
@@ -334,7 +363,7 @@
     if (board.rollup && board.rollup.length){
       const s = el("div", "sub"); s.append(el("h3", null, "Waiting on you (rollup)"));
       const ul = el("ul", "pend");
-      board.rollup.forEach(i => ul.append(pendLi(i)));
+      board.rollup.forEach(i => ul.append(pendLi(i, "general")));
       s.append(ul); ov.append(s);
     }
     if (board.note){
@@ -353,6 +382,7 @@
       hr.append(el("h2", null, p.name), el("span", "pill " + (p.tone || "n"), p.status));
       s.append(hr);
       if (p.lede) s.append(el("p", "lede", p.lede));
+      if (p.id === "checkin" && board.checkin_stats) s.append(checkinChart(board.checkin_stats));
       if (p.done && p.done.length){
         const d = el("div", "sub"); d.append(el("h3", null, "What was done"));
         const ul = el("ul", "done");
@@ -372,7 +402,7 @@
       if (p.pending && p.pending.length){
         const d = el("div", "sub"); d.append(el("h3", null, "Pending"));
         const ul = el("ul", "pend");
-        p.pending.forEach(i => ul.append(pendLi(i)));
+        p.pending.forEach(i => ul.append(pendLi(i, p.id)));
         d.append(ul); s.append(d);
       }
       s.append(commentsSection(p.id, "Comments"));
@@ -382,17 +412,95 @@
     show(currentTab, true);
   }
 
-  function pendLi(i){
+  // Latest decision per (project, item text) — later entries win.
+  function decisionsMap(){
+    const m = {};
+    allComments.filter(c => c.kind === "decision")
+      .forEach(c => { m[c.project + "||" + c.item] = c; });
+    return m;
+  }
+
+  function pendLi(i, projectId){
     const li = el("li", i.crit ? "crit" : null);
     const o = el("span", "owner" + (i.owner === "Foster" ? " foster" : ""), i.owner);
     li.append(o, document.createTextNode(i.t));
+    const dec = decisionsMap()[(projectId || "general") + "||" + i.t];
+    const row = el("div", "decide");
+    if (dec){
+      row.append(el("span", "decchip " + (dec.decision === "approved" ? "ok" : "no"),
+        (dec.decision === "approved" ? "✓ Approved" : "✗ Denied")));
+      row.append(el("span", "decnote",
+        dec.reviewed ? (dec.reply ? "Foster: " + dec.reply : "Actioned by Foster")
+                     : "Foster will action it next session"));
+    } else {
+      const ok = el("button", "ok", "✓ Approve");
+      const no = el("button", "no", "✗ Deny");
+      const msg = el("span", "decnote", "");
+      ok.onclick = () => sendDecision(projectId, i.t, "approved", ok, no, msg);
+      no.onclick = () => sendDecision(projectId, i.t, "denied", ok, no, msg);
+      row.append(ok, no, msg);
+    }
+    li.append(row);
     return li;
+  }
+
+  async function sendDecision(projectId, item, decision, ok, no, msg){
+    ok.disabled = no.disabled = true;
+    msg.textContent = "Saving…";
+    try{
+      const r = await apiFetch("/api/ops/decision", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({project: projectId || "general", item, decision}),
+      });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      lastPayload = ""; refresh(true);
+    }catch(e){
+      msg.textContent = "Could not save (" + e.message + ")";
+      ok.disabled = no.disabled = false;
+    }
+  }
+
+  function checkinChart(stats){
+    const d = el("div", "sub");
+    d.append(el("h3", null, "Daily check-ins — pass / fail (live)"));
+    const line = el("p", "statline");
+    line.append(document.createTextNode("Last 7 days: "));
+    const bp = el("b", "okv", String(stats.week_pass)); line.append(bp, document.createTextNode(" passed · "));
+    const bf = el("b", "badv", String(stats.week_fail)); line.append(bf, document.createTextNode(" failed"));
+    if (stats.week_rate !== null) line.append(document.createTextNode(" · " + stats.week_rate + "% pass rate"));
+    d.append(line);
+    const wrap = el("div", "chartwrap");
+    const chart = el("div", "chart");
+    const max = Math.max(1, ...stats.days.map(x => Math.max(x.pass, x.fail)));
+    stats.days.forEach(day => {
+      const col = el("div", "cday");
+      col.title = day.d + " — " + day.pass + " passed, " + day.fail + " failed"
+        + " (attempts " + day.pass_att + " ok / " + day.fail_att + " fail)"
+        + (day.fail_flights.length ? "\nFailed: " + day.fail_flights.join(", ") : "");
+      const bars = el("div", "cbars");
+      const pb = el("div", "cbar p"); pb.style.height = Math.round(4 + 68 * day.pass / max) + "px";
+      const fb = el("div", "cbar f"); fb.style.height = Math.round(4 + 68 * day.fail / max) + "px";
+      if (!day.pass) pb.style.height = "2px";
+      if (!day.fail) fb.style.height = "2px";
+      bars.append(pb, fb);
+      const num = el("div", "cnum");
+      num.append(el("span", "p", String(day.pass)), document.createTextNode("·"),
+                 el("span", "f", String(day.fail)));
+      col.append(bars, num, el("div", "clab", day.dow + " " + day.d.slice(5)));
+      chart.append(col);
+    });
+    wrap.append(chart);
+    d.append(wrap);
+    d.append(el("p", "chartnote",
+      "Distinct flights per day — a flight that succeeds after retries counts as a pass; hover a day for attempt counts and the failing flights. Source: the agent's own log, refreshed every 5 minutes."));
+    return d;
   }
 
   function commentsSection(projectId, title){
     const d = el("div", "sub");
     d.append(el("h3", null, title));
-    const list = allComments.filter(c => c.project === projectId);
+    const list = allComments.filter(c => c.project === projectId && c.kind !== "decision");
     if (!list.length) d.append(el("p", "empty", "No comments yet."));
     list.slice().reverse().forEach(c => {
       const box = el("div", "cmt");
