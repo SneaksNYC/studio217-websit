@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Studio217 · Dates</title>
+<style>
+  :root{
+    --bg:#faf7f2; --panel:#ffffff; --ink:#241d15; --muted:#6b6157; --line:#e8e1d5;
+    --accent:#9a5b1f; --accent-soft:#f4e8d8;
+    --green:#1f7a56; --green-soft:#e4f0ea;
+    --amber:#a06818; --amber-soft:#f7ecd9;
+    --red:#b3402f; --red-soft:#f6e4e0;
+    --grey-pill:#efeae1; --code-bg:#f2ede3;
+    --shadow:0 1px 2px rgba(36,29,21,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#1a1611; --panel:#221d16; --ink:#ece6dc; --muted:#a89c8c; --line:#352d22;
+      --accent:#d99a4e; --accent-soft:#33281a;
+      --green:#5cc294; --green-soft:#1f3229;
+      --amber:#dfa74e; --amber-soft:#33291a;
+      --red:#e07b6a; --red-soft:#38221e;
+      --grey-pill:#2b251c; --code-bg:#2a241b;
+      --shadow:none;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.55 "Segoe UI", system-ui, -apple-system, sans-serif}
+  a{color:var(--accent)}
+  code{font-family:ui-monospace, Consolas, monospace; font-size:.86em;
+    background:var(--code-bg); padding:1px 5px; border-radius:4px; word-break:break-all}
+
+  /* ---- Gate ---- */
+  #gate{min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; padding:20px}
+  #gate h1{font-size:18px; margin:0; letter-spacing:.02em}
+  #gate p{color:var(--muted); font-size:13px; margin:0}
+  #gate input{font:inherit; padding:9px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--panel); color:var(--ink); width:220px; text-align:center; letter-spacing:.1em}
+  #gate button{font:inherit; font-weight:600; padding:9px 22px; border:0; border-radius:8px;
+    background:var(--accent); color:#fff; cursor:pointer}
+  #gateErr{color:var(--red); font-size:13px; min-height:18px}
+  .shake{animation:shake .3s}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  /* ---- Page ---- */
+  #page{display:none; max-width:960px; margin:0 auto; padding:34px 24px 90px}
+  .brand h1{margin:0; font-size:24px}
+  .brand h1 span{color:var(--accent)}
+  .brand p{margin:4px 0 0; font-size:13px; color:var(--muted)}
+  #liveDot{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--muted); margin-right:5px; vertical-align:1px}
+  #liveDot.ok{background:var(--green)} #liveDot.bad{background:var(--red)}
+  .lede{margin:14px 0 0; color:var(--muted); max-width:70ch}
+
+  .tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:22px}
+  .tile{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 16px; box-shadow:var(--shadow)}
+  .tile b{display:block; font-size:26px; font-variant-numeric:tabular-nums; line-height:1.1}
+  .tile span{font-size:12.5px; color:var(--muted)}
+  .tile.warn b{color:var(--amber)}
+
+  .sub{margin-top:36px}
+  .sub h2{margin:0 0 4px; font-size:20px}
+  .sub .eyebrow{margin:0 0 4px; font-family:ui-monospace, Consolas, monospace; font-size:11px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+  .sub h3{margin:22px 0 10px; font-size:12px; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--muted); display:flex; align-items:center; gap:10px}
+  .sub h3::after{content:""; flex:1; height:1px; background:var(--line)}
+
+  .store{background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:12px 16px; margin-bottom:10px; box-shadow:var(--shadow)}
+  .store .top{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+  .store b{font-size:15.5px}
+  .store .area{font-size:12.5px; color:var(--muted)}
+  .pill{display:inline-block; padding:1px 10px; border-radius:99px; font-size:11.5px; font-weight:600; white-space:nowrap}
+  .pill.g{background:var(--green-soft); color:var(--green)}
+  .pill.a{background:var(--amber-soft); color:var(--amber)}
+  .pill.n{background:var(--grey-pill); color:var(--muted)}
+  .store .fit{margin:6px 0 0; font-size:13.5px; color:var(--muted)}
+  .store .contact{margin:7px 0 0; font-size:13.5px; display:flex; gap:16px; flex-wrap:wrap}
+  .store .contact a{word-break:break-all}
+
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 16px; box-shadow:var(--shadow)}
+  .card b{display:block; margin-bottom:4px}
+  .card p{margin:0; font-size:13.5px; color:var(--muted)}
+  .card .tag{margin-top:8px; font-size:11.5px; color:var(--accent); font-weight:600;
+    text-transform:uppercase; letter-spacing:.08em}
+
+  ul.checks{list-style:none; margin:0; padding:0}
+  ul.checks li{position:relative; padding:7px 0 7px 26px; border-bottom:1px dashed var(--line)}
+  ul.checks li:last-child{border-bottom:0}
+  ul.checks li::before{content:"○"; position:absolute; left:2px; top:7px; color:var(--muted); font-weight:700}
+  ul.checks li.done::before{content:"✓"; color:var(--green)}
+
+  ul.next{list-style:none; margin:0; padding:0; display:grid; gap:8px}
+  ul.next li{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent);
+    border-radius:8px; padding:9px 12px; box-shadow:var(--shadow)}
+  .owner{float:right; margin-left:10px; font-size:11px; font-weight:600; padding:1px 8px;
+    border-radius:99px; background:var(--amber-soft); color:var(--amber); white-space:nowrap}
+  .owner.foster{background:var(--green-soft); color:var(--green)}
+
+  .note{margin-top:26px; background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:14px 18px; box-shadow:var(--shadow); font-size:14px; color:var(--muted)}
+  .note b{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>Studio<span style="color:var(--accent)">217</span> · Dates</h1>
+  <p>Private brief — enter your access code.</p>
+  <input id="gateInput" type="password" autocomplete="off" placeholder="access code"
+         onkeydown="if(event.key==='Enter')tryUnlock()">
+  <button onclick="tryUnlock()">Enter</button>
+  <div id="gateErr"></div>
+</div>
+
+<div id="page">
+  <div class="brand">
+    <h1>Studio<span>217</span> · Algerian Dates</h1>
+    <p><span id="liveDot"></span><span id="liveTxt">connecting…</span> <span id="updatedTxt"></span></p>
+  </div>
+  <main id="main"></main>
+</div>
+
+<script>
+  // ── Gate: no secret lives in this page. The typed code is hashed and
+  // validated against the engine itself — wrong code gets a 403 from the API.
+  const GATE_KEY = "s217_ops_key";  // shared with the ops board — one code, both pages
+
+  async function sha256Hex(text){
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
+  }
+  function gateFail(msg){
+    const gate = document.getElementById("gate");
+    document.getElementById("gateErr").textContent = msg;
+    document.getElementById("gateInput").value = "";
+    gate.classList.remove("shake"); void gate.offsetWidth; gate.classList.add("shake");
+  }
+  async function tryUnlock(){
+    const input = document.getElementById("gateInput");
+    const hash = await sha256Hex(input.value.trim());
+    document.getElementById("gateErr").textContent = "Checking…";
+    await engineDiscovered;
+    let ok = false;
+    try{
+      const r = await fetch(API + "/api/ops/comments", {headers: {"x-s217-key": hash}});
+      ok = r.ok;
+      if (!ok && r.status !== 401 && r.status !== 403){
+        gateFail("Engine offline — try again in a minute."); return;
+      }
+    }catch(_e){ gateFail("Engine unreachable — try again in a minute."); return; }
+    if (ok){
+      sessionStorage.setItem(GATE_KEY, hash);
+      unlock();
+    } else {
+      gateFail("Incorrect code");
+    }
+  }
+  function unlock(){
+    document.getElementById("gate").style.display = "none";
+    document.getElementById("page").style.display = "block";
+    startPage();
+  }
+
+  // ── Engine discovery: tunnel URL published at /engine.json ──
+  let API = "http://127.0.0.1:8077";
+  function keyHeaders(){
+    const h = sessionStorage.getItem(GATE_KEY);
+    return h ? {"x-s217-key": h} : {};
+  }
+  function apiFetch(path, opts = {}){
+    opts.headers = Object.assign({}, opts.headers || {}, keyHeaders());
+    return fetch(API + path, opts);
+  }
+  const engineDiscovered = (async function(){
+    const candidates = [];
+    try{
+      const r = await fetch("/engine.json", {cache:"no-store"});
+      if (r.ok){ const j = await r.json(); if (j.engine) candidates.push(j.engine); }
+    }catch(_e){}
+    candidates.push("http://127.0.0.1:8077");
+    for (const base of candidates){
+      try{
+        const ctl = new AbortController();
+        const t = setTimeout(() => ctl.abort(), 6000);
+        const r = await fetch(base + "/api/status", {signal:ctl.signal});
+        clearTimeout(t);
+        if (r.ok){ API = base; return; }
+      }catch(_e){}
+    }
+  })();
+
+  // Returning visit: stored key is revalidated against the engine, not the page.
+  (async function(){
+    if (!sessionStorage.getItem(GATE_KEY)) return;
+    await engineDiscovered;
+    try{
+      const r = await apiFetch("/api/ops/comments");
+      if (r.ok) unlock();
+      else sessionStorage.removeItem(GATE_KEY);
+    }catch(_e){}
+  })();
+
+  let started = false;
+  function startPage(){
+    if (started) return;
+    started = true;
+    refresh();
+    setInterval(refresh, 120000);
+  }
+
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+
+  let lastPayload = "";
+  async function refresh(){
+    let d;
+    try{
+      const r = await apiFetch("/api/ops/board");
+      if (!r.ok) throw new Error("board " + r.status);
+      d = (await r.json()).dates_business;
+      if (!d) throw new Error("no dates data on the board yet");
+      setLive(true, "engine online");
+    }catch(e){
+      setLive(false, "engine unreachable — showing last loaded state");
+      return;
+    }
+    const payload = JSON.stringify(d);
+    if (payload === lastPayload) return;
+    lastPayload = payload;
+    render(d);
+  }
+  function setLive(ok, txt){
+    const d = document.getElementById("liveDot");
+    d.className = ok ? "ok" : "bad";
+    document.getElementById("liveTxt").textContent = txt;
+  }
+
+  function render(d){
+    document.getElementById("updatedTxt").textContent = d.updated ? (" · updated " + d.updated) : "";
+    const main = document.getElementById("main");
+    main.textContent = "";
+
+    if (d.lede) main.appendChild(el("p", "lede", d.lede));
+
+    if (d.tiles && d.tiles.length){
+      const tiles = el("div", "tiles");
+      for (const t of d.tiles){
+        const tile = el("div", "tile" + (t.warn ? " warn" : ""));
+        tile.appendChild(el("b", null, t.n));
+        tile.appendChild(el("span", null, t.label));
+        tiles.appendChild(tile);
+      }
+      main.appendChild(tiles);
+    }
+
+    // ── Prospect stores, grouped by category ──
+    if (d.prospects && d.prospects.length){
+      const sec = el("div", "sub");
+      sec.appendChild(el("p", "eyebrow", "resale prospects"));
+      sec.appendChild(el("h2", null, "Stores to pitch"));
+      for (const cat of d.prospects){
+        sec.appendChild(el("h3", null, cat.category));
+        for (const s of cat.stores){
+          const card = el("div", "store");
+          const top = el("div", "top");
+          top.appendChild(el("b", null, s.name));
+          if (s.area) top.appendChild(el("span", "area", s.area));
+          if (s.sells_dates) top.appendChild(el("span", "pill g", "already sells dates"));
+          if (s.tag) top.appendChild(el("span", "pill a", s.tag));
+          card.appendChild(top);
+          if (s.fit) card.appendChild(el("p", "fit", s.fit));
+          const c = el("div", "contact");
+          if (s.email){
+            const a = el("a", null, s.email);
+            a.href = "mailto:" + s.email;
+            c.appendChild(a);
+          } else if (s.contact){
+            c.appendChild(el("span", null, s.contact));
+          }
+          if (s.website){
+            const w = el("a", null, s.website.replace(/^https?:\/\//, "").replace(/\/$/, ""));
+            w.href = s.website; w.target = "_blank"; w.rel = "noopener";
+            c.appendChild(w);
+          }
+          if (s.phone) c.appendChild(el("span", null, s.phone));
+          card.appendChild(c);
+          sec.appendChild(card);
+        }
+      }
+      main.appendChild(sec);
+    }
+
+    // ── Packaging concepts ──
+    if (d.packaging && d.packaging.length){
+      const sec = el("div", "sub");
+      sec.appendChild(el("p", "eyebrow", "product"));
+      sec.appendChild(el("h2", null, "Packaging concepts"));
+      const grid = el("div", "cards");
+      grid.style.marginTop = "14px";
+      for (const p of d.packaging){
+        const card = el("div", "card");
+        card.appendChild(el("b", null, p.name));
+        card.appendChild(el("p", null, p.desc));
+        if (p.target) card.appendChild(el("div", "tag", p.target));
+        grid.appendChild(card);
+      }
+      sec.appendChild(grid);
+      main.appendChild(sec);
+    }
+
+    // ── Brand direction ──
+    if (d.brand){
+      const sec = el("div", "sub");
+      sec.appendChild(el("p", "eyebrow", "identity"));
+      sec.appendChild(el("h2", null, "Brand direction"));
+      if (d.brand.names && d.brand.names.length){
+        sec.appendChild(el("h3", null, "name candidates"));
+        const grid = el("div", "cards");
+        for (const n of d.brand.names){
+          const card = el("div", "card");
+          card.appendChild(el("b", null, n.name));
+          card.appendChild(el("p", null, n.why));
+          grid.appendChild(card);
+        }
+        sec.appendChild(grid);
+      }
+      if (d.brand.notes && d.brand.notes.length){
+        sec.appendChild(el("h3", null, "design notes"));
+        const ul = el("ul", "checks");
+        for (const t of d.brand.notes){
+          const li = el("li", "done", t);
+          ul.appendChild(li);
+        }
+        sec.appendChild(ul);
+      }
+      main.appendChild(sec);
+    }
+
+    // ── Import & compliance checklist ──
+    if (d.checklist && d.checklist.length){
+      const sec = el("div", "sub");
+      sec.appendChild(el("p", "eyebrow", "compliance"));
+      sec.appendChild(el("h2", null, "Import & labeling checklist"));
+      const ul = el("ul", "checks");
+      ul.style.marginTop = "14px";
+      for (const c of d.checklist){
+        ul.appendChild(el("li", c.done ? "done" : null, c.t));
+      }
+      sec.appendChild(ul);
+      main.appendChild(sec);
+    }
+
+    // ── Next steps ──
+    if (d.next && d.next.length){
+      const sec = el("div", "sub");
+      sec.appendChild(el("p", "eyebrow", "plan"));
+      sec.appendChild(el("h2", null, "Next steps"));
+      const ul = el("ul", "next");
+      ul.style.marginTop = "14px";
+      for (const n of d.next){
+        const li = el("li");
+        if (n.owner){
+          const o = el("span", "owner" + (/foster/i.test(n.owner) ? " foster" : ""), n.owner);
+          li.appendChild(o);
+        }
+        li.appendChild(document.createTextNode(n.t));
+        ul.appendChild(li);
+      }
+      sec.appendChild(ul);
+      main.appendChild(sec);
+    }
+
+    if (d.note){
+      const note = el("div", "note");
+      note.innerHTML = "<b>Note</b> — ";
+      note.appendChild(document.createTextNode(d.note));
+      main.appendChild(note);
+    }
+  }
+</script>
+</body>
+</html>
