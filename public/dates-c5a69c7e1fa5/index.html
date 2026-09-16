@@ -252,7 +252,7 @@
   <section id="mockups">
     <p class="eyebrow" style="font-family:ui-monospace,Consolas,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 6px">fun concepts</p>
     <h2 class="mkTitle">It's a <em>Date.</em></h2>
-    <p class="mkLede">Playing the double meaning — the fruit and the romance. Six front-of-pack concepts for a pun-led line. Same product inside (Algerian Deglet Nour), six moods on the shelf.</p>
+    <p class="mkLede">Playing the double meaning — the fruit and the romance. The format is a resealable stand-up zip pouch; six label moods, same Algerian Deglet Nour inside.</p>
 
     <div id="shelf">
       <div class="shelfWrap">
@@ -306,7 +306,7 @@
           <p class="pk-foot">produit d'algérie · تمر · 500 g</p>
         </div>
         <figcaption><b>The Perfect Date — flagship</b>
-        Kraft box, riso-print wordmark, sketch window with the branch and palm fronds. The premium/gift SKU — certified mr. right.</figcaption>
+        Kraft stand-up zip pouch, riso-print wordmark, sketch window with the branch and palm fronds. The premium/gift SKU — certified mr. right.</figcaption>
       </figure>
 
       <!-- 2 · First Date -->
@@ -347,7 +347,7 @@
           <p class="pk-foot">every love story starts somewhere</p>
         </div>
         <figcaption><b>First Date — intro sampler</b>
-        Coral box — the shy couple says "hi." Low-commitment trial size; also the wedding-favor format. May contain butterflies.</figcaption>
+        Coral zip pouch — the shy couple says "hi." Low-commitment trial size; also the wedding-favor format. May contain butterflies.</figcaption>
       </figure>
 
       <!-- 3 · Blind Date -->
@@ -376,7 +376,7 @@
           <p class="pk-foot">stuffed with… you'll see</p>
         </div>
         <figcaption><b>Blind Date — mystery box</b>
-        Matte black, a scribbled gold spotlight and one date in sunglasses. Assorted stuffed dates — you find out when you bite.</figcaption>
+        Matte-black zip pouch, a scribbled gold spotlight and one date in sunglasses. Assorted stuffed dates — you find out when you bite.</figcaption>
       </figure>
 
       <!-- 4 · Date Night -->
@@ -422,7 +422,7 @@
           <p class="pk-foot">dates + dark chocolate dip · serves 2</p>
         </div>
         <figcaption><b>Date Night — gift duo</b>
-        Plum night for two: candlelight, clinking mint-tea glasses, chocolate dip included. Valentine's + Eid gifting crossover.</figcaption>
+        Plum zip pouch for two: candlelight, clinking mint-tea glasses, chocolate dip included. Valentine's + Eid gifting crossover.</figcaption>
       </figure>
 
       <!-- 5 · Long-Distance -->
@@ -888,6 +888,25 @@
     lines.forEach((t, i) => ctx.fillText(t, 0, (i - (lines.length - 1)/2) * r*.46 + r*.16));
     ctx.restore();
   }
+  function pouchFurniture(ctx, W, H){
+    ctx.save();
+    ctx.fillStyle = "rgba(255,255,255,.16)";
+    ctx.fillRect(0, 0, W, H*.075);
+    ctx.strokeStyle = "rgba(60,40,20,.14)"; ctx.lineWidth = 2;
+    for (let x = 6; x < W; x += 9){
+      ctx.beginPath(); ctx.moveTo(x, 3); ctx.lineTo(x - 3, H*.07); ctx.stroke();
+    }
+    ctx.strokeStyle = "rgba(30,20,10,.35)"; ctx.lineWidth = Math.max(2, H*.006);
+    ctx.beginPath(); ctx.moveTo(0, H*.088); ctx.lineTo(W, H*.088); ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.3)"; ctx.lineWidth = Math.max(2, H*.005);
+    ctx.beginPath(); ctx.moveTo(0, H*.097); ctx.lineTo(W, H*.097); ctx.stroke();
+    ctx.fillStyle = "rgba(20,12,6,.5)";
+    ctx.beginPath(); ctx.moveTo(0, H*.04); ctx.lineTo(W*.02, H*.048); ctx.lineTo(0, H*.056); ctx.closePath(); ctx.fill();
+    const g = ctx.createLinearGradient(0, H*.93, 0, H);
+    g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.16)");
+    ctx.fillStyle = g; ctx.fillRect(0, H*.93, W, H*.07);
+    ctx.restore();
+  }
   function sideFace(w, h, base, inkColor){
     const c = cv(w, h), ctx = c.getContext("2d");
     grad(ctx, w, h, [[0, base[0]], [1, base[1]]]);
@@ -1040,7 +1059,7 @@
         hand(ctx, W, H*.895, "stuffed with… you'll see", "#bda67e", W*.056, .015);
         hand(ctx, W, H*.955, "(contents: a delicious mystery)", "#8f7c5f", W*.04, -.01);
       } },
-    { id: "night", label: "Date Night", dims: [2.0, 1.5, 0.55],
+    { id: "night", label: "Date Night", dims: [1.45, 1.85, 0.5],
       base: ["#4a1f2b", "#2c101a"], ink: "#f0dcc4",
       front(ctx, W, H){
         grad(ctx, W, H, [[0, "#5c2735"], [.62, "#3c1822"], [1, "#2c101a"]], true);
@@ -1084,31 +1103,56 @@
   let renderer, scene, camera, group, mesh, shadowMesh, started = false;
   let rotY = .55, rotX = -.07, vel = .006, dragging = false, lastX = 0, lastY = 0, scaleIn = 1, t0 = 0;
 
+  // The pack is a stand-up ZIP POUCH: a plane inflated into a pillow, flat at
+  // the heat-seal strip on top and pinched into the gusset at the bottom.
+  function pouchGeom(w, h, depth){
+    const g = new THREE.PlaneGeometry(w, h, 36, 36);
+    const pos = g.attributes.position;
+    for (let i = 0; i < pos.count; i++){
+      const u = pos.getX(i)/w + .5, v = pos.getY(i)/h + .5;
+      let prof;
+      if (v > .86) prof = 0;
+      else if (v > .72) prof = (.86 - v)/.14;
+      else if (v < .06) prof = .35 * (v/.06);
+      else if (v < .2) prof = .35 + .65*((v - .06)/.14);
+      else prof = 1;
+      pos.setZ(i, Math.pow(Math.sin(Math.PI*Math.min(Math.max(u, 0), 1)), .9) * depth * prof + .004);
+    }
+    g.computeVertexNormals();
+    return g;
+  }
   function makeBox(c){
     const [w, h, d] = c.dims;
     const front = cv(w*PPU, h*PPU); c.front(front.getContext("2d"), front.width, front.height);
-    const faces = [
-      sideFace(d*PPU, h*PPU, c.base, c.ink),
-      sideFace(d*PPU, h*PPU, c.base, c.ink),
-      plainFace(w*PPU, d*PPU, c.base),
-      plainFace(w*PPU, d*PPU, c.base),
-      front,
-      backFace(w*PPU, h*PPU, c.base, c.ink),
-    ].map(canvas => {
+    const backC = backFace(w*PPU, h*PPU, c.base, c.ink);
+    pouchFurniture(backC.getContext("2d"), backC.width, backC.height);
+    const mat = canvas => {
       const tex = new THREE.CanvasTexture(canvas);
       tex.encoding = THREE.sRGBEncoding;
       tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      return new THREE.MeshStandardMaterial({ map: tex, roughness: .82, metalness: .04 });
-    });
-    return new THREE.Mesh(new THREE.BoxGeometry(w, h, d), faces);
+      return new THREE.MeshStandardMaterial({ map: tex, roughness: .62, metalness: .03 });
+    };
+    const grp = new THREE.Group();
+    grp.add(new THREE.Mesh(pouchGeom(w, h, d*.55), mat(front)));
+    const back = new THREE.Mesh(pouchGeom(w, h, d*.55), mat(backC));
+    back.rotation.y = Math.PI;
+    grp.add(back);
+    return grp;
   }
 
   function setConcept(i){
     const c = CONCEPTS[i];
     if (mesh){
       group.remove(mesh);
-      mesh.geometry.dispose();
-      mesh.material.forEach(m => { m.map.dispose(); m.dispose(); });
+      mesh.traverse(o => {
+        if (o.isMesh){
+          o.geometry.dispose();
+          (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
+            if (m.map) m.map.dispose();
+            m.dispose();
+          });
+        }
+      });
     }
     mesh = makeBox(c);
     group.add(mesh);
@@ -1217,11 +1261,12 @@
       ctx.fillStyle = shadow; ctx.fillText(text, x + off, y + off);
       ctx.fillStyle = main; ctx.fillText(text, x, y);
     }
-    function roughFrame(ctx, W, H, color){
+    function roughFrame(ctx, W, H, color, top){
+      const t = top === undefined ? .033 : top;
       const rc = rcOf(ctx);
-      rc.rectangle(W*.045, H*.033, W*.91, H*.934,
+      rc.rectangle(W*.045, H*t, W*.91, H*(.967 - t),
         {stroke: color, strokeWidth: Math.max(2, W*.006), roughness: 2.2, bowing: 1.6, seed: SEED});
-      rc.rectangle(W*.065, H*.048, W*.87, H*.904,
+      rc.rectangle(W*.065, H*(t + .015), W*.87, H*(.937 - t),
         {stroke: color, strokeWidth: Math.max(1.2, W*.003), roughness: 1.6, bowing: 1, seed: SEED + 1});
     }
     function roughDate2(ctx, x, y, rx, ry, rot, seed){
@@ -1538,16 +1583,16 @@
       const rc = rcOf(ctx);
       grad(ctx, W, H, [[0, "#cba876"], [1, "#b78e5c"]]);
       speckle(ctx, W, H, 350, "#33220f", .06);
-      roughFrame(ctx, W, H, "#5d4527");
-      label(ctx, W, H*.06, "dattes d'Algérie · Deglet Nour", "#6d5233", W*.05);
-      ctx.save(); ctx.translate(W/2, H*.125); ctx.rotate(-.025);
+      roughFrame(ctx, W, H, "#5d4527", .115);
+      label(ctx, W, H*.15, "dattes d'Algérie · Deglet Nour", "#6d5233", W*.05);
+      ctx.save(); ctx.translate(W/2, H*.205); ctx.rotate(-.025);
       ctx.font = 'italic 600 ' + W*.08 + 'px "Fraunces", Georgia, serif';
       ctx.fillStyle = "#33220f"; ctx.textAlign = "center";
       ctx.fillText("the perfect", 0, 0);
       ctx.restore();
-      bouncy2(ctx, "Date", W/2, H*.27, W*.26, "#b23a2a", "#c9962e", W*.012, 2.2);
-      rc.line(W*.31, H*.312, W*.69, H*.309, {stroke: "#c9962e", strokeWidth: W*.008, roughness: 1.8, seed: SEED + 90});
-      const wx = W*.16, wy = H*.395, ww = W*.68, wh = H*.485, r = ww/2;
+      bouncy2(ctx, "Date", W/2, H*.335, W*.26, "#b23a2a", "#c9962e", W*.012, 2.2);
+      rc.line(W*.31, H*.375, W*.69, H*.372, {stroke: "#c9962e", strokeWidth: W*.008, roughness: 1.8, seed: SEED + 90});
+      const wx = W*.16, wy = H*.43, ww = W*.68, wh = H*.45, r = ww/2;
       ctx.beginPath();
       ctx.moveTo(wx, wy + wh); ctx.lineTo(wx, wy + r);
       ctx.arc(wx + r, wy + r, r, Math.PI, 0);
@@ -1567,53 +1612,55 @@
         roughDate3(ctx, W/2 + p[0]*ww, wy + wh*p[1], W*.048, W*.078, p[0]*.5, "#9c5a1e", "#5e3410", SEED + 100 + i));
       face(ctx, W/2, wy + wh*.74, W*.021, "happy");
       face(ctx, W/2 - .28*ww, wy + wh*.58, W*.018, "wink");
-      brandSticker(ctx, W*.84, H*.44, W*.088, "#b23a2a", ["mr.", "right"], .2, "#c9962e");
-      hand(ctx, W, H*.945, "ingredients: dates. that's the list.", "#4a3416", W*.05, -.012);
+      brandSticker(ctx, W*.84, H*.47, W*.088, "#b23a2a", ["mr.", "right"], .2, "#c9962e");
+      hand(ctx, W, H*.925, "ingredients: dates. that's the list.", "#4a3416", W*.05, -.012);
+      pouchFurniture(ctx, W, H);
       grainOv(ctx, W, H, .08);
     };
 
     CONCEPTS[1].front = function(ctx, W, H){
       grad(ctx, W, H, [[0, "#f4c3aa"], [1, "#eba887"]]);
       speckle(ctx, W, H, 250, "#6b2f1c", .05);
-      roughFrame(ctx, W, H, "#8a4a30");
-      label(ctx, W, H*.075, "a six-date sampler", "#9c4f34", W*.048);
-      ctx.save(); ctx.translate(W*.36, H*.27); ctx.rotate(-.05);
+      roughFrame(ctx, W, H, "#8a4a30", .115);
+      label(ctx, W, H*.155, "a six-date sampler", "#9c4f34", W*.048);
+      ctx.save(); ctx.translate(W*.36, H*.32); ctx.rotate(-.05);
       bouncy2(ctx, "First", 0, 0, W*.165, "#6b2f1c", "#f15060", W*.01, 0);
       bouncy2(ctx, "Date", W*.07, H*.115, W*.165, "#f15060", "#fff3e8", W*.01, 3.1);
       ctx.restore();
-      const cx = W*.58, cy = H*.64;
+      const cx = W*.58, cy = H*.66;
       roughDate3(ctx, cx - W*.075, cy, W*.1, W*.16, .7, "#b87a2e", "#5e3410", SEED + 21);
       roughDate3(ctx, cx + W*.075, cy, W*.1, W*.16, -.7, "#b87a2e", "#5e3410", SEED + 22);
       face(ctx, cx - W*.105, cy - W*.02, W*.032, "shy");
       face(ctx, cx + W*.105, cy - W*.02, W*.032, "happy");
       heartShape(ctx, cx, cy - W*.2, W*.01, "#c9503a");
-      bubble(ctx, W*.24, H*.5, "hi.", W*.062, "#6b2f1c", "#fff7ef", 1);
-      butterfly(ctx, W*.42, H*.42, W*.034, "#00838a", SEED + 71);
-      butterfly(ctx, W*.83, H*.66, W*.024, "#fff3e8", SEED + 74);
-      brandSticker(ctx, W*.8, H*.16, W*.08, "#f15060", ["no", "pressure!"], .18, "#00838a");
-      hand(ctx, W, H*.945, "every love story starts somewhere", "#7a3b26", W*.055, -.018);
+      bubble(ctx, W*.24, H*.53, "hi.", W*.062, "#6b2f1c", "#fff7ef", 1);
+      butterfly(ctx, W*.45, H*.45, W*.034, "#00838a", SEED + 71);
+      butterfly(ctx, W*.83, H*.68, W*.024, "#fff3e8", SEED + 74);
+      brandSticker(ctx, W*.8, H*.21, W*.08, "#f15060", ["no", "pressure!"], .18, "#00838a");
+      hand(ctx, W, H*.925, "every love story starts somewhere", "#7a3b26", W*.055, -.018);
+      pouchFurniture(ctx, W, H);
       grainOv(ctx, W, H, .08);
     };
 
     CONCEPTS[2].front = function(ctx, W, H){
       grad(ctx, W, H, [[0, "#221a12"], [1, "#150f09"]]);
       speckle(ctx, W, H, 180, "#f2e4c8", .03);
-      roughFrame(ctx, W, H, "#8f7c5f");
-      label(ctx, W, H*.07, "a mystery assortment", "#8f7c5f", W*.048);
-      ctx.save(); ctx.translate(W/2, H*.2); ctx.rotate(-.03);
+      roughFrame(ctx, W, H, "#8f7c5f", .115);
+      label(ctx, W, H*.15, "a mystery assortment", "#8f7c5f", W*.048);
+      ctx.save(); ctx.translate(W/2, H*.26); ctx.rotate(-.03);
       bouncy2(ctx, "Blind Date", 0, 0, W*.12, "#f2e4c8", "#ffb511", W*.008, 1.4);
       ctx.restore();
-      hand(ctx, W*.58, H*.27, "shhh…", "#8f7c5f", W*.055, .12);
+      hand(ctx, W*.58, H*.325, "shhh…", "#8f7c5f", W*.055, .12);
       const rc = rcOf(ctx);
-      rc.circle(W*.5, H*.53, W*.56,
+      rc.circle(W*.5, H*.56, W*.56,
         {fill: "#ffb511", fillStyle: "hachure", fillWeight: 3.4, hachureGap: 7, hachureAngle: 35,
          stroke: "#ffb511", strokeWidth: 3, roughness: 2, seed: SEED + 31});
-      rc.circle(W*.5, H*.53, W*.5,
+      rc.circle(W*.5, H*.56, W*.5,
         {fill: "#e0a83c", fillStyle: "hachure", fillWeight: 2.2, hachureGap: 9, hachureAngle: 115,
          stroke: "none", roughness: 2.2, seed: SEED + 33});
-      qmark(ctx, W*.5, H*.47, W*.24);
-      roughDate3(ctx, W*.5, H*.7, W*.062, W*.098, .05, "#b87a2e", "#5e3410", SEED + 32);
-      const gx2 = W*.5, gy2 = H*.69, gs = W*.028;
+      qmark(ctx, W*.5, H*.5, W*.24);
+      roughDate3(ctx, W*.5, H*.73, W*.062, W*.098, .05, "#b87a2e", "#5e3410", SEED + 32);
+      const gx2 = W*.5, gy2 = H*.72, gs = W*.028;
       ctx.fillStyle = "#0d0a06";
       ctx.beginPath(); ctx.arc(gx2 - gs*.6, gy2, gs*.46, 0, 7); ctx.fill();
       ctx.beginPath(); ctx.arc(gx2 + gs*.6, gy2, gs*.46, 0, 7); ctx.fill();
@@ -1623,25 +1670,26 @@
       ctx.lineWidth = gs*.11;
       ctx.beginPath(); ctx.arc(gx2 + gs*.62, gy2 - gs*.72, gs*.5, Math.PI*1.1, Math.PI*1.72); ctx.stroke();
       ctx.beginPath(); ctx.arc(gx2, gy2 + gs*1.05, gs*.5, Math.PI*.15, Math.PI*.85); ctx.stroke();
-      bubble(ctx, W*.76, H*.35, "no peeking.", W*.046, "#241b14", "#f5e7c8", -1);
-      brandSticker(ctx, W*.17, H*.62, W*.065, "#241b14", ["???"], -.22, "#ffb511");
-      hand(ctx, W, H*.945, "stuffed with… you'll see", "#cdb68c", W*.055, .015);
+      bubble(ctx, W*.76, H*.4, "no peeking.", W*.046, "#241b14", "#f5e7c8", -1);
+      brandSticker(ctx, W*.17, H*.64, W*.065, "#241b14", ["???"], -.22, "#ffb511");
+      hand(ctx, W, H*.925, "stuffed with… you'll see", "#cdb68c", W*.055, .015);
+      pouchFurniture(ctx, W, H);
       grainOv(ctx, W, H, .07);
     };
 
     CONCEPTS[3].front = function(ctx, W, H){
       grad(ctx, W, H, [[0, "#54203a"], [.6, "#3d152a"], [1, "#2b0e1e"]], true);
       speckle(ctx, W, H, 150, "#f6dfc8", .04);
-      roughFrame(ctx, W, H, "#c99a86");
+      roughFrame(ctx, W, H, "#c99a86", .115);
       const rc = rcOf(ctx);
-      rc.circle(W*.84, H*.2, W*.075,
+      rc.circle(W*.8, H*.21, W*.085,
         {fill: "#f6dfc8", fillStyle: "solid", stroke: "#f6dfc8", roughness: 1.8, seed: SEED + 41});
-      ctx.fillStyle = "#3d152a"; ctx.beginPath(); ctx.arc(W*.855, H*.185, W*.032, 0, 7); ctx.fill();
-      [[.13, .17], [.23, .32], [.66, .14], [.92, .38]].forEach(s =>
+      ctx.fillStyle = "#3d152a"; ctx.beginPath(); ctx.arc(W*.817, H*.198, W*.037, 0, 7); ctx.fill();
+      [[.15, .19], [.25, .34], [.6, .16], [.88, .38]].forEach(s =>
         sparkle(ctx, W*s[0], H*s[1], W*.011, "rgba(246,223,200,.8)"));
-      bouncy2(ctx, "Date Night", W*.44, H*.33, W*.1, "#f6dfc8", "#ffae3b", W*.007, 2.7);
-      label(ctx, W, H*.43, "for two · no reservation needed", "#c99a86", W*.032);
-      rc.line(W*.2, H*.85, W*.8, H*.85, {stroke: "#c99a86", strokeWidth: 3.5, roughness: 2.2, seed: SEED + 42});
+      bouncy2(ctx, "Date Night", W*.5, H*.32, W*.125, "#f6dfc8", "#ffae3b", W*.008, 2.7);
+      label(ctx, W, H*.38, "for two · no reservation needed", "#c99a86", W*.042);
+      rc.line(W*.18, H*.85, W*.82, H*.85, {stroke: "#c99a86", strokeWidth: 3.5, roughness: 2.2, seed: SEED + 42});
       ctx.fillStyle = "rgba(232,180,95,.15)"; ctx.beginPath(); ctx.arc(W*.5, H*.7, W*.05, 0, 7); ctx.fill();
       rc.rectangle(W*.49, H*.73, W*.02, H*.12,
         {fill: "#f6dfc8", fillStyle: "solid", stroke: "#f6dfc8", roughness: 1.4, seed: SEED + 43});
@@ -1662,9 +1710,10 @@
       ctx.beginPath(); ctx.moveTo(-W*.03, 0); ctx.lineTo(W*.03, 0); ctx.stroke();
       heartShape(ctx, 0, -W*.008, W*.0018, "#c9503a");
       ctx.restore();
-      bubble(ctx, W*.2, H*.62, "you look sweet tonight.", W*.026, "#3c1822", "#f0dcc4", 1);
-      brandSticker(ctx, W*.88, H*.7, W*.055, "#914e72", ["table", "for two"], .18, "#ffae3b");
-      hand(ctx, W, H*.955, "pairs well with candlelight & bad rom-coms", "#c99a86", W*.03, .012);
+      bubble(ctx, W*.22, H*.6, "you look sweet tonight.", W*.032, "#3c1822", "#f0dcc4", 1);
+      brandSticker(ctx, W*.84, H*.68, W*.068, "#914e72", ["table", "for two"], .18, "#ffae3b");
+      hand(ctx, W, H*.925, "pairs well with candlelight & bad rom-coms", "#c99a86", W*.036, .012);
+      pouchFurniture(ctx, W, H);
       grainOv(ctx, W, H, .07);
     };
   }
