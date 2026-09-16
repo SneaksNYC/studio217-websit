@@ -213,7 +213,8 @@
   #shelf.on{display:block}
   .shelfWrap{position:relative; border:1px solid var(--line); border-radius:14px; overflow:hidden;
     background:radial-gradient(120% 100% at 50% 0%, var(--panel) 0%, var(--accent-soft) 100%)}
-  #shelfCanvas{display:block; width:100%; height:430px; cursor:grab; touch-action:none}
+  .shelfBg{position:absolute; inset:0; width:100%; height:100%; pointer-events:none}
+  #shelfCanvas{position:relative; display:block; width:100%; height:430px; cursor:grab; touch-action:none}
   #shelfCanvas.grabbing{cursor:grabbing}
   .shelfHint{position:absolute; right:14px; top:12px; font-size:11px; letter-spacing:.12em;
     text-transform:uppercase; color:var(--muted); pointer-events:none}
@@ -255,6 +256,15 @@
 
     <div id="shelf">
       <div class="shelfWrap">
+        <svg class="shelfBg" viewBox="0 0 900 430" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+          <g stroke="#9a5b1f" fill="none" stroke-linecap="round" opacity=".14">
+            <path d="M40 374 q 118 -9 228 -3 t 238 5 t 248 -6 t 106 3" stroke-width="3"/>
+            <circle cx="110" cy="84" r="28" stroke-width="2.5"/>
+            <path d="M110 42 l 1 -14 M110 128 l -1 14 M66 84 l -14 1 M154 84 l 14 -1 M79 53 l -10 -11 M142 52 l 10 -10 M78 116 l -11 10 M143 115 l 10 11" stroke-width="2.5"/>
+            <path d="M802 372 q 5 -58 -3 -84 M801 302 q -30 -20 -54 -11 M801 302 q 30 -21 52 -14 M800 310 q -22 -32 -15 -52 M800 310 q 24 -28 36 -32" stroke-width="2.5"/>
+            <path d="M846 372 q 3 -30 -2 -44 M845 336 q -18 -12 -32 -7 M845 336 q 18 -13 30 -9" stroke-width="2"/>
+          </g>
+        </svg>
         <canvas id="shelfCanvas"></canvas>
         <span class="shelfHint">drag to spin</span>
       </div>
@@ -296,7 +306,7 @@
           <p class="pk-foot">produit d'algérie · تمر · 500 g</p>
         </div>
         <figcaption><b>The Perfect Date — flagship</b>
-        Kraft branch box, gold-foil wordmark, cathedral window showing dates still on the branch. The premium/gift SKU.</figcaption>
+        Kraft box, riso-print wordmark, sketch window with the branch and palm fronds. The premium/gift SKU — certified mr. right.</figcaption>
       </figure>
 
       <!-- 2 · First Date -->
@@ -337,7 +347,7 @@
           <p class="pk-foot">every love story starts somewhere</p>
         </div>
         <figcaption><b>First Date — intro sampler</b>
-        Blush box, two dates leaning into a heart. Low-commitment trial size for shelf browsers; also the wedding-favor format.</figcaption>
+        Coral box — the shy couple says "hi." Low-commitment trial size; also the wedding-favor format. May contain butterflies.</figcaption>
       </figure>
 
       <!-- 3 · Blind Date -->
@@ -366,7 +376,7 @@
           <p class="pk-foot">stuffed with… you'll see</p>
         </div>
         <figcaption><b>Blind Date — mystery box</b>
-        Matte black, gold question mark with one date as the dot. Assorted stuffed dates (almond, walnut, orange peel) — you find out when you bite.</figcaption>
+        Matte black, a scribbled gold spotlight and one date in sunglasses. Assorted stuffed dates — you find out when you bite.</figcaption>
       </figure>
 
       <!-- 4 · Date Night -->
@@ -412,7 +422,7 @@
           <p class="pk-foot">dates + dark chocolate dip · serves 2</p>
         </div>
         <figcaption><b>Date Night — gift duo</b>
-        Burgundy box under a crescent moon: two dates at a table for two, chocolate dip included. Valentine's + Eid gifting crossover.</figcaption>
+        Plum night for two: candlelight, clinking mint-tea glasses, chocolate dip included. Valentine's + Eid gifting crossover.</figcaption>
       </figure>
 
       <!-- 5 · Long-Distance -->
@@ -1235,6 +1245,64 @@
       ctx.restore();
     }
 
+    function bouncyRiso(ctx, text, cx, cy, px, main, shadow, off){
+      ctx.font = '400 ' + px + 'px "Shrikhand", "Fraunces", serif';
+      ctx.textAlign = "left";
+      const total = ctx.measureText(text).width;
+      let cur = cx - total/2;
+      for (let i = 0; i < text.length; i++){
+        const ch = text[i], w = ctx.measureText(ch).width;
+        const dy = Math.sin(i*2.6 + 1) * px*.055, rot = Math.sin(i*1.7) * .05;
+        ctx.save(); ctx.translate(cur + w/2, cy + dy); ctx.rotate(rot);
+        ctx.fillStyle = shadow; ctx.fillText(ch, -w/2 + off, off);
+        ctx.fillStyle = main; ctx.fillText(ch, -w/2, 0);
+        ctx.restore();
+        cur += w;
+      }
+      ctx.textAlign = "center";
+    }
+    function palmFrond(ctx, x, y, len, ang, color, seed){
+      const rc = rcOf(ctx);
+      ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+      rc.curve([[0, 0], [len*.45, -len*.18], [len, -len*.2]],
+        {stroke: color, strokeWidth: 2.6, roughness: 1.6, seed: seed});
+      for (let i = 1; i <= 6; i++){
+        const t = i/6.5, px2 = len*t, py2 = -len*.2*t*(2 - t);
+        const la = (i%2 ? .55 : -1.75);
+        rc.line(px2, py2, px2 + len*.17*Math.cos(la), py2 + len*.17*Math.sin(la),
+          {stroke: color, strokeWidth: 1.8, roughness: 1.4, seed: seed + i});
+      }
+      ctx.restore();
+    }
+    function butterfly(ctx, x, y, s, color, seed){
+      const rc = rcOf(ctx);
+      ctx.save(); ctx.translate(x, y); ctx.rotate(.2);
+      rc.ellipse(-s*.55, 0, s, s*1.4, {fill: color, fillStyle: "hachure", fillWeight: 1.2,
+        hachureGap: 2.5, stroke: color, strokeWidth: 1.2, roughness: 1.3, seed: seed});
+      rc.ellipse(s*.55, 0, s, s*1.4, {fill: color, fillStyle: "hachure", fillWeight: 1.2,
+        hachureGap: 2.5, stroke: color, strokeWidth: 1.2, roughness: 1.3, seed: seed + 1});
+      ctx.strokeStyle = "#6b2f1c"; ctx.lineWidth = 1.4; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(0, -s*.7); ctx.lineTo(0, s*.7); ctx.stroke();
+      ctx.restore();
+    }
+    function teaGlass(ctx, x, y, s, tilt, glassColor, teaColor, seed){
+      const rc = rcOf(ctx);
+      ctx.save(); ctx.translate(x, y); ctx.rotate(tilt);
+      rc.polygon([[-s*.38, -s*.62], [s*.38, -s*.62], [s*.27, s*.55], [-s*.27, s*.55]],
+        {stroke: glassColor, strokeWidth: 2, roughness: 1.3, seed: seed});
+      rc.polygon([[-s*.33, -s*.05], [s*.33, -s*.05], [s*.28, s*.48], [-s*.28, s*.48]],
+        {fill: teaColor, fillStyle: "hachure", fillWeight: 1.6, hachureGap: 3,
+         stroke: "none", roughness: 1.2, seed: seed + 1});
+      ctx.strokeStyle = glassColor; ctx.lineWidth = 1.4; ctx.lineCap = "round";
+      ctx.globalAlpha = .7;
+      ctx.beginPath();
+      ctx.moveTo(0, -s*.75);
+      ctx.quadraticCurveTo(s*.14, -s*1, 0, -s*1.2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+
     CONCEPTS[0].front = function(ctx, W, H){
       const rc = rcOf(ctx);
       grad(ctx, W, H, [[0, "#cba876"], [1, "#b78e5c"]]);
@@ -1245,7 +1313,7 @@
       ctx.font = 'italic 600 ' + W*.082 + 'px "Fraunces", Georgia, serif';
       ctx.fillStyle = "#33220f"; ctx.textAlign = "center";
       ctx.fillText("the perfect", 0, -W*.115);
-      riso(ctx, "Date", 0, W*.08, '400 ' + W*.23 + 'px "Shrikhand", "Fraunces", serif', "#b8741f", "#c9503a", W*.011);
+      bouncyRiso(ctx, "Date", 0, W*.08, W*.23, "#b8741f", "#c9503a", W*.011);
       ctx.restore();
       squiggle(ctx, W*.31, H*.315, W*.38, "#c9503a", 3.5);
       const wx = W*.16, wy = H*.36, ww = W*.68, wh = H*.47, r = ww/2;
@@ -1267,6 +1335,10 @@
       face(ctx, W/2, wy + wh*.74, W*.02, "happy");
       face(ctx, W/2 - .28*ww, wy + wh*.58, W*.017, "wink");
       face(ctx, W/2 + .28*ww, wy + wh*.58, W*.017, "shy");
+      palmFrond(ctx, W*.5 - W*.01, wy + W*.02, W*.22, -2.75, "#3f6b34", SEED + 61);
+      palmFrond(ctx, W*.5 + W*.01, wy + W*.02, W*.22, -.39, "#3f6b34", SEED + 65);
+      palmFrond(ctx, W*.5, wy + W*.015, W*.16, -1.9, "#4e7a45", SEED + 68);
+      palmFrond(ctx, W*.5, wy + W*.015, W*.16, -1.2, "#4e7a45", SEED + 69);
       roughSticker(ctx, W*.83, H*.395, W*.09, "#c9503a", "#fff3e0", ["mr.", "right"], .2);
       hand(ctx, W, H*.905, "ingredients: dates. that's the list.", "#4a3416", W*.05, -.012);
       hand(ctx, W, H*.957, "produit d'Algérie · 500 g", "#6d5233", W*.04, .01);
@@ -1280,9 +1352,12 @@
       roughFrame(ctx, W, H, "#8a4a30");
       eyebrow(ctx, W, H*.1, "a six-date sampler", "#9c4f34", W*.026);
       ctx.save(); ctx.translate(W*.36, H*.26); ctx.rotate(-.05);
-      riso(ctx, "First", 0, 0, '400 ' + W*.165 + 'px "Shrikhand", "Fraunces", serif', "#6b2f1c", "#fff3e8", W*.01);
-      riso(ctx, "Date", W*.07, H*.12, '400 ' + W*.165 + 'px "Shrikhand", "Fraunces", serif', "#c9503a", "#fff3e8", W*.01);
+      bouncyRiso(ctx, "First", 0, 0, W*.165, "#6b2f1c", "#fff3e8", W*.01);
+      bouncyRiso(ctx, "Date", W*.07, H*.12, W*.165, "#c9503a", "#fff3e8", W*.01);
       ctx.restore();
+      butterfly(ctx, W*.79, H*.4, W*.035, "#c9503a", SEED + 71);
+      butterfly(ctx, W*.15, H*.72, W*.028, "#fff3e8", SEED + 74);
+      butterfly(ctx, W*.86, H*.68, W*.022, "#fff3e8", SEED + 77);
       const cx = W*.6, cy = H*.62;
       roughDate2(ctx, cx - W*.09, cy, W*.1, W*.16, .75, SEED + 21);
       roughDate2(ctx, cx + W*.09, cy, W*.1, W*.16, -.75, SEED + 22);
@@ -1301,8 +1376,9 @@
       roughFrame(ctx, W, H, "#8f7c5f");
       eyebrow(ctx, W, H*.09, "a mystery assortment", "#8f7c5f", W*.026);
       ctx.save(); ctx.translate(W/2, H*.21); ctx.rotate(-.03);
-      riso(ctx, "Blind Date", 0, 0, '400 ' + W*.12 + 'px "Shrikhand", "Fraunces", serif', "#f2e4c8", "#c9503a", W*.008);
+      bouncyRiso(ctx, "Blind Date", 0, 0, W*.12, "#f2e4c8", "#c9503a", W*.008);
       ctx.restore();
+      hand(ctx, W*.56, H*.29, "shhh…", "#8f7c5f", W*.055, .12);
       const rc = rcOf(ctx);
       rc.circle(W*.5, H*.53, W*.54,
         {fill: "#e0a83c", fillStyle: "hachure", fillWeight: 3.2, hachureGap: 6.5, hachureAngle: 35,
@@ -1330,7 +1406,7 @@
       [[.13, .17], [.23, .32], [.66, .14], [.92, .38]].forEach(s =>
         sparkle(ctx, W*s[0], H*s[1], W*.011, "rgba(246,223,200,.8)"));
       ctx.save(); ctx.translate(W*.44, H*.35); ctx.rotate(-.035);
-      riso(ctx, "Date Night", 0, 0, '400 ' + W*.1 + 'px "Shrikhand", "Fraunces", serif', "#f6dfc8", "#e07b6a", W*.007);
+      bouncyRiso(ctx, "Date Night", 0, 0, W*.1, "#f6dfc8", "#e07b6a", W*.007);
       ctx.restore();
       eyebrow(ctx, W, H*.465, "for two · no reservation needed", "#c99a86", W*.017);
       rc.line(W*.26, H*.85, W*.74, H*.85, {stroke: "#c99a86", strokeWidth: 3.5, roughness: 2.2, seed: SEED + 42});
@@ -1344,7 +1420,10 @@
       roughDate2(ctx, W*.62, H*.73, W*.043, W*.07, .22, SEED + 45);
       face(ctx, W*.385, H*.72, W*.015, "wink");
       face(ctx, W*.615, H*.72, W*.015, "shy");
-      heartShape(ctx, W*.5, H*.56, W*.005, "#e07b6a");
+      teaGlass(ctx, W*.455, H*.6, W*.03, .3, "#f6dfc8", "#c97b3a", SEED + 81);
+      teaGlass(ctx, W*.545, H*.6, W*.03, -.3, "#f6dfc8", "#c97b3a", SEED + 84);
+      sparkle(ctx, W*.5, H*.545, W*.013, "#fff3c4");
+      heartShape(ctx, W*.5, H*.505, W*.0038, "#e07b6a");
       bubble(ctx, W*.2, H*.63, "you look sweet tonight.", W*.026, "#3c1822", "#f0dcc4", 1);
       roughSticker(ctx, W*.87, H*.72, W*.055, "#e07b6a", "#2b0e1e", ["table", "for two"], .18);
       hand(ctx, W, H*.955, "dates + chocolate dip · pairs well with bad rom-coms", "#c99a86", W*.03, .012);
