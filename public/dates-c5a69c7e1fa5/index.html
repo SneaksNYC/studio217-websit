@@ -208,6 +208,17 @@
     padding:14px 18px; font-size:14px; color:var(--ink)}
   .mkNote b{font-family:"Fraunces", Georgia, serif}
 
+  /* ── Coffee Date (email drafts) ── */
+  details.draft{background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    margin-bottom:10px; box-shadow:var(--shadow); overflow:hidden}
+  details.draft summary{cursor:pointer; padding:11px 16px; font-weight:600; font-size:14px}
+  details.draft summary span{font-weight:400; color:var(--muted); font-size:12.5px; margin-left:8px}
+  details.draft .body{border-top:1px dashed var(--line); padding:12px 16px}
+  details.draft .subj{font-size:13px; color:var(--muted); margin:0 0 8px}
+  details.draft .subj b{color:var(--ink)}
+  details.draft pre{margin:0; white-space:pre-wrap; font:13.5px/1.55 "Segoe UI", system-ui, sans-serif;
+    color:var(--ink)}
+
   /* ── 3D shelf ── */
   #shelf{margin-top:26px; display:none}
   #shelf.on{display:block}
@@ -237,6 +248,8 @@
   <h1>Studio<span style="color:var(--accent)">217</span> · Dates</h1>
   <p>Private brief — enter your access code.</p>
   <input id="gateInput" type="password" autocomplete="off" placeholder="access code"
+         inputmode="numeric" pattern="[0-9]*"
+         oninput="this.value=this.value.replace(/[^0-9]/g,'')"
          onkeydown="if(event.key==='Enter')tryUnlock()">
   <button onclick="tryUnlock()">Enter</button>
   <div id="gateErr"></div>
@@ -646,6 +659,79 @@
           card.appendChild(c);
           sec.appendChild(card);
         }
+      }
+      main.appendChild(sec);
+    }
+
+    // ── Coffee Date: the pit side hustle ──
+    if (d.coffee){
+      const c = d.coffee;
+      const sec = el("div", "sub");
+      sec.appendChild(el("p", "eyebrow", "the pit side hustle"));
+      sec.appendChild(el("h2", null, "Coffee Date"));
+      if (c.lede) sec.appendChild(el("p", "lede", c.lede));
+      if (c.analysis && c.analysis.length){
+        sec.appendChild(el("h3", null, "market analysis"));
+        const grid = el("div", "cards");
+        for (const a of c.analysis){
+          const card = el("div", "card");
+          card.appendChild(el("b", null, a.h));
+          card.appendChild(el("p", null, a.t));
+          grid.appendChild(card);
+        }
+        sec.appendChild(grid);
+      }
+      if (c.buyers && c.buyers.length){
+        sec.appendChild(el("h3", null, "pit & date buyers"));
+        for (const s of c.buyers){
+          const card = el("div", "store");
+          const top = el("div", "top");
+          top.appendChild(el("b", null, s.name));
+          if (s.area) top.appendChild(el("span", "area", s.area));
+          if (s.tag) top.appendChild(el("span", "pill a", s.tag));
+          if (s.uses_pits) top.appendChild(el("span", "pill g", "already uses date pits"));
+          card.appendChild(top);
+          if (s.fit) card.appendChild(el("p", "fit", s.fit));
+          const ct = el("div", "contact");
+          if (s.email){
+            const a2 = el("a", null, s.email);
+            a2.href = "mailto:" + s.email;
+            ct.appendChild(a2);
+          } else if (s.contact){
+            ct.appendChild(el("span", null, s.contact));
+          }
+          if (s.website){
+            const w = el("a", null, s.website.replace(/^https?:\/\//, "").replace(/\/$/, ""));
+            w.href = s.website; w.target = "_blank"; w.rel = "noopener";
+            ct.appendChild(w);
+          }
+          card.appendChild(ct);
+          sec.appendChild(card);
+        }
+      }
+      if (c.emails && c.emails.length){
+        sec.appendChild(el("h3", null, "email drafts — nothing sends without your go"));
+        for (const m of c.emails){
+          const det = el("details", "draft");
+          const sum = el("summary", null, m.name);
+          const sp = el("span", null, m.to ? ("→ " + m.to) : "");
+          sum.appendChild(sp);
+          det.appendChild(sum);
+          const body = el("div", "body");
+          const subj = el("p", "subj");
+          subj.innerHTML = "Subject: <b></b>";
+          subj.querySelector("b").textContent = m.subject;
+          body.appendChild(subj);
+          body.appendChild(el("pre", null, m.body));
+          det.appendChild(body);
+          sec.appendChild(det);
+        }
+      }
+      if (c.note){
+        const note = el("div", "note");
+        note.innerHTML = "<b>Note</b> — ";
+        note.appendChild(document.createTextNode(c.note));
+        sec.appendChild(note);
       }
       main.appendChild(sec);
     }
