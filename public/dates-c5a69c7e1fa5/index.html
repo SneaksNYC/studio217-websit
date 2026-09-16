@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Studio217 · Dates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#faf7f2; --panel:#ffffff; --ink:#241d15; --muted:#6b6157; --line:#e8e1d5;
@@ -104,6 +107,98 @@
   .note{margin-top:26px; background:var(--panel); border:1px solid var(--line); border-radius:10px;
     padding:14px 18px; box-shadow:var(--shadow); font-size:14px; color:var(--muted)}
   .note b{color:var(--ink)}
+
+  /* ═══ Mockups: "It's a Date." concept line ═══ */
+  #mockups{margin-top:52px}
+  #mockups .mkTitle{margin:0; font:600 34px/1.1 "Fraunces", Georgia, serif}
+  #mockups .mkTitle em{font-style:italic; color:var(--accent)}
+  #mockups .mkLede{margin:8px 0 0; color:var(--muted); max-width:66ch}
+  .mkGrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:26px; margin-top:26px}
+  figure.mk{margin:0}
+  figure.mk figcaption{margin-top:10px; font-size:13px; color:var(--muted); line-height:1.5}
+  figure.mk figcaption b{display:block; color:var(--ink); font-size:14px}
+
+  .pack{position:relative; aspect-ratio:3/4; border-radius:6px; overflow:hidden;
+    box-shadow:0 18px 30px -18px rgba(36,29,21,.45), 0 2px 6px rgba(36,29,21,.14);
+    display:flex; flex-direction:column; isolation:isolate}
+  .pack::after{content:""; position:absolute; inset:0; z-index:9; pointer-events:none;
+    background:linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 28%)}
+  .grain::before{content:""; position:absolute; inset:0; z-index:1; opacity:.5; pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .pack > *{position:relative; z-index:2}
+  .foil{background:linear-gradient(105deg,#8a5a1a 0%,#eac96a 38%,#fff3c4 50%,#eac96a 62%,#8a5a1a 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent}
+  .serif{font-family:"Fraunces", Georgia, serif}
+  .pk-eyebrow{font-size:9px; letter-spacing:.34em; text-transform:uppercase; text-align:center}
+  .pk-foot{font-size:8px; letter-spacing:.22em; text-transform:uppercase; text-align:center}
+
+  /* 1 · The Perfect Date — kraft flagship */
+  .pack-perfect{background:linear-gradient(160deg,#c9a473,#b78e5c); color:#3a2817; padding:20px 16px 14px; gap:2px}
+  .pack-perfect .pk-eyebrow{color:#6d5233}
+  .pack-perfect h4{margin:6px 0 0; font:600 27px/1.02 "Fraunces", Georgia, serif; text-align:center}
+  .pack-perfect h4 i{display:block; font-size:31px}
+  .pack-perfect .sub{margin-top:5px; text-align:center; font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; color:#5d4527}
+  .pack-perfect .win{flex:1; margin:12px 6px 8px; border-radius:70px 70px 8px 8px; overflow:hidden;
+    border:3px solid #8a6438; background:#2a1c10; box-shadow:inset 0 0 22px rgba(0,0,0,.65)}
+  .pack-perfect .win svg{width:100%; height:100%; display:block}
+  .pack-perfect .pk-foot{color:#6d5233}
+
+  /* 2 · First Date — blush sampler */
+  .pack-first{background:linear-gradient(170deg,#f2dfd2,#e9c8b6); color:#5a3325; padding:22px 16px 14px; align-items:center}
+  .pack-first .pk-eyebrow{color:#a97b62}
+  .pack-first h4{margin:8px 0 0; font:italic 600 34px/1 "Fraunces", Georgia, serif; text-align:center}
+  .pack-first .heart{flex:1; display:flex; align-items:center; justify-content:center; width:100%}
+  .pack-first .heart svg{width:62%; max-height:100%}
+  .pack-first .pk-foot{color:#a97b62}
+
+  /* 3 · Blind Date — matte black mystery */
+  .pack-blind{background:linear-gradient(165deg,#241b14,#17110c); color:#efe3cd; padding:22px 16px 14px; align-items:center}
+  .pack-blind .pk-eyebrow{color:#8f7c5f}
+  .pack-blind h4{margin:6px 0 0; font:600 27px/1 "Fraunces", Georgia, serif}
+  .pack-blind .q{flex:1; display:flex; align-items:center; justify-content:center; width:100%}
+  .pack-blind .q .mark{font:900 130px/1 "Fraunces", Georgia, serif; position:relative}
+  .pack-blind .q .peek{position:absolute; left:50%; bottom:4px; transform:translateX(-50%); width:30px}
+  .pack-blind .pk-foot{color:#8f7c5f}
+
+  /* 4 · Date Night — burgundy for two */
+  .pack-night{background:radial-gradient(120% 90% at 50% 0%,#5c2735 0%,#3c1822 62%,#2c101a 100%); color:#f0dcc4; padding:22px 16px 14px; align-items:center}
+  .pack-night .pk-eyebrow{color:#c99a86}
+  .pack-night h4{margin:6px 0 0; font:600 29px/1 "Fraunces", Georgia, serif; text-align:center}
+  .pack-night .scene{flex:1; display:flex; align-items:center; justify-content:center; width:100%}
+  .pack-night .scene svg{width:78%; max-height:100%}
+  .pack-night .pk-foot{color:#c99a86}
+
+  /* 5 · Long-Distance — airmail crate */
+  .pack-post{background:#efe6d4; color:#3a3026; padding:0; }
+  .pack-post .stripe{height:14px; background:repeating-linear-gradient(45deg,#b3402f 0 16px,#efe6d4 16px 32px,#274a72 32px 48px,#efe6d4 48px 64px)}
+  .pack-post .body{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 16px; gap:8px}
+  .pack-post h4{margin:0; font:600 24px/1.08 "Fraunces", Georgia, serif; text-align:center}
+  .pack-post .route{font-size:10px; letter-spacing:.26em; text-transform:uppercase; color:#7a6a54}
+  .pack-post .stamp{border:2.5px solid #a5502f; color:#a5502f; border-radius:50%; width:96px; height:96px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+    font-size:8.5px; letter-spacing:.14em; text-transform:uppercase; transform:rotate(-11deg); opacity:.85}
+  .pack-post .stamp b{font-size:15px; letter-spacing:.03em; font-family:"Fraunces", Georgia, serif}
+
+  /* 6 · The Profile — dating-app parody */
+  .pack-app{background:#fdf8ef; color:#33281c; padding:0}
+  .pack-app .photo{flex:1.5; background:radial-gradient(120% 120% at 30% 20%,#e8b45f 0%,#b97c2e 55%,#7d4d17 100%);
+    display:flex; align-items:flex-end; justify-content:center; overflow:hidden}
+  .pack-app .photo svg{width:52%; margin-bottom:-4%}
+  .pack-app .bio{padding:12px 14px 14px}
+  .pack-app .bio h4{margin:0; font:600 19px/1 "Fraunces", Georgia, serif; display:flex; align-items:center; gap:6px}
+  .pack-app .bio h4 .vf{width:14px; height:14px; border-radius:50%; background:#2f8dd8; color:#fff;
+    font:700 9px/14px sans-serif; text-align:center}
+  .pack-app .chips{display:flex; flex-wrap:wrap; gap:4px; margin-top:8px}
+  .pack-app .chips span{font-size:9px; letter-spacing:.04em; padding:2px 8px; border-radius:99px;
+    background:#f0e4cd; color:#7a6338; font-weight:600}
+  .pack-app .acts{display:flex; justify-content:center; gap:18px; margin-top:12px}
+  .pack-app .acts i{width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-style:normal; font-size:15px; box-shadow:0 2px 6px rgba(51,40,28,.18); background:#fff}
+  .pack-app .acts .no{color:#b3402f} .pack-app .acts .yes{color:#1f7a56}
+
+  .mkNote{margin-top:24px; background:var(--accent-soft); border:1px solid var(--line); border-radius:10px;
+    padding:14px 18px; font-size:14px; color:var(--ink)}
+  .mkNote b{font-family:"Fraunces", Georgia, serif}
 </style>
 </head>
 <body>
@@ -123,6 +218,178 @@
     <p><span id="liveDot"></span><span id="liveTxt">connecting…</span> <span id="updatedTxt"></span></p>
   </div>
   <main id="main"></main>
+
+  <section id="mockups">
+    <p class="eyebrow" style="font-family:ui-monospace,Consolas,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 6px">fun concepts</p>
+    <h2 class="mkTitle">It's a <em>Date.</em></h2>
+    <p class="mkLede">Playing the double meaning — the fruit and the romance. Six front-of-pack concepts for a pun-led line. Same product inside (Algerian Deglet Nour), six moods on the shelf.</p>
+
+    <div class="mkGrid">
+
+      <!-- 1 · The Perfect Date -->
+      <figure class="mk">
+        <div class="pack pack-perfect grain">
+          <p class="pk-eyebrow">Dattes d'Algérie · Deglet Nour</p>
+          <h4>The Perfect<i class="foil">Date</i></h4>
+          <p class="sub">sweet · golden · always on time</p>
+          <div class="win">
+            <svg viewBox="0 0 200 210" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="dfr" cx="34%" cy="28%" r="80%">
+                  <stop offset="0%" stop-color="#e2a955"/><stop offset="55%" stop-color="#a86a24"/><stop offset="100%" stop-color="#5e3410"/>
+                </radialGradient>
+              </defs>
+              <path d="M100 -10 V 80" stroke="#7d5a2e" stroke-width="5" stroke-linecap="round"/>
+              <path d="M100 40 C 70 55 55 80 52 110 M100 40 C 130 55 145 80 148 110 M100 55 C 85 75 78 105 80 140 M100 55 C 115 75 122 105 120 140 M100 62 C 98 95 98 130 100 165" stroke="#7d5a2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+              <g>
+                <ellipse cx="52" cy="122" rx="13" ry="21" fill="url(#dfr)"/>
+                <ellipse cx="80" cy="152" rx="13" ry="21" fill="url(#dfr)"/>
+                <ellipse cx="100" cy="178" rx="13" ry="21" fill="url(#dfr)"/>
+                <ellipse cx="120" cy="152" rx="13" ry="21" fill="url(#dfr)"/>
+                <ellipse cx="148" cy="122" rx="13" ry="21" fill="url(#dfr)"/>
+                <ellipse cx="66" cy="134" rx="12" ry="19" fill="url(#dfr)" opacity=".92"/>
+                <ellipse cx="134" cy="134" rx="12" ry="19" fill="url(#dfr)" opacity=".92"/>
+              </g>
+              <g stroke="#f5d9a0" stroke-width="2" opacity=".5" fill="none">
+                <path d="M48 108 q 3 10 1 20"/><path d="M96 164 q 3 10 1 20"/><path d="M144 108 q 3 10 1 20"/>
+              </g>
+            </svg>
+          </div>
+          <p class="pk-foot">produit d'algérie · تمر · 500 g</p>
+        </div>
+        <figcaption><b>The Perfect Date — flagship</b>
+        Kraft branch box, gold-foil wordmark, cathedral window showing dates still on the branch. The premium/gift SKU.</figcaption>
+      </figure>
+
+      <!-- 2 · First Date -->
+      <figure class="mk">
+        <div class="pack pack-first grain">
+          <p class="pk-eyebrow">a six-date sampler</p>
+          <h4>First Date</h4>
+          <div class="heart">
+            <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="dfh" cx="34%" cy="28%" r="80%">
+                  <stop offset="0%" stop-color="#d99a4e"/><stop offset="60%" stop-color="#9a5b1f"/><stop offset="100%" stop-color="#57300e"/>
+                </radialGradient>
+              </defs>
+              <ellipse cx="76" cy="78" rx="32" ry="54" fill="url(#dfh)" transform="rotate(46 76 78)"/>
+              <ellipse cx="124" cy="78" rx="32" ry="54" fill="url(#dfh)" transform="rotate(-46 124 78)"/>
+              <path d="M63 53 q 6 16 2 34" stroke="#f0cf96" stroke-width="3" opacity=".55" fill="none" transform="rotate(46 76 78)"/>
+              <path d="M115 53 q 6 16 2 34" stroke="#f0cf96" stroke-width="3" opacity=".55" fill="none" transform="rotate(-46 124 78)"/>
+              <path d="M92 26 c -5 -12 7 -19 9 -8 c 2 -11 14 -4 9 8 c -3 8 -9 11 -9 11 c 0 0 -6 -3 -9 -11 z" fill="#c95a4a"/>
+            </svg>
+          </div>
+          <p class="pk-foot">every love story starts somewhere</p>
+        </div>
+        <figcaption><b>First Date — intro sampler</b>
+        Blush box, two dates leaning into a heart. Low-commitment trial size for shelf browsers; also the wedding-favor format.</figcaption>
+      </figure>
+
+      <!-- 3 · Blind Date -->
+      <figure class="mk">
+        <div class="pack pack-blind grain">
+          <p class="pk-eyebrow">a mystery assortment</p>
+          <h4>Blind Date</h4>
+          <div class="q">
+            <div class="mark foil">?
+              <svg class="peek" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="dfq" cx="34%" cy="28%" r="80%">
+                    <stop offset="0%" stop-color="#e2a955"/><stop offset="60%" stop-color="#a86a24"/><stop offset="100%" stop-color="#5e3410"/>
+                  </radialGradient>
+                </defs>
+                <ellipse cx="20" cy="30" rx="16" ry="26" fill="url(#dfq)"/>
+                <path d="M13 12 q 4 14 1 32" stroke="#f5d9a0" stroke-width="2.4" opacity=".5" fill="none"/>
+              </svg>
+            </div>
+          </div>
+          <p class="pk-foot">stuffed with… you'll see</p>
+        </div>
+        <figcaption><b>Blind Date — mystery box</b>
+        Matte black, gold question mark with one date as the dot. Assorted stuffed dates (almond, walnut, orange peel) — you find out when you bite.</figcaption>
+      </figure>
+
+      <!-- 4 · Date Night -->
+      <figure class="mk">
+        <div class="pack pack-night grain">
+          <p class="pk-eyebrow">for two · no reservation needed</p>
+          <h4>Date Night</h4>
+          <div class="scene">
+            <svg viewBox="0 0 220 170" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="dfn" cx="34%" cy="28%" r="80%">
+                  <stop offset="0%" stop-color="#e2a955"/><stop offset="60%" stop-color="#a86a24"/><stop offset="100%" stop-color="#5e3410"/>
+                </radialGradient>
+              </defs>
+              <circle cx="110" cy="34" r="16" fill="#f0dcc4" opacity=".9"/>
+              <circle cx="116" cy="30" r="14" fill="#3c1822"/>
+              <g fill="#f0dcc4" opacity=".75">
+                <circle cx="52" cy="24" r="2"/><circle cx="172" cy="40" r="1.6"/><circle cx="188" cy="18" r="2.2"/><circle cx="30" cy="52" r="1.6"/>
+              </g>
+              <path d="M40 150 h 140" stroke="#c99a86" stroke-width="3" stroke-linecap="round"/>
+              <ellipse cx="82" cy="122" rx="17" ry="27" fill="url(#dfn)" transform="rotate(-14 82 122)"/>
+              <ellipse cx="138" cy="122" rx="17" ry="27" fill="url(#dfn)" transform="rotate(14 138 122)"/>
+              <path d="M72 104 q 5 16 2 34" stroke="#f0cf96" stroke-width="2.6" opacity=".5" fill="none" transform="rotate(-14 82 122)"/>
+              <path d="M128 104 q 5 16 2 34" stroke="#f0cf96" stroke-width="2.6" opacity=".5" fill="none" transform="rotate(14 138 122)"/>
+              <path d="M104 92 c -3 -8 4 -13 6 -6 c 2 -7 9 -2 6 6 c -2 5 -6 7 -6 7 c 0 0 -4 -2 -6 -7 z" fill="#e07b6a"/>
+            </svg>
+          </div>
+          <p class="pk-foot">dates + dark chocolate dip · serves 2</p>
+        </div>
+        <figcaption><b>Date Night — gift duo</b>
+        Burgundy box under a crescent moon: two dates at a table for two, chocolate dip included. Valentine's + Eid gifting crossover.</figcaption>
+      </figure>
+
+      <!-- 5 · Long-Distance -->
+      <figure class="mk">
+        <div class="pack pack-post grain">
+          <div class="stripe"></div>
+          <div class="body">
+            <p class="route">par avion · biskra → brooklyn</p>
+            <h4>Long-Distance<br>Relationship</h4>
+            <div class="stamp">
+              <span>ziban oasis</span><b>4,000 mi</b><span>for you</span>
+            </div>
+            <p class="route" style="letter-spacing:.14em; white-space:nowrap">with love, from the sahara</p>
+          </div>
+          <div class="stripe"></div>
+        </div>
+        <figcaption><b>Long-Distance Relationship</b>
+        Airmail-envelope box with a rubber-stamped route. The origin story as the romance: these dates crossed an ocean to meet you.</figcaption>
+      </figure>
+
+      <!-- 6 · The Profile -->
+      <figure class="mk">
+        <div class="pack pack-app">
+          <div class="photo">
+            <svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="dfp" cx="34%" cy="24%" r="82%">
+                  <stop offset="0%" stop-color="#efc077"/><stop offset="55%" stop-color="#a86a24"/><stop offset="100%" stop-color="#4f2c0c"/>
+                </radialGradient>
+              </defs>
+              <ellipse cx="60" cy="85" rx="42" ry="64" fill="url(#dfp)"/>
+              <path d="M38 38 q 10 34 4 78" stroke="#f5d9a0" stroke-width="5" opacity=".45" fill="none"/>
+              <path d="M60 21 q 3 -12 14 -16" stroke="#3f6b34" stroke-width="7" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="bio">
+            <h4>Deglet, 29 <span class="vf">✓</span></h4>
+            <div class="chips">
+              <span>Algerian</span><span>Golden</span><span>Naturally sweet</span><span>Great with coffee</span>
+            </div>
+            <div class="acts"><i class="no">✕</i><i class="yes">♥</i></div>
+          </div>
+        </div>
+        <figcaption><b>The Profile — social campaign</b>
+        Dating-app parody card for Instagram, not a box: swipe right, it's a Date. Launch-teaser content in the Mahali playbook style.</figcaption>
+      </figure>
+
+    </div>
+
+    <div class="mkNote"><b>Why the pun has a season:</b> in 2027 Ramadan begins ~Feb 8 and Valentine's lands Feb 14 — inside Ramadan. One February shelf, two reasons to buy dates: "This February, every date counts twice" / "Break your fast with a good Date."</div>
+  </section>
 </div>
 
 <script>
