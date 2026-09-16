@@ -199,6 +199,27 @@
   .mkNote{margin-top:24px; background:var(--accent-soft); border:1px solid var(--line); border-radius:10px;
     padding:14px 18px; font-size:14px; color:var(--ink)}
   .mkNote b{font-family:"Fraunces", Georgia, serif}
+
+  /* ── 3D shelf ── */
+  #shelf{margin-top:26px; display:none}
+  #shelf.on{display:block}
+  .shelfWrap{position:relative; border:1px solid var(--line); border-radius:14px; overflow:hidden;
+    background:radial-gradient(120% 100% at 50% 0%, var(--panel) 0%, var(--accent-soft) 100%)}
+  #shelfCanvas{display:block; width:100%; height:430px; cursor:grab; touch-action:none}
+  #shelfCanvas.grabbing{cursor:grabbing}
+  .shelfHint{position:absolute; right:14px; top:12px; font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--muted); pointer-events:none}
+  .shelfChips{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+  .shelfChips button{font:600 13px/1 "Segoe UI", system-ui, sans-serif; padding:8px 16px; border-radius:99px;
+    border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer; transition:all .2s}
+  .shelfChips button:hover{border-color:var(--accent)}
+  .shelfChips button.on{background:var(--accent); border-color:var(--accent); color:#fff}
+
+  /* flats get picked up on hover — nothing sits stiff on this shelf */
+  .pack{transition:transform .35s cubic-bezier(.2,.8,.3,1), box-shadow .35s}
+  figure.mk:nth-child(odd):hover .pack{transform:translateY(-7px) rotate(-1.4deg)}
+  figure.mk:nth-child(even):hover .pack{transform:translateY(-7px) rotate(1.4deg)}
+  figure.mk:hover .pack{box-shadow:0 30px 40px -20px rgba(36,29,21,.5), 0 3px 8px rgba(36,29,21,.16)}
 </style>
 </head>
 <body>
@@ -223,6 +244,14 @@
     <p class="eyebrow" style="font-family:ui-monospace,Consolas,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 6px">fun concepts</p>
     <h2 class="mkTitle">It's a <em>Date.</em></h2>
     <p class="mkLede">Playing the double meaning — the fruit and the romance. Six front-of-pack concepts for a pun-led line. Same product inside (Algerian Deglet Nour), six moods on the shelf.</p>
+
+    <div id="shelf">
+      <div class="shelfWrap">
+        <canvas id="shelfCanvas"></canvas>
+        <span class="shelfHint">drag to spin</span>
+      </div>
+      <div class="shelfChips" id="shelfChips"></div>
+    </div>
 
     <div class="mkGrid">
 
@@ -653,6 +682,320 @@
       main.appendChild(note);
     }
   }
+</script>
+<script src="/dates-c5a69c7e1fa5/three.min.js"></script>
+<script>
+// ── 3D shelf: the four boxes as real, grabbable packs (three.js, self-hosted) ──
+(function(){
+  "use strict";
+  if (!window.THREE) return;
+
+  // ---- canvas paint helpers ----
+  const PPU = 340; // pixels per world unit on textures
+  function cv(w, h){ const c = document.createElement("canvas"); c.width = Math.round(w); c.height = Math.round(h); return c; }
+  function grad(ctx, W, H, stops, radial){
+    let g;
+    if (radial) g = ctx.createRadialGradient(W*.5, H*.05, W*.1, W*.5, H*.3, H*1.05);
+    else g = ctx.createLinearGradient(0, 0, W*.25, H);
+    stops.forEach(s => g.addColorStop(s[0], s[1]));
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  }
+  function speckle(ctx, W, H, n, color, a){
+    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = color;
+    for (let i = 0; i < n; i++){
+      ctx.beginPath();
+      ctx.arc(Math.random()*W, Math.random()*H, Math.random()*1.4 + .3, 0, 7);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+  function foilFill(ctx, x0, x1, y){
+    const g = ctx.createLinearGradient(x0, y, x1, y + 30);
+    [[0,"#8a5a1a"],[.38,"#eac96a"],[.5,"#fff3c4"],[.62,"#eac96a"],[1,"#8a5a1a"]].forEach(s => g.addColorStop(s[0], s[1]));
+    return g;
+  }
+  function dateFruit(ctx, x, y, rx, ry, rot){
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot || 0);
+    const g = ctx.createRadialGradient(-rx*.35, -ry*.4, rx*.15, 0, 0, ry*1.1);
+    g.addColorStop(0, "#e2a955"); g.addColorStop(.58, "#a86a24"); g.addColorStop(1, "#5e3410");
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, 0, 7); ctx.fill();
+    ctx.strokeStyle = "rgba(245,217,160,.5)"; ctx.lineWidth = rx*.14; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-rx*.45, -ry*.62); ctx.quadraticCurveTo(-rx*.15, -ry*.1, -rx*.35, ry*.5); ctx.stroke();
+    ctx.restore();
+  }
+  function heartShape(ctx, x, y, s, color){
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(0, 4);
+    ctx.bezierCurveTo(-6, -6, -14, 2, 0, 12);
+    ctx.bezierCurveTo(14, 2, 6, -6, 0, 4);
+    ctx.fill(); ctx.restore();
+  }
+  function eyebrow(ctx, W, y, text, color, px){
+    ctx.fillStyle = color; ctx.textAlign = "center";
+    ctx.font = "600 " + (px || 15) + 'px "Segoe UI", sans-serif';
+    try{ ctx.letterSpacing = "5px"; }catch(_e){}
+    ctx.fillText(text.toUpperCase(), W/2, y);
+    try{ ctx.letterSpacing = "0px"; }catch(_e){}
+  }
+  function sideFace(w, h, base, inkColor){
+    const c = cv(w, h), ctx = c.getContext("2d");
+    grad(ctx, w, h, [[0, base[0]], [1, base[1]]]);
+    speckle(ctx, w, h, w*h/300, inkColor, .05);
+    ctx.save(); ctx.translate(w/2, h/2); ctx.rotate(-Math.PI/2);
+    ctx.fillStyle = inkColor; ctx.globalAlpha = .8; ctx.textAlign = "center";
+    ctx.font = 'italic 600 ' + Math.min(w*.52, 46) + 'px "Fraunces", Georgia, serif';
+    ctx.fillText("It's a Date.", 0, 12);
+    ctx.restore();
+    return c;
+  }
+  function backFace(w, h, base, inkColor){
+    const c = cv(w, h), ctx = c.getContext("2d");
+    grad(ctx, w, h, [[0, base[0]], [1, base[1]]]);
+    speckle(ctx, w, h, w*h/300, inkColor, .05);
+    ctx.fillStyle = inkColor; ctx.textAlign = "center";
+    ctx.font = 'italic 600 ' + w*.11 + 'px "Fraunces", Georgia, serif';
+    ctx.fillText("It's a Date.", w/2, h*.2);
+    eyebrow(ctx, w, h*.28, "dattes d'algérie · deglet nour", inkColor, w*.032);
+    ctx.font = '400 ' + w*.034 + 'px "Segoe UI", sans-serif';
+    ctx.globalAlpha = .8;
+    ["Grown in the Ziban oases, Biskra.", "Naturally sweet — nothing added.", "Product of Algeria · 500 g"].forEach((t, i) =>
+      ctx.fillText(t, w/2, h*.37 + i*h*.05));
+    ctx.globalAlpha = 1;
+    const bw = w*.4, bx = (w-bw)/2, by = h*.78;
+    ctx.fillStyle = inkColor;
+    let x = bx;
+    while (x < bx + bw){ const lw = Math.random()*5 + 1.5; ctx.fillRect(x, by, lw, h*.09); x += lw + Math.random()*5 + 2; }
+    return c;
+  }
+  function plainFace(w, d, base){
+    const c = cv(w, d), ctx = c.getContext("2d");
+    grad(ctx, w, d, [[0, base[0]], [1, base[1]]]);
+    return c;
+  }
+
+  // ---- the four boxes ----
+  const CONCEPTS = [
+    { id: "perfect", label: "The Perfect Date", dims: [1.5, 2.05, 0.5],
+      base: ["#c9a473", "#b78e5c"], ink: "#3a2817",
+      front(ctx, W, H){
+        grad(ctx, W, H, [[0, "#c9a473"], [1, "#b78e5c"]]);
+        speckle(ctx, W, H, 900, "#3a2817", .06);
+        eyebrow(ctx, W, H*.075, "dattes d'algérie · deglet nour", "#6d5233", W*.028);
+        ctx.fillStyle = "#3a2817"; ctx.textAlign = "center";
+        ctx.font = '600 ' + W*.135 + 'px "Fraunces", Georgia, serif';
+        ctx.fillText("The Perfect", W/2, H*.155);
+        ctx.font = 'italic 700 ' + W*.155 + 'px "Fraunces", Georgia, serif';
+        ctx.fillStyle = foilFill(ctx, W*.3, W*.7, H*.2);
+        ctx.fillText("Date", W/2, H*.235);
+        eyebrow(ctx, W, H*.275, "sweet · golden · always on time", "#5d4527", W*.024);
+        const wx = W*.14, wy = H*.31, ww = W*.72, wh = H*.56, r = ww/2;
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(wx, wy + wh); ctx.lineTo(wx, wy + r);
+        ctx.arc(wx + r, wy + r, r, Math.PI, 0);
+        ctx.lineTo(wx + ww, wy + wh); ctx.closePath();
+        ctx.fillStyle = "#2a1c10"; ctx.fill();
+        ctx.lineWidth = W*.022; ctx.strokeStyle = "#8a6438"; ctx.stroke();
+        ctx.clip();
+        ctx.strokeStyle = "#7d5a2e"; ctx.lineCap = "round";
+        ctx.lineWidth = W*.016;
+        ctx.beginPath(); ctx.moveTo(W/2, wy); ctx.lineTo(W/2, wy + wh*.36); ctx.stroke();
+        ctx.lineWidth = W*.011;
+        [[-.26, .52], [.26, .52], [-.14, .66], [.14, .66], [0, .78]].forEach(p => {
+          ctx.beginPath(); ctx.moveTo(W/2, wy + wh*.3);
+          ctx.quadraticCurveTo(W/2 + p[0]*ww*.5, wy + wh*.42, W/2 + p[0]*ww*.62, wy + wh*p[1]);
+          ctx.stroke();
+        });
+        [[-.31, .58], [.31, .58], [-.17, .72], [.17, .72], [0, .85], [-.24, .68], [.24, .68]].forEach(p =>
+          dateFruit(ctx, W/2 + p[0]*ww, wy + wh*p[1], W*.037, W*.062, p[0]*.5));
+        ctx.restore();
+        eyebrow(ctx, W, H*.945, "produit d'algérie · 500 g", "#6d5233", W*.022);
+      } },
+    { id: "first", label: "First Date", dims: [1.45, 1.8, 0.5],
+      base: ["#f2dfd2", "#e9c8b6"], ink: "#5a3325",
+      front(ctx, W, H){
+        grad(ctx, W, H, [[0, "#f2dfd2"], [1, "#e9c8b6"]]);
+        speckle(ctx, W, H, 500, "#5a3325", .04);
+        eyebrow(ctx, W, H*.09, "a six-date sampler", "#a97b62", W*.028);
+        ctx.fillStyle = "#5a3325"; ctx.textAlign = "center";
+        ctx.font = 'italic 600 ' + W*.155 + 'px "Fraunces", Georgia, serif';
+        ctx.fillText("First Date", W/2, H*.22);
+        const cy = H*.55;
+        dateFruit(ctx, W*.42, cy, W*.1, W*.165, .8);
+        dateFruit(ctx, W*.58, cy, W*.1, W*.165, -.8);
+        heartShape(ctx, W*.5, H*.36, W*.011, "#c95a4a");
+        eyebrow(ctx, W, H*.92, "every love story starts somewhere", "#a97b62", W*.024);
+      } },
+    { id: "blind", label: "Blind Date", dims: [1.35, 2.0, 0.45],
+      base: ["#241b14", "#17110c"], ink: "#efe3cd",
+      front(ctx, W, H){
+        grad(ctx, W, H, [[0, "#241b14"], [1, "#17110c"]]);
+        speckle(ctx, W, H, 500, "#efe3cd", .03);
+        eyebrow(ctx, W, H*.085, "a mystery assortment", "#8f7c5f", W*.028);
+        ctx.fillStyle = "#efe3cd"; ctx.textAlign = "center";
+        ctx.font = '600 ' + W*.135 + 'px "Fraunces", Georgia, serif';
+        ctx.fillText("Blind Date", W/2, H*.19);
+        ctx.font = '900 ' + W*.62 + 'px "Fraunces", Georgia, serif';
+        ctx.fillStyle = foilFill(ctx, W*.25, W*.75, H*.5);
+        ctx.fillText("?", W/2, H*.62);
+        dateFruit(ctx, W*.485, H*.74, W*.055, W*.09, 0);
+        eyebrow(ctx, W, H*.93, "stuffed with… you'll see", "#8f7c5f", W*.024);
+      } },
+    { id: "night", label: "Date Night", dims: [2.0, 1.5, 0.55],
+      base: ["#4a1f2b", "#2c101a"], ink: "#f0dcc4",
+      front(ctx, W, H){
+        grad(ctx, W, H, [[0, "#5c2735"], [.62, "#3c1822"], [1, "#2c101a"]], true);
+        ctx.fillStyle = "#f0dcc4";
+        [[.12,.14,2],[.85,.2,1.6],[.92,.09,2.2],[.2,.3,1.4],[.78,.34,1.3]].forEach(s => {
+          ctx.globalAlpha = .75; ctx.beginPath(); ctx.arc(W*s[0], H*s[1], s[2], 0, 7); ctx.fill();
+        });
+        ctx.globalAlpha = .9;
+        ctx.beginPath(); ctx.arc(W*.5, H*.17, W*.036, 0, 7); ctx.fill();
+        ctx.fillStyle = "#3c1822"; ctx.beginPath(); ctx.arc(W*.515, H*.155, W*.032, 0, 7); ctx.fill();
+        ctx.globalAlpha = 1;
+        eyebrow(ctx, W, H*.36, "for two · no reservation needed", "#c99a86", W*.018);
+        ctx.fillStyle = "#f0dcc4"; ctx.textAlign = "center";
+        ctx.font = '600 ' + W*.1 + 'px "Fraunces", Georgia, serif';
+        ctx.fillText("Date Night", W/2, H*.5);
+        ctx.strokeStyle = "#c99a86"; ctx.lineWidth = 3; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(W*.28, H*.87); ctx.lineTo(W*.72, H*.87); ctx.stroke();
+        dateFruit(ctx, W*.43, H*.76, W*.038, W*.062, -.24);
+        dateFruit(ctx, W*.57, H*.76, W*.038, W*.062, .24);
+        heartShape(ctx, W*.5, H*.62, W*.005, "#e07b6a");
+        eyebrow(ctx, W, H*.96, "dates + dark chocolate dip · serves 2", "#c99a86", W*.016);
+      } },
+  ];
+
+  // ---- scene ----
+  let renderer, scene, camera, group, mesh, shadowMesh, started = false;
+  let rotY = .55, rotX = -.07, vel = .006, dragging = false, lastX = 0, lastY = 0, scaleIn = 1, t0 = 0;
+
+  function makeBox(c){
+    const [w, h, d] = c.dims;
+    const front = cv(w*PPU, h*PPU); c.front(front.getContext("2d"), front.width, front.height);
+    const faces = [
+      sideFace(d*PPU, h*PPU, c.base, c.ink),
+      sideFace(d*PPU, h*PPU, c.base, c.ink),
+      plainFace(w*PPU, d*PPU, c.base),
+      plainFace(w*PPU, d*PPU, c.base),
+      front,
+      backFace(w*PPU, h*PPU, c.base, c.ink),
+    ].map(canvas => {
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.encoding = THREE.sRGBEncoding;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      return new THREE.MeshStandardMaterial({ map: tex, roughness: .82, metalness: .04 });
+    });
+    return new THREE.Mesh(new THREE.BoxGeometry(w, h, d), faces);
+  }
+
+  function setConcept(i){
+    const c = CONCEPTS[i];
+    if (mesh){
+      group.remove(mesh);
+      mesh.geometry.dispose();
+      mesh.material.forEach(m => { m.map.dispose(); m.dispose(); });
+    }
+    mesh = makeBox(c);
+    group.add(mesh);
+    shadowMesh.scale.set(c.dims[0]*2.1, Math.max(c.dims[2]*3.2, 1.5), 1);
+    shadowMesh.position.y = -c.dims[1]/2 - .06;
+    rotY = .55; rotX = -.07; vel = .006; scaleIn = .75;
+    document.querySelectorAll("#shelfChips button").forEach((b, j) => b.classList.toggle("on", j === i));
+  }
+
+  function init(){
+    const canvas = document.getElementById("shelfCanvas");
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(30, 2, .1, 50);
+    camera.position.set(0, .42, 5.8);
+    camera.lookAt(0, -.05, 0);
+    scene.add(new THREE.HemisphereLight(0xfff4e0, 0x6b5233, .95));
+    const key = new THREE.DirectionalLight(0xffffff, .85); key.position.set(2.5, 4, 3); scene.add(key);
+    const warm = new THREE.DirectionalLight(0xd99a4e, .3); warm.position.set(-3, 1, -2); scene.add(warm);
+    group = new THREE.Group(); scene.add(group);
+
+    const sc = cv(256, 256), sctx = sc.getContext("2d");
+    const sg = sctx.createRadialGradient(128, 128, 10, 128, 128, 125);
+    sg.addColorStop(0, "rgba(36,29,21,.4)"); sg.addColorStop(1, "rgba(36,29,21,0)");
+    sctx.fillStyle = sg; sctx.fillRect(0, 0, 256, 256);
+    shadowMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), transparent: true, depthWrite: false }));
+    shadowMesh.rotation.x = -Math.PI/2;
+    scene.add(shadowMesh);
+
+    const chips = document.getElementById("shelfChips");
+    CONCEPTS.forEach((c, i) => {
+      const b = document.createElement("button");
+      b.textContent = c.label;
+      b.onclick = () => setConcept(i);
+      chips.appendChild(b);
+    });
+
+    canvas.addEventListener("pointerdown", e => {
+      dragging = true; lastX = e.clientX; lastY = e.clientY;
+      canvas.classList.add("grabbing"); canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener("pointermove", e => {
+      if (!dragging) return;
+      vel = (e.clientX - lastX) * .0075;
+      rotY += vel;
+      rotX = Math.max(-.55, Math.min(.65, rotX + (e.clientY - lastY) * .004));
+      lastX = e.clientX; lastY = e.clientY;
+    });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(ev =>
+      canvas.addEventListener(ev, () => { dragging = false; canvas.classList.remove("grabbing"); }));
+
+    function resize(){
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w/h; camera.updateProjectionMatrix();
+    }
+    window.addEventListener("resize", resize);
+    resize();
+    setConcept(0);
+
+    (function animate(ts){
+      requestAnimationFrame(animate);
+      if (!t0) t0 = ts;
+      if (!dragging){
+        vel += (Math.sign(vel || 1) * .006 - vel) * .02;
+        rotY += vel;
+        rotX += (-.07 - rotX) * .03;
+      }
+      scaleIn += (1 - scaleIn) * .1;
+      group.rotation.y = rotY;
+      group.rotation.x = rotX;
+      group.scale.setScalar(scaleIn);
+      group.position.y = Math.sin((ts - t0) * .0008) * .035;
+      renderer.render(scene, camera);
+    })(0);
+  }
+
+  function boot(){
+    if (started) return;
+    started = true;
+    const loads = ['600 60px "Fraunces"', 'italic 600 60px "Fraunces"', '900 60px "Fraunces"']
+      .map(f => document.fonts.load(f).catch(() => {}));
+    Promise.all(loads).then(() => {
+      const shelf = document.getElementById("shelf");
+      shelf.classList.add("on"); // must be visible before init so the canvas has a size
+      try{
+        init();
+      }catch(e){ shelf.classList.remove("on"); /* no WebGL — the flat lineup still tells the story */ }
+    });
+  }
+
+  const _unlock = window.unlock;
+  window.unlock = function(){ _unlock(); setTimeout(boot, 80); };
+})();
 </script>
 </body>
 </html>
