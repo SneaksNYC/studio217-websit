@@ -147,7 +147,7 @@
     await engineDiscovered;
     let ok = false;
     try{
-      const r = await fetch(API + "/api/ops/comments", {headers: {"x-s217-key": hash}});
+      const r = await fetch(API + "/api/ops/dates", {headers: {"x-s217-key": hash}});
       ok = r.ok;
       if (!ok && r.status !== 401 && r.status !== 403){
         gateFail("Engine offline — try again in a minute."); return;
@@ -199,7 +199,7 @@
     if (!sessionStorage.getItem(GATE_KEY)) return;
     await engineDiscovered;
     try{
-      const r = await apiFetch("/api/ops/comments");
+      const r = await apiFetch("/api/ops/dates");
       if (r.ok) unlock();
       else sessionStorage.removeItem(GATE_KEY);
     }catch(_e){}
@@ -224,8 +224,8 @@
   async function refresh(){
     let d;
     try{
-      const r = await apiFetch("/api/ops/board");
-      if (!r.ok) throw new Error("board " + r.status);
+      const r = await apiFetch("/api/ops/dates");
+      if (!r.ok) throw new Error("dates " + r.status);
       d = (await r.json()).dates_business;
       if (!d) throw new Error("no dates data on the board yet");
       setLive(true, "engine online");
