@@ -7,7 +7,7 @@
 <title>Studio217 · Dates</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Caveat:wght@400..700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#faf7f2; --panel:#ffffff; --ink:#241d15; --muted:#6b6157; --line:#e8e1d5;
@@ -130,7 +130,11 @@
     -webkit-background-clip:text; background-clip:text; color:transparent}
   .serif{font-family:"Fraunces", Georgia, serif}
   .pk-eyebrow{font-size:9px; letter-spacing:.34em; text-transform:uppercase; text-align:center}
-  .pk-foot{font-size:8px; letter-spacing:.22em; text-transform:uppercase; text-align:center}
+  .pk-foot{font:500 15px/1.2 "Caveat", "Segoe Script", cursive; letter-spacing:.02em; text-align:center}
+  .pack h4{transform:rotate(-1.3deg)}
+  .pack-first h4{transform:rotate(1.6deg)}
+  .pack-night h4{transform:rotate(-1.8deg)}
+  .hand{font:500 16px/1.2 "Caveat", "Segoe Script", cursive !important; letter-spacing:.02em !important; text-transform:none !important}
 
   /* 1 · The Perfect Date — kraft flagship */
   .pack-perfect{background:linear-gradient(160deg,#c9a473,#b78e5c); color:#3a2817; padding:20px 16px 14px; gap:2px}
@@ -380,7 +384,7 @@
             <div class="stamp">
               <span>ziban oasis</span><b>4,000 mi</b><span>for you</span>
             </div>
-            <p class="route" style="letter-spacing:.14em; white-space:nowrap">with love, from the sahara</p>
+            <p class="route hand" style="white-space:nowrap; transform:rotate(-1.5deg)">with love, from the Sahara ♡</p>
           </div>
           <div class="stripe"></div>
         </div>
@@ -739,6 +743,36 @@
     ctx.fillText(text.toUpperCase(), W/2, y);
     try{ ctx.letterSpacing = "0px"; }catch(_e){}
   }
+  function hand(ctx, W, y, text, color, px, rot){
+    ctx.save(); ctx.translate(W/2, y); ctx.rotate(rot === undefined ? -.02 : rot);
+    ctx.fillStyle = color; ctx.textAlign = "center";
+    ctx.font = '500 ' + px + 'px "Caveat", "Segoe Script", cursive';
+    ctx.fillText(text, 0, 0);
+    ctx.restore();
+  }
+  function jitterLine(ctx, x0, y0, x1, y1, seg, amp){
+    ctx.beginPath(); ctx.moveTo(x0, y0);
+    for (let i = 1; i <= seg; i++){
+      const t = i/seg;
+      ctx.lineTo(x0 + (x1-x0)*t + (Math.random()-.5)*amp, y0 + (y1-y0)*t + (Math.random()-.5)*amp);
+    }
+    ctx.stroke();
+  }
+  function squiggle(ctx, x, y, w, color, lw){
+    ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(x, y);
+    const n = Math.max(4, Math.round(w/26));
+    for (let i = 1; i <= n; i++)
+      ctx.quadraticCurveTo(x + w*(i - .5)/n, y + (i%2 ? 6 : -6), x + w*i/n, y);
+    ctx.stroke(); ctx.restore();
+  }
+  function sparkle(ctx, x, y, s, color){
+    ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = Math.max(1.6, s*.26); ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(x - s, y); ctx.lineTo(x + s, y);
+    ctx.moveTo(x, y - s); ctx.lineTo(x, y + s);
+    ctx.stroke(); ctx.restore();
+  }
   function sideFace(w, h, base, inkColor){
     const c = cv(w, h), ctx = c.getContext("2d");
     grad(ctx, w, h, [[0, base[0]], [1, base[1]]]);
@@ -758,11 +792,12 @@
     ctx.font = 'italic 600 ' + w*.11 + 'px "Fraunces", Georgia, serif';
     ctx.fillText("It's a Date.", w/2, h*.2);
     eyebrow(ctx, w, h*.28, "dattes d'algérie · deglet nour", inkColor, w*.032);
-    ctx.font = '400 ' + w*.034 + 'px "Segoe UI", sans-serif';
-    ctx.globalAlpha = .8;
-    ["Grown in the Ziban oases, Biskra.", "Naturally sweet — nothing added.", "Product of Algeria · 500 g"].forEach((t, i) =>
-      ctx.fillText(t, w/2, h*.37 + i*h*.05));
-    ctx.globalAlpha = 1;
+    ctx.save(); ctx.translate(w/2, 0); ctx.rotate(-.012);
+    ctx.font = '500 ' + w*.052 + 'px "Caveat", "Segoe Script", cursive';
+    ctx.globalAlpha = .85;
+    ["Grown in the Ziban oases, Biskra.", "Naturally sweet — nothing added.", "Opened with someone you like."].forEach((t, i) =>
+      ctx.fillText(t, 0, h*.38 + i*h*.055));
+    ctx.restore(); ctx.globalAlpha = 1;
     const bw = w*.4, bx = (w-bw)/2, by = h*.78;
     ctx.fillStyle = inkColor;
     let x = bx;
@@ -783,13 +818,16 @@
         grad(ctx, W, H, [[0, "#c9a473"], [1, "#b78e5c"]]);
         speckle(ctx, W, H, 900, "#3a2817", .06);
         eyebrow(ctx, W, H*.075, "dattes d'algérie · deglet nour", "#6d5233", W*.028);
+        ctx.save(); ctx.translate(W/2, 0); ctx.rotate(-.022);
         ctx.fillStyle = "#3a2817"; ctx.textAlign = "center";
         ctx.font = '600 ' + W*.135 + 'px "Fraunces", Georgia, serif';
-        ctx.fillText("The Perfect", W/2, H*.155);
+        ctx.fillText("The Perfect", 0, H*.155);
         ctx.font = 'italic 700 ' + W*.155 + 'px "Fraunces", Georgia, serif';
-        ctx.fillStyle = foilFill(ctx, W*.3, W*.7, H*.2);
-        ctx.fillText("Date", W/2, H*.235);
-        eyebrow(ctx, W, H*.275, "sweet · golden · always on time", "#5d4527", W*.024);
+        ctx.fillStyle = foilFill(ctx, -W*.2, W*.2, H*.2);
+        ctx.fillText("Date", 0, H*.235);
+        ctx.restore();
+        squiggle(ctx, W*.34, H*.252, W*.32, "#8a5a1a", 3);
+        hand(ctx, W, H*.29, "sweet, golden, always on time", "#5d4527", W*.052, -.015);
         const wx = W*.14, wy = H*.31, ww = W*.72, wh = H*.56, r = ww/2;
         ctx.save();
         ctx.beginPath();
@@ -811,22 +849,41 @@
         [[-.31, .58], [.31, .58], [-.17, .72], [.17, .72], [0, .85], [-.24, .68], [.24, .68]].forEach(p =>
           dateFruit(ctx, W/2 + p[0]*ww, wy + wh*p[1], W*.037, W*.062, p[0]*.5));
         ctx.restore();
-        eyebrow(ctx, W, H*.945, "produit d'algérie · 500 g", "#6d5233", W*.022);
+        ctx.save(); ctx.strokeStyle = "#6d4a26"; ctx.lineWidth = W*.007; ctx.globalAlpha = .7;
+        ctx.translate(W/2, wy + r); ctx.rotate(.006); ctx.translate(-W/2, -(wy + r));
+        ctx.beginPath();
+        ctx.moveTo(wx - W*.018, wy + wh); ctx.lineTo(wx - W*.018, wy + r);
+        ctx.arc(wx + r, wy + r, r + W*.018, Math.PI, 0);
+        ctx.lineTo(wx + ww + W*.018, wy + wh);
+        ctx.stroke(); ctx.restore();
+        hand(ctx, W, H*.955, "produit d'Algérie · 500 g", "#6d5233", W*.05, .012);
       } },
     { id: "first", label: "First Date", dims: [1.45, 1.8, 0.5],
       base: ["#f2dfd2", "#e9c8b6"], ink: "#5a3325",
       front(ctx, W, H){
         grad(ctx, W, H, [[0, "#f2dfd2"], [1, "#e9c8b6"]]);
         speckle(ctx, W, H, 500, "#5a3325", .04);
-        eyebrow(ctx, W, H*.09, "a six-date sampler", "#a97b62", W*.028);
+        ctx.save(); ctx.strokeStyle = "#b98a72"; ctx.lineWidth = 2.5; ctx.lineCap = "round"; ctx.globalAlpha = .75;
+        const m = W*.055, ov = W*.012;
+        jitterLine(ctx, m - ov, m, W - m + ov, m, 9, 3);
+        jitterLine(ctx, m - ov, H - m, W - m + ov, H - m, 9, 3);
+        jitterLine(ctx, m, m - ov, m, H - m + ov, 12, 3);
+        jitterLine(ctx, W - m, m - ov, W - m, H - m + ov, 12, 3);
+        ctx.restore();
+        eyebrow(ctx, W, H*.1, "a six-date sampler", "#a97b62", W*.028);
+        ctx.save(); ctx.translate(W/2, H*.22); ctx.rotate(.028);
         ctx.fillStyle = "#5a3325"; ctx.textAlign = "center";
         ctx.font = 'italic 600 ' + W*.155 + 'px "Fraunces", Georgia, serif';
-        ctx.fillText("First Date", W/2, H*.22);
+        ctx.fillText("First Date", 0, 0);
+        ctx.restore();
+        squiggle(ctx, W*.3, H*.25, W*.4, "#c99a86", 3);
         const cy = H*.55;
         dateFruit(ctx, W*.42, cy, W*.1, W*.165, .8);
         dateFruit(ctx, W*.58, cy, W*.1, W*.165, -.8);
         heartShape(ctx, W*.5, H*.36, W*.011, "#c95a4a");
-        eyebrow(ctx, W, H*.92, "every love story starts somewhere", "#a97b62", W*.024);
+        heartShape(ctx, W*.16, H*.78, W*.005, "rgba(201,90,74,.55)");
+        heartShape(ctx, W*.84, H*.32, W*.004, "rgba(201,90,74,.45)");
+        hand(ctx, W, H*.92, "every love story starts somewhere", "#8a5a44", W*.056, -.018);
       } },
     { id: "blind", label: "Blind Date", dims: [1.35, 2.0, 0.45],
       base: ["#241b14", "#17110c"], ink: "#efe3cd",
@@ -834,14 +891,22 @@
         grad(ctx, W, H, [[0, "#241b14"], [1, "#17110c"]]);
         speckle(ctx, W, H, 500, "#efe3cd", .03);
         eyebrow(ctx, W, H*.085, "a mystery assortment", "#8f7c5f", W*.028);
+        ctx.save(); ctx.translate(W/2, H*.19); ctx.rotate(-.02);
         ctx.fillStyle = "#efe3cd"; ctx.textAlign = "center";
         ctx.font = '600 ' + W*.135 + 'px "Fraunces", Georgia, serif';
-        ctx.fillText("Blind Date", W/2, H*.19);
+        ctx.fillText("Blind Date", 0, 0);
+        ctx.restore();
+        ctx.save(); ctx.translate(W/2, H*.55); ctx.rotate(.03); ctx.translate(-W/2, -H*.55);
         ctx.font = '900 ' + W*.62 + 'px "Fraunces", Georgia, serif';
         ctx.fillStyle = foilFill(ctx, W*.25, W*.75, H*.5);
+        ctx.textAlign = "center";
         ctx.fillText("?", W/2, H*.62);
-        dateFruit(ctx, W*.485, H*.74, W*.055, W*.09, 0);
-        eyebrow(ctx, W, H*.93, "stuffed with… you'll see", "#8f7c5f", W*.024);
+        ctx.restore();
+        dateFruit(ctx, W*.5, H*.745, W*.055, W*.09, .06);
+        sparkle(ctx, W*.22, H*.34, W*.022, "#eac96a");
+        sparkle(ctx, W*.8, H*.3, W*.016, "#eac96a");
+        sparkle(ctx, W*.75, H*.66, W*.019, "#eac96a");
+        hand(ctx, W, H*.93, "stuffed with… you'll see", "#bda67e", W*.056, .015);
       } },
     { id: "night", label: "Date Night", dims: [2.0, 1.5, 0.55],
       base: ["#4a1f2b", "#2c101a"], ink: "#f0dcc4",
@@ -856,15 +921,17 @@
         ctx.fillStyle = "#3c1822"; ctx.beginPath(); ctx.arc(W*.515, H*.155, W*.032, 0, 7); ctx.fill();
         ctx.globalAlpha = 1;
         eyebrow(ctx, W, H*.36, "for two · no reservation needed", "#c99a86", W*.018);
+        ctx.save(); ctx.translate(W/2, H*.5); ctx.rotate(-.022);
         ctx.fillStyle = "#f0dcc4"; ctx.textAlign = "center";
         ctx.font = '600 ' + W*.1 + 'px "Fraunces", Georgia, serif';
-        ctx.fillText("Date Night", W/2, H*.5);
+        ctx.fillText("Date Night", 0, 0);
+        ctx.restore();
         ctx.strokeStyle = "#c99a86"; ctx.lineWidth = 3; ctx.lineCap = "round";
-        ctx.beginPath(); ctx.moveTo(W*.28, H*.87); ctx.lineTo(W*.72, H*.87); ctx.stroke();
+        jitterLine(ctx, W*.28, H*.87, W*.72, H*.87, 9, 3.5);
         dateFruit(ctx, W*.43, H*.76, W*.038, W*.062, -.24);
         dateFruit(ctx, W*.57, H*.76, W*.038, W*.062, .24);
         heartShape(ctx, W*.5, H*.62, W*.005, "#e07b6a");
-        eyebrow(ctx, W, H*.96, "dates + dark chocolate dip · serves 2", "#c99a86", W*.016);
+        hand(ctx, W, H*.97, "dates + dark chocolate dip · serves two", "#c99a86", W*.038, .012);
       } },
   ];
 
@@ -982,7 +1049,7 @@
   function boot(){
     if (started) return;
     started = true;
-    const loads = ['600 60px "Fraunces"', 'italic 600 60px "Fraunces"', '900 60px "Fraunces"']
+    const loads = ['600 60px "Fraunces"', 'italic 600 60px "Fraunces"', '900 60px "Fraunces"', '500 60px "Caveat"']
       .map(f => document.fonts.load(f).catch(() => {}));
     Promise.all(loads).then(() => {
       const shelf = document.getElementById("shelf");
