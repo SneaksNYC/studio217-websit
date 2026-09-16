@@ -1665,10 +1665,37 @@
       ctx.restore();
     }
 
+    // Halftone dot screen — ported from p5.riso's halftoneImage: a rotated dot
+    // grid whose dot radius follows a density function. The riso print signature.
+    function halftone(ctx, x, y, w, h, color, angle, gap, alpha, densFn){
+      ctx.save();
+      ctx.translate(x + w/2, y + h/2); ctx.rotate(angle);
+      ctx.fillStyle = color; ctx.globalAlpha = alpha;
+      const diag = Math.hypot(w, h)/2;
+      const cosA = Math.cos(-angle), sinA = Math.sin(-angle);
+      for (let gx = -diag; gx < diag; gx += gap){
+        for (let gy = -diag; gy < diag; gy += gap){
+          const lx = gx*cosA - gy*sinA, ly = gx*sinA + gy*cosA;
+          const u = lx/w + .5, v = ly/h + .5;
+          if (u < 0 || u > 1 || v < 0 || v > 1) continue;
+          const d = densFn(u, v);
+          if (d <= .03) continue;
+          ctx.beginPath();
+          ctx.arc(gx, gy, gap*.5*Math.min(1, d), 0, 7);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+    const htRadial = (cx, cy, r) => (u, v) => Math.max(0, 1 - Math.hypot(u - cx, v - cy)/r);
+    const htCorner = (cu, cv, r) => (u, v) => Math.max(0, 1 - Math.hypot(u - cu, v - cv)/r);
+    const htFloor = () => (u, v) => Math.max(0, (v - .55)/.45);
+
     CONCEPTS[0].front = function(ctx, W, H){
       const rc = rcOf(ctx);
       grad(ctx, W, H, [[0, "#cba876"], [1, "#b78e5c"]]);
       speckle(ctx, W, H, 350, "#33220f", .06);
+      halftone(ctx, 0, H*.1, W*.5, H*.35, "#c9962e", .4, 7, .4, htCorner(0, .1, .8));
       roughFrame(ctx, W, H, "#5d4527", .115);
       label(ctx, W, H*.15, "dattes d'Algérie · Deglet Nour", "#6d5233", W*.05);
       ctx.save(); ctx.translate(W/2, H*.205); ctx.rotate(-.025);
@@ -1684,6 +1711,9 @@
       ctx.arc(wx + r, wy + r, r, Math.PI, 0);
       ctx.lineTo(wx + ww, wy + wh); ctx.closePath();
       ctx.fillStyle = "#f3e3c2"; ctx.fill();
+      ctx.save(); ctx.clip();
+      halftone(ctx, wx, wy, ww, wh, "#9c7440", .4, 6.5, .5, htFloor());
+      ctx.restore();
       rc.path("M " + wx + " " + (wy + wh) + " L " + wx + " " + (wy + r) +
               " A " + r + " " + r + " 0 0 1 " + (wx + ww) + " " + (wy + r) +
               " L " + (wx + ww) + " " + (wy + wh) + " Z",
@@ -1714,6 +1744,8 @@
       bouncy2(ctx, "Date", W*.07, H*.115, W*.165, "#f15060", "#fff3e8", W*.01, 3.1);
       ctx.restore();
       const cx = W*.58, cy = H*.66;
+      halftone(ctx, cx - W*.3, cy - W*.32, W*.6, W*.6, "#f15060", .38, 7, .3, htRadial(.5, .5, .55));
+      halftone(ctx, W*.55, H*.75, W*.45, H*.25, "#fff3e8", .4, 6.5, .45, htCorner(1, 1, .9));
       roughDate3(ctx, cx - W*.075, cy, W*.1, W*.16, .7, "#b87a2e", "#5e3410", SEED + 21);
       roughDate3(ctx, cx + W*.075, cy, W*.1, W*.16, -.7, "#b87a2e", "#5e3410", SEED + 22);
       face(ctx, cx - W*.105, cy - W*.02, W*.032, "shy");
@@ -1738,6 +1770,7 @@
       ctx.restore();
       hand(ctx, W*.58, H*.325, "shhh…", "#8f7c5f", W*.055, .12);
       const rc = rcOf(ctx);
+      halftone(ctx, W*.08, H*.28, W*.84, H*.56, "#ffb511", .38, 7.5, .35, htRadial(.5, .5, .62));
       rc.circle(W*.5, H*.56, W*.56,
         {fill: "#ffb511", fillStyle: "hachure", fillWeight: 3.4, hachureGap: 7, hachureAngle: 35,
          stroke: "#ffb511", strokeWidth: 3, roughness: 2, seed: SEED + 31});
@@ -1768,6 +1801,7 @@
       speckle(ctx, W, H, 150, "#f6dfc8", .04);
       roughFrame(ctx, W, H, "#c99a86", .115);
       const rc = rcOf(ctx);
+      halftone(ctx, W*.62, H*.09, W*.36, W*.36, "#ffae3b", .38, 6.5, .4, htRadial(.5, .48, .55));
       rc.circle(W*.8, H*.21, W*.085,
         {fill: "#f6dfc8", fillStyle: "solid", stroke: "#f6dfc8", roughness: 1.8, seed: SEED + 41});
       ctx.fillStyle = "#3d152a"; ctx.beginPath(); ctx.arc(W*.817, H*.198, W*.037, 0, 7); ctx.fill();
@@ -1776,7 +1810,7 @@
       bouncy2(ctx, "Date Night", W*.5, H*.32, W*.125, "#f6dfc8", "#ffae3b", W*.008, 2.7);
       label(ctx, W, H*.38, "for two · no reservation needed", "#c99a86", W*.042);
       rc.line(W*.18, H*.85, W*.82, H*.85, {stroke: "#c99a86", strokeWidth: 3.5, roughness: 2.2, seed: SEED + 42});
-      ctx.fillStyle = "rgba(232,180,95,.15)"; ctx.beginPath(); ctx.arc(W*.5, H*.7, W*.05, 0, 7); ctx.fill();
+      halftone(ctx, W*.36, H*.6, W*.28, W*.28, "#ffae3b", .42, 5.5, .5, htRadial(.5, .5, .5));
       rc.rectangle(W*.49, H*.73, W*.02, H*.12,
         {fill: "#f6dfc8", fillStyle: "solid", stroke: "#f6dfc8", roughness: 1.4, seed: SEED + 43});
       const fl = ctx.createRadialGradient(W*.5, H*.7, 1, W*.5, H*.7, W*.016);
