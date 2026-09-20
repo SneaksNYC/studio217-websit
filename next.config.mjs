@@ -13,6 +13,8 @@ const nextConfig = {
       { source: '/ops-6831ad7fe284', destination: '/ops-6831ad7fe284/index.html' },
       // Private Algerian-dates business brief (unlisted path, gated by access code)
       { source: '/dates-c5a69c7e1fa5', destination: '/dates-c5a69c7e1fa5/index.html' },
+      // Private Karma Muse hostel availability board demo (unlisted path)
+      { source: '/project/karma-acb8b4dd76e9', destination: '/project/karma-acb8b4dd76e9/index.html' },
     ]
   },
 }

@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%9B%8F%3C/text%3E%3C/svg%3E">
+<title>Karma Muse Night Board</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06322C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    --ground: #06322C;
+    --card: #0C453E;
+    --card-lift: #0E5049;
+    --teal: #0A737D;
+    --mint: #7DBFAC;
+    --coral: #F78076;
+    --amber: #FAA11E;
+    --cream: #FFF4C5;
+    --cream-dim: rgba(255, 244, 197, 0.74);
+    --cream-faint: rgba(255, 244, 197, 0.48);
+    --edge: rgba(125, 191, 172, 0.16);
+    --display: "Fraunces", Georgia, serif;
+    --sans: "Instrument Sans", -apple-system, "Segoe UI", sans-serif;
+    --r: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html { background: var(--ground); }
+  body {
+    background: var(--ground);
+    background-image: radial-gradient(120% 60% at 50% 0%, rgba(10, 115, 125, 0.16), rgba(10, 115, 125, 0) 60%);
+    background-repeat: no-repeat;
+    color: var(--cream);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.45;
+    min-height: 100vh;
+    padding-bottom: 48px;
+  }
+
+  .wide-note { display: none; }
+  @media (min-width: 768px) {
+    .wide-note {
+      display: block;
+      text-align: center;
+      font-size: 12.5px;
+      letter-spacing: 0.04em;
+      color: var(--cream-faint);
+      margin-top: 14px;
+    }
+  }
+
+  button { font-family: var(--sans); cursor: pointer; border: 0; background: none; color: inherit; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+  .wrap { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+
+  /* ---------- Sticky answer header ---------- */
+  .board-head {
+    position: sticky; top: 0; z-index: 20;
+    background: linear-gradient(to bottom, var(--ground) 82%, rgba(6, 50, 44, 0));
+    padding-top: env(safe-area-inset-top);
+  }
+  .head-inner { max-width: 480px; margin: 0 auto; padding: 12px 16px 14px; }
+
+  .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .wordmark {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: 0.14em;
+    color: var(--cream);
+  }
+  .wordmark span { color: var(--mint); }
+  .head-date { font-size: 12px; color: var(--cream-dim); letter-spacing: 0.06em; text-transform: uppercase; }
+  .gear {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: grid; place-items: center;
+    color: var(--cream-dim);
+    border: 1px solid var(--edge);
+  }
+  .gear:active { background: var(--card); }
+
+  .answer {
+    margin-top: 10px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--edge);
+    border-radius: var(--r);
+    padding: 10px 14px 12px;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .stat-num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 1;
+    color: var(--cream);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-num.none { color: var(--coral); }
+  .stat-label { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .stat-what { font-size: 13px; font-weight: 600; color: var(--cream); }
+  .stat-price { font-size: 12.5px; color: var(--cream-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .stat-price strong { color: var(--cream); font-weight: 600; }
+  .stat-price .tonight {
+    color: var(--amber); font-weight: 600; font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  /* ---------- New night banner ---------- */
+  .night-banner {
+    display: none;
+    margin: 4px 0 14px;
+    background: var(--card);
+    border: 1px solid rgba(250, 161, 30, 0.45);
+    border-radius: var(--r);
+    padding: 12px 14px;
+  }
+  .night-banner.show { display: block; }
+  .night-banner p { font-size: 13.5px; color: var(--cream-dim); }
+  .night-banner p strong { color: var(--amber); font-weight: 600; }
+  .banner-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .banner-actions button {
+    flex: 1; padding: 10px; border-radius: 10px;
+    font-size: 13px; font-weight: 600;
+  }
+  .btn-reset { background: var(--amber); color: #3D2A00; }
+  .btn-keep { border: 1px solid var(--edge); color: var(--cream-dim); }
+
+  /* ---------- Rooms ---------- */
+  .section-tag {
+    margin: 20px 0 10px;
+    font-size: 11.5px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--teal);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-tag::after { content: ""; flex: 1; height: 1px; background: var(--edge); }
+
+  .room {
+    background: var(--card);
+    border: 1px solid var(--edge);
+    border-radius: var(--r);
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .room-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+  .room-name { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .room-type { font-size: 12.5px; font-weight: 400; color: var(--cream-dim); }
+  .badge-female {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--cream); border: 1px solid var(--cream-faint);
+    border-radius: 99px; padding: 3px 8px;
+  }
+  .room-free { font-size: 12.5px; color: var(--cream-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .room-free strong { color: var(--mint); font-weight: 700; }
+  .room-free.full strong { color: var(--coral); }
+
+  .beds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+  .bed {
+    min-height: 64px;
+    border-radius: 12px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+    border: 1.5px solid transparent;
+  }
+  .bed:active { transform: scale(0.94); }
+  .bed .letter { font-family: var(--display); font-weight: 600; font-size: 24px; line-height: 1; }
+  .bed .state { font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .bed.open { background: var(--mint); }
+  .bed.open .letter { color: #06322C; }
+  .bed.open .state { color: rgba(6, 50, 44, 0.72); }
+
+  .bed.taken { background: rgba(247, 128, 118, 0.14); border-color: rgba(247, 128, 118, 0.55); }
+  .bed.taken .letter { color: var(--coral); opacity: 0.85; }
+  .bed.taken .state { color: var(--coral); }
+
+  /* Private room rows */
+  .private-row {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--edge);
+    border-radius: var(--r);
+    padding: 14px;
+    margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    text-align: left;
+    transition: transform 0.12s ease;
+  }
+  .private-row:active { transform: scale(0.98); }
+  .private-name { font-size: 15px; font-weight: 600; }
+  .private-sub { font-size: 12.5px; color: var(--cream-dim); font-variant-numeric: tabular-nums; }
+  .pill {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    border-radius: 99px; padding: 8px 14px; white-space: nowrap;
+  }
+  .pill.open { background: var(--mint); color: #06322C; }
+  .pill.taken { background: rgba(247, 128, 118, 0.14); border: 1.5px solid rgba(247, 128, 118, 0.55); color: var(--coral); }
+
+  .foot {
+    margin-top: 22px;
+    font-size: 12px; color: var(--cream-faint);
+    text-align: center;
+  }
+
+  /* ---------- Sheets (PIN + admin) ---------- */
+  .scrim {
+    position: fixed; inset: 0; z-index: 40;
+    background: rgba(3, 26, 23, 0.72);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .scrim.show { opacity: 1; pointer-events: auto; }
+
+  .sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    background: var(--card-lift);
+    border-radius: 20px 20px 0 0;
+    border-top: 1px solid var(--edge);
+    max-width: 520px; margin: 0 auto;
+    padding: 20px 20px calc(24px + env(safe-area-inset-bottom));
+    transform: translateY(105%);
+    transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 88vh; overflow-y: auto;
+  }
+  .sheet.show { transform: translateY(0); }
+
+  .sheet h2 { font-family: var(--display); font-weight: 600; font-size: 20px; margin-bottom: 4px; }
+  .sheet .sub { font-size: 13px; color: var(--cream-dim); margin-bottom: 16px; }
+
+  /* PIN pad */
+  .pin-dots { display: flex; gap: 12px; justify-content: center; margin: 18px 0; }
+  .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--cream-faint); }
+  .pin-dot.fill { background: var(--mint); border-color: var(--mint); }
+  .pin-dots.shake { animation: shake 0.35s; }
+  @keyframes shake { 20%,60% { transform: translateX(-7px); } 40%,80% { transform: translateX(7px); } }
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 280px; margin: 0 auto; }
+  .pad button {
+    height: 58px; border-radius: 14px;
+    background: var(--card);
+    border: 1px solid var(--edge);
+    font-size: 22px; font-weight: 500; color: var(--cream);
+    font-variant-numeric: tabular-nums;
+  }
+  .pad button:active { background: var(--teal); }
+  .pad .pad-aux { font-size: 13px; color: var(--cream-dim); background: none; border: none; }
+
+  /* Admin form */
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .field label {
+    display: block; font-size: 11.5px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--cream-dim); margin-bottom: 6px;
+  }
+  .field .money { position: relative; }
+  .field .money::before {
+    content: "$"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--cream-dim); font-size: 15px;
+  }
+  .field input {
+    width: 100%; padding: 12px 12px 12px 26px;
+    background: var(--card);
+    border: 1px solid var(--edge);
+    border-radius: 12px;
+    color: var(--cream); font-family: var(--sans);
+    font-size: 16px; font-variant-numeric: tabular-nums;
+  }
+  .field input.pin-input { padding-left: 12px; letter-spacing: 0.3em; }
+
+  .admin-block {
+    border-top: 1px solid var(--edge);
+    margin-top: 16px; padding-top: 16px;
+  }
+  .admin-block h3 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .admin-block h3 .tonight-tag { color: var(--amber); }
+  .admin-block .note { font-size: 12.5px; color: var(--cream-dim); margin-bottom: 10px; }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .switch { position: relative; width: 48px; height: 28px; flex: none; }
+  .switch input { opacity: 0; width: 100%; height: 100%; position: absolute; margin: 0; cursor: pointer; }
+  .switch .track {
+    position: absolute; inset: 0; border-radius: 99px;
+    background: var(--ground); border: 1px solid var(--edge);
+    transition: background 0.15s;
+  }
+  .switch .track::after {
+    content: ""; position: absolute; top: 3px; left: 3px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--cream-faint);
+    transition: transform 0.15s, background 0.15s;
+  }
+  .switch input:checked + .track { background: var(--amber); border-color: var(--amber); }
+  .switch input:checked + .track::after { transform: translateX(20px); background: #3D2A00; }
+
+  .btn-wide {
+    width: 100%; padding: 14px; border-radius: 12px;
+    font-size: 15px; font-weight: 700;
+  }
+  .btn-save { background: var(--mint); color: #06322C; margin-top: 18px; }
+  .btn-danger { border: 1.5px solid rgba(247, 128, 118, 0.5); color: var(--coral); font-weight: 600; font-size: 14px; padding: 12px; }
+  .btn-close { color: var(--cream-dim); font-size: 14px; margin-top: 10px; padding: 10px; width: 100%; }
+
+  /* Toast */
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; z-index: 60;
+    transform: translate(-50%, 80px);
+    background: var(--cream); color: #06322C;
+    border-radius: 12px; padding: 12px 16px;
+    font-size: 14px; font-weight: 500;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translate(-50%, 0); }
+  .toast button { color: #0A737D; font-weight: 700; font-size: 14px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<header class="board-head">
+  <div class="head-inner">
+    <div class="brand-row">
+      <div>
+        <div class="wordmark">KARMA <span>MUSE</span></div>
+        <div class="head-date" id="headDate">Tonight</div>
+      </div>
+      <button class="gear" id="gearBtn" aria-label="Admin settings">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="answer">
+      <div class="stat">
+        <div class="stat-num" id="dormCount">0</div>
+        <div class="stat-label">
+          <div class="stat-what" id="dormWhat">dorm beds</div>
+          <div class="stat-price" id="dormPrice"></div>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="privCount">0</div>
+        <div class="stat-label">
+          <div class="stat-what" id="privWhat">private rooms</div>
+          <div class="stat-price" id="privPrice"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="night-banner" id="nightBanner">
+    <p><strong>New night.</strong> Yesterday's board is still showing. Reset beds to available, or keep them for guests staying another night.</p>
+    <div class="banner-actions">
+      <button class="btn-reset" id="bannerReset">Reset all to available</button>
+      <button class="btn-keep" id="bannerKeep">Keep current</button>
+    </div>
+  </div>
+
+  <div class="section-tag">Dorm beds</div>
+  <div id="dormRooms"></div>
+
+  <div class="section-tag">Private rooms</div>
+  <div id="privateRooms"></div>
+
+  <p class="foot" id="footNote"></p>
+  <p class="wide-note">Made for the phone at the front desk — open it on mobile for the real feel.</p>
+</main>
+
+<div class="scrim" id="scrim"></div>
+
+<!-- PIN sheet -->
+<div class="sheet" id="pinSheet" role="dialog" aria-modal="true" aria-label="Enter admin PIN" tabindex="-1">
+  <h2>Admin</h2>
+  <p class="sub">Enter the 4-digit PIN to change prices or reset the board.</p>
+  <div class="pin-dots" id="pinDots">
+    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+  </div>
+  <div class="pad" id="pinPad"></div>
+  <button class="btn-close" id="pinClose">Cancel</button>
+</div>
+
+<!-- Admin sheet -->
+<div class="sheet" id="adminSheet" role="dialog" aria-modal="true" aria-label="Admin settings" tabindex="-1">
+  <h2>Settings</h2>
+  <p class="sub">Set prices once — volunteers just read them off the board, no nightly typing.</p>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="inDorm">Dorm bed / person</label>
+      <div class="money"><input id="inDorm" type="number" inputmode="decimal" min="0" step="1"></div>
+    </div>
+    <div class="field">
+      <label for="inPriv">Private / night</label>
+      <div class="money"><input id="inPriv" type="number" inputmode="decimal" min="0" step="1"></div>
+    </div>
+  </div>
+
+  <div class="admin-block">
+    <div class="toggle-row">
+      <h3><span class="tonight-tag">Tonight only</span> — special price</h3>
+      <label class="switch">
+        <input type="checkbox" id="ovrToggle" aria-label="Tonight-only special price">
+        <span class="track"></span>
+      </label>
+    </div>
+    <p class="note">Overrides the regular price until morning, then expires on its own.</p>
+    <div class="field-row" id="ovrFields" style="display:none">
+      <div class="field">
+        <label for="inOvrDorm">Dorm tonight</label>
+        <div class="money"><input id="inOvrDorm" type="number" inputmode="decimal" min="0" step="1"></div>
+      </div>
+      <div class="field">
+        <label for="inOvrPriv">Private tonight</label>
+        <div class="money"><input id="inOvrPriv" type="number" inputmode="decimal" min="0" step="1"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-block">
+    <h3>Change PIN</h3>
+    <p class="note">Leave blank to keep the current PIN.</p>
+    <div class="field">
+      <input class="pin-input" id="inPin" type="text" inputmode="numeric" maxlength="4" pattern="\d{4}" placeholder="••••" autocomplete="off" aria-label="New 4-digit PIN">
+    </div>
+  </div>
+
+  <div class="admin-block">
+    <h3>Board</h3>
+    <p class="note">Start a fresh night — every bed and room back to available.</p>
+    <button class="btn-wide btn-danger" id="adminReset">Reset all to available</button>
+  </div>
+
+  <button class="btn-wide btn-save" id="adminSave">Save settings</button>
+  <button class="btn-close" id="adminClose">Close</button>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastMsg"></span>
+  <button id="toastUndo" style="display:none">Undo</button>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Data ---------- */
+  // Bed ids must stay unique across ALL rooms and privates — state.beds is one flat map keyed by them.
+  var ROOMS = [
+    { id: "r1", name: "Room 1", type: "Mixed", beds: ["A", "B", "C", "D", "E", "F"] },
+    { id: "r2", name: "Room 2", type: "Mixed", beds: ["G", "H", "I", "J", "K", "L"] },
+    { id: "r3", name: "Room 3", type: "Female only", female: true, beds: ["M", "N", "O", "P"] },
+    { id: "r5", name: "Room 5", type: "Mixed", beds: ["Q", "R", "S", "T", "U"] }
+  ];
+  var PRIVATES = [
+    { id: "p4", name: "Room 4" },
+    { id: "p6", name: "Room 6" }
+  ];
+
+  var STORE_KEY = "karmaMuseBoard.v1";
+
+  // Hostel nights run past midnight: 2 AM still belongs to yesterday's night.
+  function nightKey(d) {
+    var shifted = new Date(d.getTime() - 11 * 3600 * 1000);
+    return shifted.getFullYear() + "-" +
+      String(shifted.getMonth() + 1).padStart(2, "0") + "-" +
+      String(shifted.getDate()).padStart(2, "0");
+  }
+
+  function seedState() {
+    var taken = { B: 1, E: 1, H: 1, K: 1, N: 1, R: 1, U: 1, p4: 1 };
+    var beds = {};
+    ROOMS.forEach(function (r) { r.beds.forEach(function (b) { beds[b] = !!taken[b]; }); });
+    PRIVATES.forEach(function (p) { beds[p.id] = !!taken[p.id]; });
+    return {
+      beds: beds,
+      nightKey: nightKey(new Date()),
+      dormPrice: 18,
+      privPrice: 55,
+      pin: "1234",
+      override: null,
+      lastChange: null,
+      bannerDismissedFor: null
+    };
+  }
+
+  function load() {
+    var base = seedState();
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return base;
+      var s = JSON.parse(raw);
+      if (!s || typeof s !== "object") return base;
+      var beds = {};
+      Object.keys(base.beds).forEach(function (k) {
+        beds[k] = s.beds && typeof s.beds[k] === "boolean" ? s.beds[k] : base.beds[k];
+      });
+      var num = function (v, d) { return typeof v === "number" && isFinite(v) && v >= 0 ? v : d; };
+      var ovr = null;
+      if (s.override && typeof s.override === "object" && typeof s.override.nightKey === "string") {
+        ovr = {
+          nightKey: s.override.nightKey,
+          dorm: typeof s.override.dorm === "number" && isFinite(s.override.dorm) && s.override.dorm >= 0 ? s.override.dorm : null,
+          priv: typeof s.override.priv === "number" && isFinite(s.override.priv) && s.override.priv >= 0 ? s.override.priv : null
+        };
+      }
+      return {
+        beds: beds,
+        nightKey: typeof s.nightKey === "string" ? s.nightKey : base.nightKey,
+        dormPrice: num(s.dormPrice, base.dormPrice),
+        privPrice: num(s.privPrice, base.privPrice),
+        pin: typeof s.pin === "string" && /^\d{4}$/.test(s.pin) ? s.pin : base.pin,
+        override: ovr,
+        lastChange: typeof s.lastChange === "number" ? s.lastChange : null,
+        bannerDismissedFor: typeof s.bannerDismissedFor === "string" ? s.bannerDismissedFor : null
+      };
+    } catch (e) {
+      return base;
+    }
+  }
+
+  var state = load();
+  var saveFailed = false;
+
+  function save() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    } catch (e) {
+      if (!saveFailed) {
+        saveFailed = true;
+        renderFoot();
+        showToast("This browser isn't saving changes (private mode?)", false);
+      }
+    }
+  }
+
+  /* ---------- Pricing ---------- */
+  function activeOverride() {
+    if (state.override && state.override.nightKey === nightKey(new Date())) return state.override;
+    return null;
+  }
+  function currentDorm() { var o = activeOverride(); return o && o.dorm != null ? o.dorm : state.dormPrice; }
+  function currentPriv() { var o = activeOverride(); return o && o.priv != null ? o.priv : state.privPrice; }
+  function fmt(n) {
+    var r = Math.round(n * 100) / 100;
+    return "$" + (r % 1 === 0 ? r : r.toFixed(2));
+  }
+
+  /* ---------- Render ---------- */
+  var el = function (id) { return document.getElementById(id); };
+
+  function renderHeader() {
+    var dormOpen = 0, dormTotal = 0, privOpen = 0;
+    ROOMS.forEach(function (r) {
+      r.beds.forEach(function (b) { dormTotal++; if (!state.beds[b]) dormOpen++; });
+    });
+    PRIVATES.forEach(function (p) { if (!state.beds[p.id]) privOpen++; });
+
+    el("dormCount").textContent = dormOpen;
+    el("dormCount").className = "stat-num" + (dormOpen === 0 ? " none" : "");
+    el("dormWhat").textContent = (dormOpen === 1 ? "dorm bed" : "dorm beds") + " free";
+
+    el("privCount").textContent = privOpen;
+    el("privCount").className = "stat-num" + (privOpen === 0 ? " none" : "");
+    el("privWhat").textContent = (privOpen === 1 ? "private room" : "private rooms") + " free";
+
+    var o = activeOverride();
+    el("dormPrice").innerHTML = "<strong>" + fmt(currentDorm()) + "</strong> / person" +
+      (o && o.dorm != null ? ' <span class="tonight">tonight</span>' : "");
+    el("privPrice").innerHTML = "<strong>" + fmt(currentPriv()) + "</strong> / night" +
+      (o && o.priv != null ? ' <span class="tonight">tonight</span>' : "");
+
+    var d = new Date();
+    el("headDate").textContent = "Tonight · " +
+      d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  }
+
+  function renderRooms() {
+    var host = el("dormRooms");
+    host.innerHTML = "";
+    ROOMS.forEach(function (r) {
+      var open = r.beds.filter(function (b) { return !state.beds[b]; }).length;
+
+      var card = document.createElement("div");
+      card.className = "room";
+
+      var head = document.createElement("div");
+      head.className = "room-head";
+      head.innerHTML =
+        '<div class="room-name">' + r.name +
+        (r.female
+          ? ' <span class="badge-female">Female only</span>'
+          : ' <span class="room-type">· ' + r.type + "</span>") +
+        "</div>" +
+        '<div class="room-free' + (open === 0 ? " full" : "") + '"><strong>' + open + "</strong> of " + r.beds.length + " free</div>";
+      card.appendChild(head);
+
+      var grid = document.createElement("div");
+      grid.className = "beds";
+      r.beds.forEach(function (b) {
+        var taken = !!state.beds[b];
+        var btn = document.createElement("button");
+        btn.className = "bed " + (taken ? "taken" : "open");
+        btn.setAttribute("aria-pressed", taken ? "true" : "false");
+        btn.setAttribute("aria-label", "Bed " + b + ": " + (taken ? "taken" : "available") + ". Tap to change.");
+        btn.dataset.bed = b;
+        btn.innerHTML = '<span class="letter">' + b + '</span><span class="state">' + (taken ? "Taken" : "Available") + "</span>";
+        btn.addEventListener("click", function () { toggle(b); });
+        grid.appendChild(btn);
+      });
+      card.appendChild(grid);
+      host.appendChild(card);
+    });
+
+    var ph = el("privateRooms");
+    ph.innerHTML = "";
+    PRIVATES.forEach(function (p) {
+      var taken = !!state.beds[p.id];
+      var row = document.createElement("button");
+      row.className = "private-row";
+      row.dataset.bed = p.id;
+      row.setAttribute("aria-pressed", taken ? "true" : "false");
+      row.setAttribute("aria-label", p.name + ": " + (taken ? "taken" : "available") + ". Tap to change.");
+      row.innerHTML =
+        "<div><div class='private-name'>" + p.name + "</div>" +
+        "<div class='private-sub'>Private · " + fmt(currentPriv()) + " / night</div></div>" +
+        '<span class="pill ' + (taken ? "taken" : "open") + '">' + (taken ? "Taken" : "Available") + "</span>";
+      row.addEventListener("click", function () { toggle(p.id); });
+      ph.appendChild(row);
+    });
+  }
+
+  function renderFoot() {
+    var msg = "Tap any bed to flip it · This device only (demo)";
+    if (state.lastChange) {
+      var t = new Date(state.lastChange);
+      msg = "Last change " + t.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }) + " · " + msg;
+    }
+    if (saveFailed) msg += " · NOT SAVING in this browser";
+    el("footNote").textContent = msg;
+  }
+
+  function renderAll() { renderHeader(); renderRooms(); renderFoot(); renderBanner(); }
+
+  /* ---------- Toggle ---------- */
+  function toggle(id) {
+    var next = Object.assign({}, state.beds);
+    next[id] = !next[id];
+    state = Object.assign({}, state, { beds: next, lastChange: Date.now() });
+    undoBeds = null; // board changed since the reset — the undo snapshot is stale
+    save();
+    renderAll();
+    var btn = document.querySelector('[data-bed="' + id + '"]');
+    if (btn) btn.focus({ preventScroll: true });
+    if (navigator.vibrate) navigator.vibrate(8);
+  }
+
+  /* ---------- New-night banner ---------- */
+  function renderBanner() {
+    var nk = nightKey(new Date());
+    var stale = state.nightKey !== nk && state.bannerDismissedFor !== nk;
+    el("nightBanner").className = "night-banner" + (stale ? " show" : "");
+  }
+
+  var undoBeds = null, toastTimer = null;
+
+  function resetBoard() {
+    var anythingTaken = Object.keys(state.beds).some(function (k) { return state.beds[k]; });
+    if (anythingTaken) undoBeds = state.beds; // never replace a real snapshot with an already-empty board
+    var fresh = {};
+    Object.keys(state.beds).forEach(function (k) { fresh[k] = false; });
+    state = Object.assign({}, state, { beds: fresh, nightKey: nightKey(new Date()), lastChange: Date.now() });
+    save();
+    renderAll();
+    showToast("Board reset — everything available", true);
+  }
+
+  el("bannerReset").addEventListener("click", resetBoard);
+  el("bannerKeep").addEventListener("click", function () {
+    var nk = nightKey(new Date());
+    state = Object.assign({}, state, { nightKey: nk, bannerDismissedFor: nk });
+    save();
+    renderBanner();
+  });
+
+  function showToast(msg, withUndo) {
+    el("toastMsg").textContent = msg;
+    el("toastUndo").style.display = withUndo ? "" : "none";
+    el("toast").classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el("toast").classList.remove("show"); }, 6000);
+  }
+
+  el("toastUndo").addEventListener("click", function () {
+    if (undoBeds) {
+      state = Object.assign({}, state, { beds: undoBeds, lastChange: Date.now() });
+      undoBeds = null;
+      save();
+      renderAll();
+    }
+    el("toast").classList.remove("show");
+  });
+
+  /* ---------- Sheets ---------- */
+  var scrim = el("scrim"), pinSheet = el("pinSheet"), adminSheet = el("adminSheet");
+
+  function openSheet(sheet) {
+    scrim.classList.add("show");
+    sheet.classList.add("show");
+    sheet.focus({ preventScroll: true });
+  }
+  function closeSheets() {
+    var wasOpen = pinSheet.classList.contains("show") || adminSheet.classList.contains("show");
+    scrim.classList.remove("show");
+    pinSheet.classList.remove("show");
+    adminSheet.classList.remove("show");
+    pinEntry = "";
+    paintPinDots();
+    if (wasOpen) el("gearBtn").focus({ preventScroll: true });
+  }
+  scrim.addEventListener("click", closeSheets);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeSheets();
+  });
+  el("pinClose").addEventListener("click", closeSheets);
+  el("adminClose").addEventListener("click", closeSheets);
+
+  /* ---------- PIN pad ---------- */
+  var pinEntry = "";
+  var pad = el("pinPad");
+  ["1","2","3","4","5","6","7","8","9","clear","0","del"].forEach(function (k) {
+    var b = document.createElement("button");
+    if (k === "clear") { b.textContent = "Clear"; b.className = "pad-aux"; }
+    else if (k === "del") { b.textContent = "⌫"; b.className = "pad-aux"; b.setAttribute("aria-label", "Delete digit"); }
+    else b.textContent = k;
+    b.addEventListener("click", function () {
+      if (k === "clear") pinEntry = "";
+      else if (k === "del") pinEntry = pinEntry.slice(0, -1);
+      else if (pinEntry.length < 4) pinEntry += k;
+      paintPinDots();
+      if (pinEntry.length === 4) checkPin();
+    });
+    pad.appendChild(b);
+  });
+
+  function paintPinDots() {
+    var dots = el("pinDots").children;
+    for (var i = 0; i < 4; i++) dots[i].className = "pin-dot" + (i < pinEntry.length ? " fill" : "");
+  }
+
+  function checkPin() {
+    if (pinEntry === state.pin) {
+      pinEntry = "";
+      paintPinDots();
+      pinSheet.classList.remove("show");
+      fillAdminForm();
+      openSheet(adminSheet);
+    } else {
+      pinEntry = "";
+      el("pinDots").classList.add("shake");
+      setTimeout(function () {
+        el("pinDots").classList.remove("shake");
+        paintPinDots();
+      }, 380);
+    }
+  }
+
+  el("gearBtn").addEventListener("click", function () { openSheet(pinSheet); });
+
+  /* ---------- Admin form ---------- */
+  function fillAdminForm() {
+    el("inDorm").value = state.dormPrice;
+    el("inPriv").value = state.privPrice;
+    var o = activeOverride();
+    el("ovrToggle").checked = !!o;
+    el("ovrFields").style.display = o ? "" : "none";
+    el("inOvrDorm").value = o && o.dorm != null ? o.dorm : state.dormPrice;
+    el("inOvrPriv").value = o && o.priv != null ? o.priv : state.privPrice;
+    el("inPin").value = "";
+  }
+
+  el("ovrToggle").addEventListener("change", function () {
+    el("ovrFields").style.display = this.checked ? "" : "none";
+    if (this.checked) {
+      el("inOvrDorm").value = el("inOvrDorm").value || state.dormPrice;
+      el("inOvrPriv").value = el("inOvrPriv").value || state.privPrice;
+    }
+  });
+
+  var resetArmed = false, resetArmTimer = null;
+  el("adminReset").addEventListener("click", function () {
+    if (!resetArmed) {
+      resetArmed = true;
+      el("adminReset").textContent = "Tap again to confirm reset";
+      resetArmTimer = setTimeout(function () {
+        resetArmed = false;
+        el("adminReset").textContent = "Reset all to available";
+      }, 4000);
+      return;
+    }
+    clearTimeout(resetArmTimer);
+    resetArmed = false;
+    el("adminReset").textContent = "Reset all to available";
+    resetBoard();
+    closeSheets();
+  });
+
+  el("adminSave").addEventListener("click", function () {
+    var dorm = parseFloat(el("inDorm").value);
+    var priv = parseFloat(el("inPriv").value);
+    if (isNaN(dorm) || dorm < 0 || isNaN(priv) || priv < 0) {
+      showToast("Prices must be numbers, 0 or more", false);
+      return;
+    }
+    var patch = { dormPrice: dorm, privPrice: priv };
+
+    if (el("ovrToggle").checked) {
+      var od = parseFloat(el("inOvrDorm").value);
+      var op = parseFloat(el("inOvrPriv").value);
+      patch.override = {
+        nightKey: nightKey(new Date()),
+        dorm: !isNaN(od) && od >= 0 ? od : null,
+        priv: !isNaN(op) && op >= 0 ? op : null
+      };
+    } else {
+      patch.override = null;
+    }
+
+    var newPin = el("inPin").value.trim();
+    if (newPin) {
+      if (/^\d{4}$/.test(newPin)) patch.pin = newPin;
+      else { showToast("PIN must be exactly 4 digits", false); return; }
+    }
+
+    state = Object.assign({}, state, patch);
+    save();
+    closeSheets();
+    renderAll();
+    showToast("Settings saved", false);
+  });
+
+  /* ---------- Boot ---------- */
+  renderAll();
+  // Re-check the night + clock-driven bits when the tab wakes up mid-shift.
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) renderAll();
+  });
+  // A front-desk device stays open for days: tick every minute so the 11 AM
+  // night rollover and override expiry fire without a reload.
+  setInterval(function () {
+    if (!document.hidden) renderAll();
+  }, 60000);
+  // iOS Safari needs a touch listener registered for :active states to fire.
+  document.addEventListener("touchstart", function () {}, { passive: true });
+})();
+</script>
+
+</body>
+</html>
