@@ -279,7 +279,7 @@
     padding: 20px 20px calc(24px + env(safe-area-inset-bottom));
     transform: translateY(105%);
     transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
-    max-height: 88vh; overflow-y: auto;
+    max-height: 88vh; max-height: 88dvh; overflow-y: auto;
   }
   .sheet.show { transform: translateY(0); }
 
@@ -568,13 +568,15 @@
       } catch (_e) {}
       candidates.push("http://127.0.0.1:8077");
       for (var i = 0; i < candidates.length; i++) {
+        var ctl = new AbortController();
+        var t = setTimeout(function () { ctl.abort(); }, 6000);
         try {
-          var ctl = new AbortController();
-          var t = setTimeout(function () { ctl.abort(); }, 6000);
           var res = await fetch(candidates[i] + "/api/status", { signal: ctl.signal });
-          clearTimeout(t);
           if (res.ok) { API = candidates[i]; return; }
-        } catch (_e) {}
+        } catch (_e) {
+        } finally {
+          clearTimeout(t);
+        }
       }
     })();
   })();
@@ -589,6 +591,20 @@
 
   var el = function (id) { return document.getElementById(id); };
 
+  // Server-side name validation already blocks markup, but every dynamic
+  // value that reaches innerHTML gets escaped anyway — a stolen key hash is
+  // the auth credential, so XSS here is not a cosmetic risk.
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (ch) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+    });
+  }
+
+  function safeFocus(node) {
+    if (!node) return;
+    try { node.focus({ preventScroll: true }); } catch (_e) { try { node.focus(); } catch (_e2) {} }
+  }
+
   /* ---------- Gate ---------- */
   function gateFail(msg) {
     var gate = el("gate");
@@ -599,10 +615,24 @@
 
   window.tryUnlock = async function () {
     var code = el("gateInput").value.trim();
-    if (!code) return;
+    if (!code || el("gateBtn").disabled) return;
+    el("gateBtn").disabled = true;
     el("gateErr").textContent = "Checking…";
-    var hash = await sha256Hex(code);
+    var hash;
+    try {
+      if (!window.crypto || !crypto.subtle) {
+        gateFail("This page needs HTTPS (or localhost) to sign in — open the studio217.ai link.");
+        el("gateBtn").disabled = false;
+        return;
+      }
+      hash = await sha256Hex(code);
+    } catch (_e) {
+      gateFail("Sign-in isn't available in this browser — open the studio217.ai link.");
+      el("gateBtn").disabled = false;
+      return;
+    }
     await engineDiscovered;
+    el("gateBtn").disabled = false;
     try {
       var r = await fetch(API + "/api/karma/auth", {
         method: "POST", headers: { "x-karma-key": hash } });
@@ -633,6 +663,15 @@
     sessionStorage.removeItem(KEY);
     sessionStorage.removeItem(NAME);
     sessionStorage.removeItem(ROLE);
+    // Drop every piece of session UI state, or a revoked user who signs back
+    // in inherits stuck pending beds, a stale board, and an orphaned sheet
+    // scrim sitting on top of the gate.
+    pendingBeds = {};
+    board = null;
+    fails = 0;
+    scrim.classList.remove("show");
+    adminSheet.classList.remove("show");
+    disarmReset();
     el("app").style.display = "none";
     el("gate").style.display = "block";
     el("gateErr").textContent = msg || "";
@@ -656,13 +695,17 @@
   var pollTimer = null, tickTimer = null;
   var pendingBeds = {};      // bed id -> true while a toggle is in flight
 
+  var syncing = false;
   function startSync() {
+    if (syncing) return; // double-tap on Enter must not stack poll loops
+    syncing = true;
     poll();
     pollTimer = setInterval(poll, 4000);
     tickTimer = setInterval(renderClockBits, 1000);
     document.addEventListener("visibilitychange", onVisible);
   }
   function stopSync() {
+    syncing = false;
     clearInterval(pollTimer); clearInterval(tickTimer);
     document.removeEventListener("visibilitychange", onVisible);
   }
@@ -678,7 +721,20 @@
       var data = await r.json();
       fails = 0;
       lastSyncAt = Date.now();
-      if (!data.unchanged) { board = data; renderAll(); }
+      if (!data.unchanged) {
+        // A poll snapshot can arrive AFTER a toggle response that's already
+        // newer — never let the stale snapshot roll the board back.
+        if (!board || data.version >= board.version) { board = data; renderAll(); }
+      } else if (board && data.night) {
+        // No writes since last poll, but the clock moved: the server still
+        // sends night + effective prices so cutover and override expiry
+        // reach a phone that's been sitting open all day.
+        var shifted = JSON.stringify(board.night) !== JSON.stringify(data.night) ||
+                      JSON.stringify(board.prices) !== JSON.stringify(data.prices);
+        board.night = data.night;
+        board.prices = data.prices;
+        if (shifted) { renderHeader(); renderBanner(); renderRooms(); }
+      }
       renderConnection();
     } catch (_e) {
       fails++;
@@ -689,8 +745,10 @@
   function applyBoard(data) {
     fails = 0;
     lastSyncAt = Date.now();
-    board = data;
-    renderAll();
+    if (!board || data.version >= board.version) {
+      board = data;
+      renderAll();
+    }
     renderConnection();
   }
 
@@ -758,7 +816,7 @@
     btn.dataset.bed = id;
     btn.setAttribute("aria-pressed", taken ? "true" : "false");
     btn.setAttribute("aria-label", "Bed " + letter + ": " + (taken ? "taken" : "available") + ". Tap to change.");
-    btn.innerHTML = '<span class="letter">' + letter + '</span><span class="state">' + (taken ? "Taken" : "Available") + "</span>";
+    btn.innerHTML = '<span class="letter">' + esc(letter) + '</span><span class="state">' + (taken ? "Taken" : "Available") + "</span>";
     btn.addEventListener("click", function () { toggle(id); });
     return btn;
   }
@@ -773,10 +831,10 @@
       var head = document.createElement("div");
       head.className = "room-head";
       head.innerHTML =
-        '<div class="room-name">' + r.name +
+        '<div class="room-name">' + esc(r.name) +
         (r.female
           ? ' <span class="badge-female">Female only</span>'
-          : ' <span class="room-type">· ' + r.type + "</span>") +
+          : ' <span class="room-type">· ' + esc(r.type) + "</span>") +
         "</div>" +
         '<div class="room-free' + (open === 0 ? " full" : "") + '"><strong>' + open + "</strong> of " + r.beds.length + " free</div>";
       card.appendChild(head);
@@ -797,7 +855,7 @@
       row.setAttribute("aria-pressed", taken ? "true" : "false");
       row.setAttribute("aria-label", p.name + ": " + (taken ? "taken" : "available") + ". Tap to change.");
       row.innerHTML =
-        "<div><div class='private-name'>" + p.name + "</div>" +
+        "<div><div class='private-name'>" + esc(p.name) + "</div>" +
         "<div class='private-sub'>Private · " + fmt(board.prices.priv) + " / night</div></div>" +
         '<span class="pill ' + (taken ? "taken" : "open") + '">' + (taken ? "Taken" : "Available") + "</span>";
       row.addEventListener("click", function () { toggle(p.id); });
@@ -816,9 +874,17 @@
         body: JSON.stringify({ bed: id, expect: board.beds[id].taken })
       });
       if (r.status === 401) { signOutToGate("Your code is no longer active."); return; }
-      if (!r.ok) throw new Error("bad status");
-      var data = await r.json();
       delete pendingBeds[id];
+      if (!r.ok) {
+        // A server error is not a lost connection — don't fake "Offline".
+        renderRooms();
+        showToast(r.status === 429
+          ? "Slow down a moment — too many taps at once."
+          : "The board engine had a problem — nothing was saved. Try again.");
+        poll();
+        return;
+      }
+      var data = await r.json();
       applyBoard(data);
       if (data.conflict) {
         var who = data.conflict.by || "someone";
@@ -826,8 +892,7 @@
       } else if (navigator.vibrate) {
         navigator.vibrate(8);
       }
-      var btn = document.querySelector('[data-bed="' + id + '"]');
-      if (btn) btn.focus({ preventScroll: true });
+      safeFocus(document.querySelector('[data-bed="' + id + '"]'));
     } catch (_e) {
       delete pendingBeds[id];
       fails = Math.max(fails, 2);
@@ -838,11 +903,23 @@
   }
 
   async function adminPost(path, body) {
-    var r = await apiFetch(path, { method: "POST", body: body ? JSON.stringify(body) : "{}" });
+    var r;
+    try {
+      r = await apiFetch(path, { method: "POST", body: body ? JSON.stringify(body) : "{}" });
+    } catch (_e) {
+      // Callers swallow the throw, so the feedback happens right here —
+      // an admin must never believe a reset worked when nothing was sent.
+      showToast("No connection — nothing was saved.");
+      throw new Error("network");
+    }
     if (r.status === 401) { signOutToGate("Your code is no longer active."); throw new Error("auth"); }
-    var data = await r.json();
-    if (!r.ok) { showToast(data.detail || "That didn't work."); throw new Error("api"); }
-    return data;
+    if (!r.ok) {
+      var detail = "That didn't work.";
+      try { detail = (await r.json()).detail || detail; } catch (_e2) {}
+      showToast(detail);
+      throw new Error("api");
+    }
+    return r.json();
   }
 
   /* ---------- Night banner ---------- */
@@ -879,13 +956,14 @@
     refreshHistory();
     scrim.classList.add("show");
     adminSheet.classList.add("show");
-    adminSheet.focus({ preventScroll: true });
+    safeFocus(adminSheet);
   }
   function closeAdmin() {
     scrim.classList.remove("show");
     adminSheet.classList.remove("show");
     el("codeReveal").className = "code-reveal";
-    el("gearBtn").focus({ preventScroll: true });
+    disarmReset(); // an armed reset must not survive a closed sheet
+    if (el("app").style.display !== "none") safeFocus(el("gearBtn"));
   }
   scrim.addEventListener("click", closeAdmin);
   el("adminClose").addEventListener("click", closeAdmin);
@@ -963,19 +1041,19 @@
   });
 
   var resetArmed = false, resetArmTimer = null;
+  function disarmReset() {
+    clearTimeout(resetArmTimer);
+    resetArmed = false;
+    el("adminReset").textContent = "Reset all to available";
+  }
   el("adminReset").addEventListener("click", async function () {
     if (!resetArmed) {
       resetArmed = true;
       el("adminReset").textContent = "Tap again to confirm reset";
-      resetArmTimer = setTimeout(function () {
-        resetArmed = false;
-        el("adminReset").textContent = "Reset all to available";
-      }, 4000);
+      resetArmTimer = setTimeout(disarmReset, 4000);
       return;
     }
-    clearTimeout(resetArmTimer);
-    resetArmed = false;
-    el("adminReset").textContent = "Reset all to available";
+    disarmReset();
     try {
       applyBoard(await adminPost("/api/karma/reset", { mode: "all" }));
       showToast("Board reset — Undo below if that was a mistake.");
@@ -1003,8 +1081,8 @@
       data.staff.forEach(function (p) {
         var li = document.createElement("li");
         var left = document.createElement("span");
-        left.innerHTML = (p.active ? "" : '<span class="revoked">') + p.name +
-          (p.active ? "" : "</span>") + ' <span class="role">' + p.role + "</span>";
+        left.innerHTML = (p.active ? "" : '<span class="revoked">') + esc(p.name) +
+          (p.active ? "" : "</span>") + ' <span class="role">' + esc(p.role) + "</span>";
         li.appendChild(left);
         if (p.active && p.name !== sessionStorage.getItem(NAME)) {
           var btn = document.createElement("button");
@@ -1031,8 +1109,8 @@
         { name: name, role: el("staffRole").value });
       el("staffName").value = "";
       var cr = el("codeReveal");
-      cr.innerHTML = "Code for <b>" + data.name + "</b> — shown only once:" +
-        "<strong>" + data.code + "</strong>" +
+      cr.innerHTML = "Code for <b>" + esc(data.name) + "</b> — shown only once:" +
+        "<strong>" + esc(data.code) + "</strong>" +
         "Write it down now and hand it over in person.";
       cr.className = "code-reveal show";
       refreshStaff();
@@ -1057,12 +1135,12 @@
       data.entries.forEach(function (e) {
         var li = document.createElement("li");
         var t = new Date(e.ts);
-        var what = ACTION_LABELS[e.action] || e.action;
+        var what = ACTION_LABELS[e.action] || esc(e.action);
         if (e.action === "toggle") {
-          what = "set bed " + e.detail.bed + " " + (e.detail.taken ? "TAKEN" : "AVAILABLE");
+          what = "set bed " + esc(e.detail.bed) + " " + (e.detail.taken ? "TAKEN" : "AVAILABLE");
         }
         li.innerHTML = t.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
-          ' · <span class="who">' + e.actor + "</span> " + what;
+          ' · <span class="who">' + esc(e.actor) + "</span> " + what;
         ul.appendChild(li);
       });
     } catch (_e) {}
