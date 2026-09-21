@@ -1,0 +1,1076 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Karma Muse Night Board</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06322C">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%9B%8F%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    --ground: #06322C;
+    --card: #0C453E;
+    --card-lift: #0E5049;
+    --teal: #0A737D;
+    --mint: #7DBFAC;
+    --coral: #F78076;
+    --amber: #FAA11E;
+    --cream: #FFF4C5;
+    --cream-dim: rgba(255, 244, 197, 0.74);
+    --cream-faint: rgba(255, 244, 197, 0.48);
+    --edge: rgba(125, 191, 172, 0.16);
+    --display: "Fraunces", Georgia, serif;
+    --sans: "Instrument Sans", -apple-system, "Segoe UI", sans-serif;
+    --r: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html { background: var(--ground); }
+  body {
+    background: var(--ground);
+    background-image: radial-gradient(120% 60% at 50% 0%, rgba(10, 115, 125, 0.16), rgba(10, 115, 125, 0) 60%);
+    background-repeat: no-repeat;
+    color: var(--cream);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.45;
+    min-height: 100vh;
+    padding-bottom: 48px;
+  }
+
+  button { font-family: var(--sans); cursor: pointer; border: 0; background: none; color: inherit; }
+  button:disabled { cursor: default; opacity: 0.55; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+  .wrap { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+
+  /* ---------- Gate ---------- */
+  #gate {
+    max-width: 340px; margin: 18vh auto 0; padding: 0 20px;
+    text-align: center;
+  }
+  #gate .wordmark { font-size: 24px; margin-bottom: 6px; }
+  #gate p { font-size: 13.5px; color: var(--cream-dim); margin-bottom: 22px; }
+  #gateInput {
+    width: 100%; padding: 14px; text-align: center;
+    background: var(--card); border: 1px solid var(--edge); border-radius: 12px;
+    color: var(--cream); font-family: var(--sans); font-size: 17px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  #gateBtn {
+    width: 100%; margin-top: 12px; padding: 14px;
+    background: var(--mint); color: #06322C;
+    border-radius: 12px; font-size: 15px; font-weight: 700;
+  }
+  #gateErr { min-height: 20px; margin-top: 12px; font-size: 13px; color: var(--coral); }
+  #gate.shake { animation: shake 0.35s; }
+  @keyframes shake { 20%,60% { transform: translateX(-7px); } 40%,80% { transform: translateX(7px); } }
+
+  /* ---------- Sticky answer header ---------- */
+  #app { display: none; }
+  .board-head {
+    position: sticky; top: 0; z-index: 20;
+    background: linear-gradient(to bottom, var(--ground) 82%, rgba(6, 50, 44, 0));
+    padding-top: env(safe-area-inset-top);
+  }
+  .head-inner { max-width: 480px; margin: 0 auto; padding: 12px 16px 14px; }
+
+  .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .wordmark {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: 0.14em;
+    color: var(--cream);
+  }
+  .wordmark span { color: var(--mint); }
+  .head-sub { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--cream-dim); letter-spacing: 0.05em; }
+  .pill-live {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    border-radius: 99px; padding: 2px 8px;
+  }
+  .pill-live .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .pill-live.live { color: var(--mint); border: 1px solid rgba(125,191,172,0.4); }
+  .pill-live.live .dot { background: var(--mint); }
+  .pill-live.recon { color: var(--amber); border: 1px solid rgba(250,161,30,0.45); }
+  .pill-live.recon .dot { background: var(--amber); }
+  .pill-live.offline { color: var(--coral); border: 1px solid rgba(247,128,118,0.5); }
+  .pill-live.offline .dot { background: var(--coral); }
+
+  .gear {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: grid; place-items: center;
+    color: var(--cream-dim);
+    border: 1px solid var(--edge);
+  }
+  .gear:active { background: var(--card); }
+
+  .answer { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--edge);
+    border-radius: var(--r);
+    padding: 10px 14px 12px;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .stat-num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 1;
+    color: var(--cream);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-num.none { color: var(--coral); }
+  .stat-label { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .stat-what { font-size: 13px; font-weight: 600; color: var(--cream); }
+  .stat-price { font-size: 12.5px; color: var(--cream-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .stat-price strong { color: var(--cream); font-weight: 600; }
+  .stat-price .tonight {
+    color: var(--amber); font-weight: 600; font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  /* ---------- Offline bar + banners ---------- */
+  .offline-bar {
+    display: none;
+    margin: 4px 0 12px;
+    background: rgba(247, 128, 118, 0.12);
+    border: 1px solid rgba(247, 128, 118, 0.5);
+    border-radius: var(--r);
+    padding: 10px 14px;
+    font-size: 13px; color: var(--coral); font-weight: 600;
+  }
+  .offline-bar.show { display: block; }
+  body.offline .bed, body.offline .private-row { pointer-events: none; opacity: 0.55; }
+
+  .night-banner {
+    display: none;
+    margin: 4px 0 14px;
+    background: var(--card);
+    border: 1px solid rgba(250, 161, 30, 0.45);
+    border-radius: var(--r);
+    padding: 12px 14px;
+  }
+  .night-banner.show { display: block; }
+  .night-banner p { font-size: 13.5px; color: var(--cream-dim); }
+  .night-banner p strong { color: var(--amber); font-weight: 600; }
+  .banner-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .banner-actions button {
+    flex: 1; padding: 10px; border-radius: 10px;
+    font-size: 13px; font-weight: 600;
+  }
+  .btn-reset { background: var(--amber); color: #3D2A00; }
+  .btn-keep { border: 1px solid var(--edge); color: var(--cream-dim); }
+
+  /* ---------- Rooms ---------- */
+  .section-tag {
+    margin: 20px 0 10px;
+    font-size: 11.5px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--teal);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-tag::after { content: ""; flex: 1; height: 1px; background: var(--edge); }
+
+  .room {
+    background: var(--card);
+    border: 1px solid var(--edge);
+    border-radius: var(--r);
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .room-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+  .room-name { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .room-type { font-size: 12.5px; font-weight: 400; color: var(--cream-dim); }
+  .badge-female {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--cream); border: 1px solid var(--cream-faint);
+    border-radius: 99px; padding: 3px 8px;
+  }
+  .room-free { font-size: 12.5px; color: var(--cream-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .room-free strong { color: var(--mint); font-weight: 700; }
+  .room-free.full strong { color: var(--coral); }
+
+  .beds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+  .bed {
+    min-height: 64px;
+    border-radius: 12px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+    border: 1.5px solid transparent;
+  }
+  .bed:active { transform: scale(0.94); }
+  .bed .letter { font-family: var(--display); font-weight: 600; font-size: 24px; line-height: 1; }
+  .bed .state { font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .bed.open { background: var(--mint); }
+  .bed.open .letter { color: #06322C; }
+  .bed.open .state { color: rgba(6, 50, 44, 0.72); }
+
+  .bed.taken { background: rgba(247, 128, 118, 0.14); border-color: rgba(247, 128, 118, 0.55); }
+  .bed.taken .letter { color: var(--coral); opacity: 0.85; }
+  .bed.taken .state { color: var(--coral); }
+
+  .bed.pending { opacity: 0.5; pointer-events: none; }
+
+  .private-row {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--edge);
+    border-radius: var(--r);
+    padding: 14px;
+    margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    text-align: left;
+    transition: transform 0.12s ease;
+  }
+  .private-row:active { transform: scale(0.98); }
+  .private-row.pending { opacity: 0.5; pointer-events: none; }
+  .private-name { font-size: 15px; font-weight: 600; }
+  .private-sub { font-size: 12.5px; color: var(--cream-dim); font-variant-numeric: tabular-nums; }
+  .pill {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    border-radius: 99px; padding: 8px 14px; white-space: nowrap;
+  }
+  .pill.open { background: var(--mint); color: #06322C; }
+  .pill.taken { background: rgba(247, 128, 118, 0.14); border: 1.5px solid rgba(247, 128, 118, 0.55); color: var(--coral); }
+
+  .foot {
+    margin-top: 22px;
+    font-size: 12px; color: var(--cream-faint);
+    text-align: center;
+  }
+  .wide-note { display: none; }
+  @media (min-width: 768px) {
+    .wide-note {
+      display: block;
+      text-align: center;
+      font-size: 12.5px;
+      letter-spacing: 0.04em;
+      color: var(--cream-faint);
+      margin-top: 14px;
+    }
+  }
+
+  /* ---------- Sheets ---------- */
+  .scrim {
+    position: fixed; inset: 0; z-index: 40;
+    background: rgba(3, 26, 23, 0.72);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .scrim.show { opacity: 1; pointer-events: auto; }
+
+  .sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    background: var(--card-lift);
+    border-radius: 20px 20px 0 0;
+    border-top: 1px solid var(--edge);
+    max-width: 520px; margin: 0 auto;
+    padding: 20px 20px calc(24px + env(safe-area-inset-bottom));
+    transform: translateY(105%);
+    transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 88vh; overflow-y: auto;
+  }
+  .sheet.show { transform: translateY(0); }
+
+  .sheet h2 { font-family: var(--display); font-weight: 600; font-size: 20px; margin-bottom: 4px; }
+  .sheet .sub { font-size: 13px; color: var(--cream-dim); margin-bottom: 16px; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .field label {
+    display: block; font-size: 11.5px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--cream-dim); margin-bottom: 6px;
+  }
+  .field .money { position: relative; }
+  .field .money::before {
+    content: "$"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--cream-dim); font-size: 15px;
+  }
+  .field input, .field select {
+    width: 100%; padding: 12px;
+    background: var(--card);
+    border: 1px solid var(--edge);
+    border-radius: 12px;
+    color: var(--cream); font-family: var(--sans);
+    font-size: 16px; font-variant-numeric: tabular-nums;
+  }
+  .field .money input { padding-left: 26px; }
+
+  .admin-block { border-top: 1px solid var(--edge); margin-top: 16px; padding-top: 16px; }
+  .admin-block h3 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .admin-block h3 .tonight-tag { color: var(--amber); }
+  .admin-block .note { font-size: 12.5px; color: var(--cream-dim); margin-bottom: 10px; }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .switch { position: relative; width: 48px; height: 28px; flex: none; }
+  .switch input { opacity: 0; width: 100%; height: 100%; position: absolute; margin: 0; cursor: pointer; }
+  .switch .track {
+    position: absolute; inset: 0; border-radius: 99px;
+    background: var(--ground); border: 1px solid var(--edge);
+    transition: background 0.15s;
+  }
+  .switch .track::after {
+    content: ""; position: absolute; top: 3px; left: 3px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--cream-faint);
+    transition: transform 0.15s, background 0.15s;
+  }
+  .switch input:checked + .track { background: var(--amber); border-color: var(--amber); }
+  .switch input:checked + .track::after { transform: translateX(20px); background: #3D2A00; }
+
+  .btn-wide { width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; }
+  .btn-save { background: var(--mint); color: #06322C; margin-top: 18px; }
+  .btn-danger { border: 1.5px solid rgba(247, 128, 118, 0.5); color: var(--coral); font-weight: 600; font-size: 14px; padding: 12px; }
+  .btn-quiet { border: 1px solid var(--edge); color: var(--cream-dim); font-weight: 600; font-size: 14px; padding: 12px; }
+  .btn-close { color: var(--cream-dim); font-size: 14px; margin-top: 10px; padding: 10px; width: 100%; }
+
+  .staff-list { list-style: none; margin-bottom: 12px; }
+  .staff-list li {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 8px 0; border-bottom: 1px solid var(--edge);
+    font-size: 14px;
+  }
+  .staff-list .role { font-size: 11px; color: var(--cream-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+  .staff-list .revoked { color: var(--cream-faint); text-decoration: line-through; }
+  .staff-list button { color: var(--coral); font-size: 12.5px; font-weight: 600; }
+  .staff-add-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; }
+  .staff-add-row input, .staff-add-row select {
+    padding: 10px; background: var(--card); border: 1px solid var(--edge);
+    border-radius: 10px; color: var(--cream); font-family: var(--sans); font-size: 14px;
+  }
+  .staff-add-row button { background: var(--mint); color: #06322C; border-radius: 10px; padding: 10px 14px; font-weight: 700; font-size: 13px; }
+  .code-reveal {
+    display: none;
+    margin-top: 10px; padding: 12px;
+    background: rgba(250, 161, 30, 0.12);
+    border: 1px solid rgba(250, 161, 30, 0.5);
+    border-radius: 10px;
+    font-size: 13.5px;
+  }
+  .code-reveal.show { display: block; }
+  .code-reveal strong { font-size: 18px; letter-spacing: 0.1em; color: var(--amber); display: block; margin: 4px 0; font-variant-numeric: tabular-nums; }
+
+  .history-list { list-style: none; font-size: 12.5px; color: var(--cream-dim); max-height: 200px; overflow-y: auto; }
+  .history-list li { padding: 5px 0; border-bottom: 1px solid var(--edge); }
+  .history-list .who { color: var(--cream); font-weight: 600; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; z-index: 60;
+    transform: translate(-50%, 80px);
+    background: var(--cream); color: #06322C;
+    border-radius: 12px; padding: 12px 16px;
+    font-size: 14px; font-weight: 500;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+    max-width: min(92vw, 480px);
+  }
+  .toast.show { transform: translate(-50%, 0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="wordmark">KARMA <span>MUSE</span></div>
+  <p>Night board — enter your staff code.</p>
+  <input id="gateInput" autocomplete="off" autocapitalize="characters" spellcheck="false"
+         aria-label="Staff access code" onkeydown="if(event.key==='Enter')tryUnlock()">
+  <button id="gateBtn" onclick="tryUnlock()">Enter</button>
+  <div id="gateErr"></div>
+</div>
+
+<div id="app">
+  <header class="board-head">
+    <div class="head-inner">
+      <div class="brand-row">
+        <div>
+          <div class="wordmark">KARMA <span>MUSE</span></div>
+          <div class="head-sub">
+            <span id="headDate">Tonight</span>
+            <span class="pill-live live" id="livePill"><span class="dot"></span><span id="liveTxt">Live</span></span>
+          </div>
+        </div>
+        <button class="gear" id="gearBtn" aria-label="Admin settings" style="display:none">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82V9a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="answer">
+        <div class="stat">
+          <div class="stat-num" id="dormCount">–</div>
+          <div class="stat-label">
+            <div class="stat-what" id="dormWhat">dorm beds free</div>
+            <div class="stat-price" id="dormPrice"></div>
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" id="privCount">–</div>
+          <div class="stat-label">
+            <div class="stat-what" id="privWhat">private rooms free</div>
+            <div class="stat-price" id="privPrice"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="offline-bar" id="offlineBar">
+      No connection — the board may be out of date. Taps are paused until it reconnects.
+    </div>
+
+    <div class="night-banner" id="nightBanner">
+      <p><strong>New night.</strong> The board still shows the previous night. Keep beds for staying guests, or an admin can reset everything to available.</p>
+      <div class="banner-actions">
+        <button class="btn-reset" id="bannerReset" style="display:none">Reset all to available</button>
+        <button class="btn-keep" id="bannerKeep">Keep current beds</button>
+      </div>
+    </div>
+
+    <div class="section-tag">Dorm beds</div>
+    <div id="dormRooms"></div>
+
+    <div class="section-tag">Private rooms</div>
+    <div id="privateRooms"></div>
+
+    <p class="foot" id="footNote"></p>
+    <p class="wide-note">Made for the phone at the front desk — open it on mobile for the real feel.</p>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="sheet" id="adminSheet" role="dialog" aria-modal="true" aria-label="Admin settings" tabindex="-1">
+  <h2>Settings</h2>
+  <p class="sub" id="adminSub">Signed in as —</p>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="inDorm">Dorm bed / person</label>
+      <div class="money"><input id="inDorm" type="number" inputmode="decimal" min="0" step="1"></div>
+    </div>
+    <div class="field">
+      <label for="inPriv">Private / night</label>
+      <div class="money"><input id="inPriv" type="number" inputmode="decimal" min="0" step="1"></div>
+    </div>
+  </div>
+
+  <div class="admin-block">
+    <div class="toggle-row">
+      <h3><span class="tonight-tag">Tonight only</span> — special price</h3>
+      <label class="switch">
+        <input type="checkbox" id="ovrToggle" aria-label="Tonight-only special price">
+        <span class="track"></span>
+      </label>
+    </div>
+    <p class="note">Overrides the regular price until the night cutover, then expires on its own.</p>
+    <div class="field-row" id="ovrFields" style="display:none">
+      <div class="field">
+        <label for="inOvrDorm">Dorm tonight</label>
+        <div class="money"><input id="inOvrDorm" type="number" inputmode="decimal" min="0" step="1"></div>
+      </div>
+      <div class="field">
+        <label for="inOvrPriv">Private tonight</label>
+        <div class="money"><input id="inOvrPriv" type="number" inputmode="decimal" min="0" step="1"></div>
+      </div>
+    </div>
+    <button class="btn-wide btn-save" id="savePrices" style="margin-top:6px">Save prices</button>
+  </div>
+
+  <div class="admin-block">
+    <h3>Night settings</h3>
+    <p class="note">The night runs until the cutover hour in the property's own timezone. Confirm both with the property before launch.</p>
+    <div class="field-row">
+      <div class="field">
+        <label for="inTz">Property timezone</label>
+        <select id="inTz"></select>
+      </div>
+      <div class="field">
+        <label for="inCut">Night ends at</label>
+        <select id="inCut"></select>
+      </div>
+    </div>
+    <button class="btn-wide btn-quiet" id="saveNight">Save night settings</button>
+  </div>
+
+  <div class="admin-block">
+    <h3>Board</h3>
+    <p class="note">Start a fresh night — every bed and room back to available. Undo restores the previous board but never wipes a change someone made after the reset.</p>
+    <button class="btn-wide btn-danger" id="adminReset">Reset all to available</button>
+    <button class="btn-wide btn-quiet" id="adminUndo" style="margin-top:8px; display:none">Undo last reset</button>
+  </div>
+
+  <div class="admin-block">
+    <h3>Staff access</h3>
+    <p class="note">Each person gets their own code. A new code is shown once — write it down and hand it over in person, never by email.</p>
+    <ul class="staff-list" id="staffList"></ul>
+    <div class="staff-add-row">
+      <input id="staffName" placeholder="Name" maxlength="40" aria-label="New staff name">
+      <select id="staffRole" aria-label="New staff role">
+        <option value="staff">Staff</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button id="staffAdd">Add</button>
+    </div>
+    <div class="code-reveal" id="codeReveal"></div>
+  </div>
+
+  <div class="admin-block">
+    <h3>Recent changes</h3>
+    <ul class="history-list" id="historyList"></ul>
+  </div>
+
+  <button class="btn-close" id="adminClose">Close</button>
+</div>
+
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Session + engine ---------- */
+  var KEY = "karma_key", NAME = "karma_name", ROLE = "karma_role";
+  var API = "http://127.0.0.1:8077";
+
+  function sha256Hex(text) {
+    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))
+      .then(function (buf) {
+        return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+          return b.toString(16).padStart(2, "0");
+        }).join("");
+      });
+  }
+
+  var engineDiscovered = (function () {
+    return (async function () {
+      var candidates = [];
+      try {
+        var r = await fetch("/engine.json", { cache: "no-store" });
+        if (r.ok) { var j = await r.json(); if (j.engine) candidates.push(j.engine); }
+      } catch (_e) {}
+      candidates.push("http://127.0.0.1:8077");
+      for (var i = 0; i < candidates.length; i++) {
+        try {
+          var ctl = new AbortController();
+          var t = setTimeout(function () { ctl.abort(); }, 6000);
+          var res = await fetch(candidates[i] + "/api/status", { signal: ctl.signal });
+          clearTimeout(t);
+          if (res.ok) { API = candidates[i]; return; }
+        } catch (_e) {}
+      }
+    })();
+  })();
+
+  function apiFetch(path, opts) {
+    opts = opts || {};
+    opts.headers = Object.assign({}, opts.headers || {},
+      { "x-karma-key": sessionStorage.getItem(KEY) || "" });
+    if (opts.body) opts.headers["content-type"] = "application/json";
+    return fetch(API + path, opts);
+  }
+
+  var el = function (id) { return document.getElementById(id); };
+
+  /* ---------- Gate ---------- */
+  function gateFail(msg) {
+    var gate = el("gate");
+    el("gateErr").textContent = msg;
+    el("gateInput").value = "";
+    gate.classList.remove("shake"); void gate.offsetWidth; gate.classList.add("shake");
+  }
+
+  window.tryUnlock = async function () {
+    var code = el("gateInput").value.trim();
+    if (!code) return;
+    el("gateErr").textContent = "Checking…";
+    var hash = await sha256Hex(code);
+    await engineDiscovered;
+    try {
+      var r = await fetch(API + "/api/karma/auth", {
+        method: "POST", headers: { "x-karma-key": hash } });
+      if (r.ok) {
+        var me = await r.json();
+        sessionStorage.setItem(KEY, hash);
+        sessionStorage.setItem(NAME, me.name);
+        sessionStorage.setItem(ROLE, me.role);
+        unlock();
+      } else if (r.status === 401 || r.status === 403) {
+        gateFail("Code not recognized");
+      } else {
+        gateFail("Board engine offline — try again in a minute.");
+      }
+    } catch (_e) {
+      gateFail("Board engine unreachable — try again in a minute.");
+    }
+  };
+
+  function unlock() {
+    el("gate").style.display = "none";
+    el("app").style.display = "block";
+    if (sessionStorage.getItem(ROLE) === "admin") el("gearBtn").style.display = "";
+    startSync();
+  }
+
+  function signOutToGate(msg) {
+    sessionStorage.removeItem(KEY);
+    sessionStorage.removeItem(NAME);
+    sessionStorage.removeItem(ROLE);
+    el("app").style.display = "none";
+    el("gate").style.display = "block";
+    el("gateErr").textContent = msg || "";
+    stopSync();
+  }
+
+  (async function () {
+    if (!sessionStorage.getItem(KEY)) return;
+    await engineDiscovered;
+    try {
+      var r = await apiFetch("/api/karma/auth", { method: "POST" });
+      if (r.ok) unlock();
+      else sessionStorage.removeItem(KEY);
+    } catch (_e) {}
+  })();
+
+  /* ---------- Sync loop ---------- */
+  var board = null;          // last server board view
+  var fails = 0;
+  var lastSyncAt = null;
+  var pollTimer = null, tickTimer = null;
+  var pendingBeds = {};      // bed id -> true while a toggle is in flight
+
+  function startSync() {
+    poll();
+    pollTimer = setInterval(poll, 4000);
+    tickTimer = setInterval(renderClockBits, 1000);
+    document.addEventListener("visibilitychange", onVisible);
+  }
+  function stopSync() {
+    clearInterval(pollTimer); clearInterval(tickTimer);
+    document.removeEventListener("visibilitychange", onVisible);
+  }
+  function onVisible() { if (!document.hidden) poll(); }
+
+  async function poll() {
+    if (document.hidden) return;
+    try {
+      var since = board ? board.version : 0;
+      var r = await apiFetch("/api/karma/board?since=" + since);
+      if (r.status === 401) { signOutToGate("Your code is no longer active."); return; }
+      if (!r.ok) throw new Error("bad status");
+      var data = await r.json();
+      fails = 0;
+      lastSyncAt = Date.now();
+      if (!data.unchanged) { board = data; renderAll(); }
+      renderConnection();
+    } catch (_e) {
+      fails++;
+      renderConnection();
+    }
+  }
+
+  function applyBoard(data) {
+    fails = 0;
+    lastSyncAt = Date.now();
+    board = data;
+    renderAll();
+    renderConnection();
+  }
+
+  function renderConnection() {
+    var pill = el("livePill"), txt = el("liveTxt");
+    var offline = fails >= 2;
+    document.body.classList.toggle("offline", offline);
+    el("offlineBar").classList.toggle("show", offline);
+    if (fails === 0) { pill.className = "pill-live live"; txt.textContent = "Live"; }
+    else if (fails === 1) { pill.className = "pill-live recon"; txt.textContent = "Reconnecting"; }
+    else { pill.className = "pill-live offline"; txt.textContent = "Offline"; }
+  }
+
+  function renderClockBits() {
+    if (!lastSyncAt || !board) return;
+    var s = Math.max(0, Math.round((Date.now() - lastSyncAt) / 1000));
+    var msg = "Synced " + (s <= 2 ? "just now" : s + "s ago");
+    if (board.lastChange) {
+      var t = new Date(board.lastChange.at);
+      msg = "Last change " + t.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }) +
+            " by " + board.lastChange.by + " · " + msg;
+    }
+    el("footNote").textContent = msg;
+  }
+
+  /* ---------- Render ---------- */
+  function fmt(n) {
+    var r = Math.round(n * 100) / 100;
+    return "$" + (r % 1 === 0 ? r : r.toFixed(2));
+  }
+
+  function renderAll() {
+    if (!board) return;
+    renderHeader(); renderRooms(); renderBanner(); renderClockBits();
+    if (el("adminSheet").classList.contains("show")) el("adminUndo").style.display = board.canUndoReset ? "" : "none";
+  }
+
+  function renderHeader() {
+    var dormOpen = 0, privOpen = 0;
+    board.rooms.forEach(function (r) {
+      r.beds.forEach(function (b) { if (!board.beds[b].taken) dormOpen++; });
+    });
+    board.privates.forEach(function (p) { if (!board.beds[p.id].taken) privOpen++; });
+
+    el("dormCount").textContent = dormOpen;
+    el("dormCount").className = "stat-num" + (dormOpen === 0 ? " none" : "");
+    el("dormWhat").textContent = (dormOpen === 1 ? "dorm bed" : "dorm beds") + " free";
+    el("privCount").textContent = privOpen;
+    el("privCount").className = "stat-num" + (privOpen === 0 ? " none" : "");
+    el("privWhat").textContent = (privOpen === 1 ? "private room" : "private rooms") + " free";
+
+    var p = board.prices;
+    el("dormPrice").innerHTML = "<strong>" + fmt(p.dorm) + "</strong> / person" +
+      (p.overrideActive ? ' <span class="tonight">tonight</span>' : "");
+    el("privPrice").innerHTML = "<strong>" + fmt(p.priv) + "</strong> / night" +
+      (p.overrideActive ? ' <span class="tonight">tonight</span>' : "");
+
+    el("headDate").textContent = "Tonight · " + board.night.current;
+  }
+
+  function bedButton(id, letter) {
+    var taken = board.beds[id].taken;
+    var btn = document.createElement("button");
+    btn.className = "bed " + (taken ? "taken" : "open") + (pendingBeds[id] ? " pending" : "");
+    btn.dataset.bed = id;
+    btn.setAttribute("aria-pressed", taken ? "true" : "false");
+    btn.setAttribute("aria-label", "Bed " + letter + ": " + (taken ? "taken" : "available") + ". Tap to change.");
+    btn.innerHTML = '<span class="letter">' + letter + '</span><span class="state">' + (taken ? "Taken" : "Available") + "</span>";
+    btn.addEventListener("click", function () { toggle(id); });
+    return btn;
+  }
+
+  function renderRooms() {
+    var host = el("dormRooms");
+    host.innerHTML = "";
+    board.rooms.forEach(function (r) {
+      var open = r.beds.filter(function (b) { return !board.beds[b].taken; }).length;
+      var card = document.createElement("div");
+      card.className = "room";
+      var head = document.createElement("div");
+      head.className = "room-head";
+      head.innerHTML =
+        '<div class="room-name">' + r.name +
+        (r.female
+          ? ' <span class="badge-female">Female only</span>'
+          : ' <span class="room-type">· ' + r.type + "</span>") +
+        "</div>" +
+        '<div class="room-free' + (open === 0 ? " full" : "") + '"><strong>' + open + "</strong> of " + r.beds.length + " free</div>";
+      card.appendChild(head);
+      var grid = document.createElement("div");
+      grid.className = "beds";
+      r.beds.forEach(function (b) { grid.appendChild(bedButton(b, b)); });
+      card.appendChild(grid);
+      host.appendChild(card);
+    });
+
+    var ph = el("privateRooms");
+    ph.innerHTML = "";
+    board.privates.forEach(function (p) {
+      var taken = board.beds[p.id].taken;
+      var row = document.createElement("button");
+      row.className = "private-row" + (pendingBeds[p.id] ? " pending" : "");
+      row.dataset.bed = p.id;
+      row.setAttribute("aria-pressed", taken ? "true" : "false");
+      row.setAttribute("aria-label", p.name + ": " + (taken ? "taken" : "available") + ". Tap to change.");
+      row.innerHTML =
+        "<div><div class='private-name'>" + p.name + "</div>" +
+        "<div class='private-sub'>Private · " + fmt(board.prices.priv) + " / night</div></div>" +
+        '<span class="pill ' + (taken ? "taken" : "open") + '">' + (taken ? "Taken" : "Available") + "</span>";
+      row.addEventListener("click", function () { toggle(p.id); });
+      ph.appendChild(row);
+    });
+  }
+
+  /* ---------- Actions ---------- */
+  async function toggle(id) {
+    if (pendingBeds[id] || fails >= 2) return;
+    pendingBeds[id] = true;
+    renderRooms();
+    try {
+      var r = await apiFetch("/api/karma/toggle", {
+        method: "POST",
+        body: JSON.stringify({ bed: id, expect: board.beds[id].taken })
+      });
+      if (r.status === 401) { signOutToGate("Your code is no longer active."); return; }
+      if (!r.ok) throw new Error("bad status");
+      var data = await r.json();
+      delete pendingBeds[id];
+      applyBoard(data);
+      if (data.conflict) {
+        var who = data.conflict.by || "someone";
+        showToast("Bed " + id.replace(/^p/, "Room ") + " was just changed by " + who + " — board refreshed.");
+      } else if (navigator.vibrate) {
+        navigator.vibrate(8);
+      }
+      var btn = document.querySelector('[data-bed="' + id + '"]');
+      if (btn) btn.focus({ preventScroll: true });
+    } catch (_e) {
+      delete pendingBeds[id];
+      fails = Math.max(fails, 2);
+      renderConnection();
+      renderRooms();
+      showToast("No connection — that change was NOT saved.");
+    }
+  }
+
+  async function adminPost(path, body) {
+    var r = await apiFetch(path, { method: "POST", body: body ? JSON.stringify(body) : "{}" });
+    if (r.status === 401) { signOutToGate("Your code is no longer active."); throw new Error("auth"); }
+    var data = await r.json();
+    if (!r.ok) { showToast(data.detail || "That didn't work."); throw new Error("api"); }
+    return data;
+  }
+
+  /* ---------- Night banner ---------- */
+  function renderBanner() {
+    var stale = board.night.stale;
+    el("nightBanner").className = "night-banner" + (stale ? " show" : "");
+    el("bannerReset").style.display = sessionStorage.getItem(ROLE) === "admin" ? "" : "none";
+  }
+
+  el("bannerKeep").addEventListener("click", async function () {
+    try { applyBoard(await adminPost("/api/karma/reset", { mode: "keep" })); } catch (_e) {}
+  });
+  el("bannerReset").addEventListener("click", async function () {
+    try {
+      applyBoard(await adminPost("/api/karma/reset", { mode: "all" }));
+      showToast("Board reset — Undo is in Settings.");
+    } catch (_e) {}
+  });
+
+  /* ---------- Toast ---------- */
+  var toastTimer = null;
+  function showToast(msg) {
+    el("toastMsg").textContent = msg;
+    el("toast").classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el("toast").classList.remove("show"); }, 6000);
+  }
+
+  /* ---------- Admin sheet ---------- */
+  var scrim = el("scrim"), adminSheet = el("adminSheet");
+  function openAdmin() {
+    fillAdminForm();
+    refreshStaff();
+    refreshHistory();
+    scrim.classList.add("show");
+    adminSheet.classList.add("show");
+    adminSheet.focus({ preventScroll: true });
+  }
+  function closeAdmin() {
+    scrim.classList.remove("show");
+    adminSheet.classList.remove("show");
+    el("codeReveal").className = "code-reveal";
+    el("gearBtn").focus({ preventScroll: true });
+  }
+  scrim.addEventListener("click", closeAdmin);
+  el("adminClose").addEventListener("click", closeAdmin);
+  el("gearBtn").addEventListener("click", openAdmin);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && adminSheet.classList.contains("show")) closeAdmin();
+  });
+
+  var TZS = ["America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
+             "America/Mexico_City", "America/Bogota", "Europe/London", "Europe/Paris",
+             "Africa/Algiers", "Asia/Dubai", "Asia/Jakarta", "Asia/Manila", "Asia/Tokyo",
+             "Australia/Sydney"];
+
+  function fillAdminForm() {
+    el("adminSub").textContent = "Signed in as " + (sessionStorage.getItem(NAME) || "—") +
+      " · prices update on every phone within seconds.";
+    el("inDorm").value = board.basePrices.dorm;
+    el("inPriv").value = board.basePrices.priv;
+    var o = board.override && board.prices.overrideActive ? board.override : null;
+    el("ovrToggle").checked = !!o;
+    el("ovrFields").style.display = o ? "" : "none";
+    el("inOvrDorm").value = o && o.dorm != null ? o.dorm : board.basePrices.dorm;
+    el("inOvrPriv").value = o && o.priv != null ? o.priv : board.basePrices.priv;
+
+    var tzSel = el("inTz");
+    tzSel.innerHTML = "";
+    var zones = TZS.indexOf(board.night.tz) === -1 ? [board.night.tz].concat(TZS) : TZS;
+    zones.forEach(function (z) {
+      var opt = document.createElement("option");
+      opt.value = z; opt.textContent = z.replace("_", " ");
+      if (z === board.night.tz) opt.selected = true;
+      tzSel.appendChild(opt);
+    });
+    var cutSel = el("inCut");
+    cutSel.innerHTML = "";
+    for (var h = 0; h < 24; h++) {
+      var o2 = document.createElement("option");
+      var label = (h % 12 === 0 ? 12 : h % 12) + (h < 12 ? " AM" : " PM");
+      o2.value = h; o2.textContent = label;
+      if (h === board.night.cutoverHour) o2.selected = true;
+      cutSel.appendChild(o2);
+    }
+    el("adminUndo").style.display = board.canUndoReset ? "" : "none";
+  }
+
+  el("ovrToggle").addEventListener("change", function () {
+    el("ovrFields").style.display = this.checked ? "" : "none";
+  });
+
+  el("savePrices").addEventListener("click", async function () {
+    var dorm = parseFloat(el("inDorm").value);
+    var priv = parseFloat(el("inPriv").value);
+    if (isNaN(dorm) || dorm < 0 || isNaN(priv) || priv < 0) {
+      showToast("Prices must be numbers, 0 or more"); return;
+    }
+    var body = { dorm: dorm, priv: priv, overrideOn: el("ovrToggle").checked };
+    if (body.overrideOn) {
+      var od = parseFloat(el("inOvrDorm").value);
+      var op = parseFloat(el("inOvrPriv").value);
+      body.overrideDorm = !isNaN(od) && od >= 0 ? od : null;
+      body.overridePriv = !isNaN(op) && op >= 0 ? op : null;
+    }
+    try {
+      applyBoard(await adminPost("/api/karma/prices", body));
+      showToast("Prices saved");
+    } catch (_e) {}
+  });
+
+  el("saveNight").addEventListener("click", async function () {
+    try {
+      applyBoard(await adminPost("/api/karma/night",
+        { tz: el("inTz").value, cutoverHour: parseInt(el("inCut").value, 10) }));
+      showToast("Night settings saved");
+    } catch (_e) {}
+  });
+
+  var resetArmed = false, resetArmTimer = null;
+  el("adminReset").addEventListener("click", async function () {
+    if (!resetArmed) {
+      resetArmed = true;
+      el("adminReset").textContent = "Tap again to confirm reset";
+      resetArmTimer = setTimeout(function () {
+        resetArmed = false;
+        el("adminReset").textContent = "Reset all to available";
+      }, 4000);
+      return;
+    }
+    clearTimeout(resetArmTimer);
+    resetArmed = false;
+    el("adminReset").textContent = "Reset all to available";
+    try {
+      applyBoard(await adminPost("/api/karma/reset", { mode: "all" }));
+      showToast("Board reset — Undo below if that was a mistake.");
+    } catch (_e) {}
+  });
+
+  el("adminUndo").addEventListener("click", async function () {
+    try {
+      var data = await adminPost("/api/karma/undo-reset");
+      applyBoard(data);
+      showToast(data.undoSkipped && data.undoSkipped.length
+        ? "Reset undone — kept newer changes to: " + data.undoSkipped.join(", ")
+        : "Reset undone");
+    } catch (_e) {}
+  });
+
+  /* ---------- Staff management ---------- */
+  async function refreshStaff() {
+    try {
+      var r = await apiFetch("/api/karma/staff");
+      if (!r.ok) return;
+      var data = await r.json();
+      var ul = el("staffList");
+      ul.innerHTML = "";
+      data.staff.forEach(function (p) {
+        var li = document.createElement("li");
+        var left = document.createElement("span");
+        left.innerHTML = (p.active ? "" : '<span class="revoked">') + p.name +
+          (p.active ? "" : "</span>") + ' <span class="role">' + p.role + "</span>";
+        li.appendChild(left);
+        if (p.active && p.name !== sessionStorage.getItem(NAME)) {
+          var btn = document.createElement("button");
+          btn.textContent = "Revoke";
+          btn.addEventListener("click", async function () {
+            try {
+              await adminPost("/api/karma/staff/revoke", { name: p.name });
+              showToast(p.name + "'s code revoked");
+              refreshStaff();
+            } catch (_e) {}
+          });
+          li.appendChild(btn);
+        }
+        ul.appendChild(li);
+      });
+    } catch (_e) {}
+  }
+
+  el("staffAdd").addEventListener("click", async function () {
+    var name = el("staffName").value.trim();
+    if (!name) { showToast("Give the new code a name"); return; }
+    try {
+      var data = await adminPost("/api/karma/staff",
+        { name: name, role: el("staffRole").value });
+      el("staffName").value = "";
+      var cr = el("codeReveal");
+      cr.innerHTML = "Code for <b>" + data.name + "</b> — shown only once:" +
+        "<strong>" + data.code + "</strong>" +
+        "Write it down now and hand it over in person.";
+      cr.className = "code-reveal show";
+      refreshStaff();
+    } catch (_e) {}
+  });
+
+  /* ---------- History ---------- */
+  var ACTION_LABELS = {
+    "toggle": "flipped a bed", "reset-all": "reset the board",
+    "undo-reset": "undid a reset", "night-keep": "kept beds into the new night",
+    "prices": "changed prices", "night-settings": "changed night settings",
+    "staff-add": "added a staff code", "staff-revoke": "revoked a staff code"
+  };
+
+  async function refreshHistory() {
+    try {
+      var r = await apiFetch("/api/karma/history?limit=30");
+      if (!r.ok) return;
+      var data = await r.json();
+      var ul = el("historyList");
+      ul.innerHTML = "";
+      data.entries.forEach(function (e) {
+        var li = document.createElement("li");
+        var t = new Date(e.ts);
+        var what = ACTION_LABELS[e.action] || e.action;
+        if (e.action === "toggle") {
+          what = "set bed " + e.detail.bed + " " + (e.detail.taken ? "TAKEN" : "AVAILABLE");
+        }
+        li.innerHTML = t.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) +
+          ' · <span class="who">' + e.actor + "</span> " + what;
+        ul.appendChild(li);
+      });
+    } catch (_e) {}
+  }
+
+  // iOS Safari needs a touch listener registered for :active states to fire.
+  document.addEventListener("touchstart", function () {}, { passive: true });
+})();
+</script>
+</body>
+</html>
