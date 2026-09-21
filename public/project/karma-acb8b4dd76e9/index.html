@@ -116,6 +116,17 @@
     text-transform: uppercase; letter-spacing: 0.06em;
   }
 
+  /* ---------- Demo notice ---------- */
+  .demo-note {
+    margin: 4px 0 12px;
+    background: rgba(250, 161, 30, 0.1);
+    border: 1px solid rgba(250, 161, 30, 0.45);
+    border-radius: var(--r);
+    padding: 10px 14px;
+    font-size: 13px; color: var(--cream-dim);
+  }
+  .demo-note strong { color: var(--amber); font-weight: 700; }
+
   /* ---------- New night banner ---------- */
   .night-banner {
     display: none;
@@ -366,6 +377,10 @@
 </header>
 
 <main class="wrap">
+  <div class="demo-note">
+    <strong>Design preview.</strong> Taps save on this device only — nothing is shared between phones here. The live pilot board (shared in real time, staff sign-in) runs at a separate link.
+  </div>
+
   <div class="night-banner" id="nightBanner">
     <p><strong>New night.</strong> Yesterday's board is still showing. Reset beds to available, or keep them for guests staying another night.</p>
     <div class="banner-actions">
