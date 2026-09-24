@@ -387,9 +387,10 @@
 
 <div id="gate">
   <div class="wordmark">KARMA <span>MUSE</span></div>
-  <p>Night board — enter your staff code.</p>
-  <input id="gateInput" autocomplete="off" autocapitalize="characters" spellcheck="false"
-         aria-label="Staff access code" onkeydown="if(event.key==='Enter')tryUnlock()">
+  <p>Night board — enter your 4-digit staff code.</p>
+  <input id="gateInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4"
+         placeholder="••••" autocomplete="off" spellcheck="false"
+         aria-label="4-digit staff code" onkeydown="if(event.key==='Enter')tryUnlock()">
   <button id="gateBtn" onclick="tryUnlock()">Enter</button>
   <div id="gateErr"></div>
 </div>
@@ -612,6 +613,11 @@
     el("gateInput").value = "";
     gate.classList.remove("shake"); void gate.offsetWidth; gate.classList.add("shake");
   }
+
+  el("gateInput").addEventListener("input", function () {
+    this.value = this.value.replace(/\D/g, "").slice(0, 4);
+    if (this.value.length === 4) tryUnlock();
+  });
 
   window.tryUnlock = async function () {
     var code = el("gateInput").value.trim();
